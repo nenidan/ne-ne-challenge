@@ -2,10 +2,7 @@ package com.github.nenidan.ne_ne_challenge.domain.user.entity;
 
 import com.github.nenidan.ne_ne_challenge.domain.user.type.UserRole;
 import com.github.nenidan.ne_ne_challenge.global.entity.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,12 +21,14 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private String email;
 
     private String password;
 
     private UserRole role;
 
+    @Column(nullable = false, unique = true)
     private String nickname;
 
     private LocalDate birth;

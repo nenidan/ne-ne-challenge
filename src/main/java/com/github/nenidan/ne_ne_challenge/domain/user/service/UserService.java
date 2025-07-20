@@ -8,10 +8,13 @@ import com.github.nenidan.ne_ne_challenge.domain.user.entity.User;
 import com.github.nenidan.ne_ne_challenge.domain.user.exception.UserErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.user.exception.UserException;
 import com.github.nenidan.ne_ne_challenge.domain.user.repository.UserRepository;
+import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -51,6 +54,22 @@ public class UserService {
         ));
     }
 
+    public CursorResponse<UserResponse, String> searchProfiles(String cursor, int size, String keyword) {
+
+        List<UserResponse> userList = userRepository.findByKeword(cursor, keyword, size + 1)
+                .stream()
+                .map(UserResponse::from)
+                .toList();
+
+        boolean hasNext = userList.size() > size;
+
+        List<UserResponse> content = hasNext ? userList.subList(0, size) : userList;
+
+        String nextCursor = hasNext ? userList.get(userList.size() - 1).getNickname() : null;
+
+        return new CursorResponse<>(content, nextCursor, userList.size() > size);
+    }
+
     @Transactional
     public UserResponse updateProfile(Long id, UpdateProfileRequest updateProfileRequest) {
 
@@ -67,6 +86,5 @@ public class UserService {
 
         return UserResponse.from(user);
     }
-
 
 }
