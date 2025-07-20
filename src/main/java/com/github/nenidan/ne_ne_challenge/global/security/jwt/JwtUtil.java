@@ -50,6 +50,10 @@ public class JwtUtil {
                 .compact();
     }
 
+    public String getBearerToken(String token) {
+        return BEARER_PREFIX + token;
+    }
+
     public static boolean isValidBearerToken(String authorizationHeader) {
         return authorizationHeader != null && BEARER_PATTERN.matcher(authorizationHeader).matches();
     }

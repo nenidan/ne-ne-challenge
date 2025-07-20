@@ -7,11 +7,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDate;
 
+@Getter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -34,4 +36,16 @@ public class User extends BaseEntity {
 
     private String bio;
 
+    public User(String email, String password, String nickname, LocalDate birth, String bio) {
+        this.email = email;
+        this.password = password;
+        this.role = UserRole.USER;
+        this.nickname = nickname;
+        this.birth = birth;
+        this.bio = bio;
+    }
+
+    public void updatePassword(String newPassword) {
+        this.password = newPassword;
+    }
 }
