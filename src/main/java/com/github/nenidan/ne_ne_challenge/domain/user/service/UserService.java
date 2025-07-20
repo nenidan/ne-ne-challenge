@@ -29,6 +29,10 @@ public class UserService {
             throw new UserException(UserErrorCode.DUPLICATE_EMAIL);
         }
 
+        if(userRepository.findByNickname(joinRequest.getEmail()).isPresent()) {
+            throw new UserException(UserErrorCode.DUPLICATE_NICKNAME);
+        }
+
         User newUser = joinRequest.toEntity();
         newUser.updatePassword(passwordEncoder.encode(newUser.getPassword()));
 

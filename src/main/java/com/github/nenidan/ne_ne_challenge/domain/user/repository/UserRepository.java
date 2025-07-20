@@ -14,6 +14,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(String email);
 
+    Optional<User> findByNickname(String nickname);
+
     @Query(value = "SELECT * FROM user u " +
             "WHERE (:cursor IS NULL OR u.nickname >= :cursor) " +
             "AND u.nickname LIKE CONCAT('%', :keyword, '%') " +
