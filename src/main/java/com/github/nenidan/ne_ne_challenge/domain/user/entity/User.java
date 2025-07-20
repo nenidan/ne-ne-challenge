@@ -48,4 +48,10 @@ public class User extends BaseEntity {
     public void updatePassword(String newPassword) {
         this.password = newPassword;
     }
+
+    public void updateProfile(String nickname, LocalDate birth, String bio) {
+        this.nickname = nickname != null ? nickname : this.nickname;
+        this.birth = birth != null ? birth : this.birth;
+        this.bio = bio != null ? bio : this.bio;
+    }
 }

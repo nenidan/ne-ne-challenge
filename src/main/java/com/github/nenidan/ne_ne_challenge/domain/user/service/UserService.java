@@ -2,6 +2,7 @@ package com.github.nenidan.ne_ne_challenge.domain.user.service;
 
 import com.github.nenidan.ne_ne_challenge.domain.user.dto.request.JoinRequest;
 import com.github.nenidan.ne_ne_challenge.domain.user.dto.request.LoginRequest;
+import com.github.nenidan.ne_ne_challenge.domain.user.dto.request.UpdateProfileRequest;
 import com.github.nenidan.ne_ne_challenge.domain.user.dto.response.UserResponse;
 import com.github.nenidan.ne_ne_challenge.domain.user.entity.User;
 import com.github.nenidan.ne_ne_challenge.domain.user.exception.UserErrorCode;
@@ -10,6 +11,7 @@ import com.github.nenidan.ne_ne_challenge.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -42,4 +44,22 @@ public class UserService {
 
         return UserResponse.from(findUser);
     }
+
+    @Transactional
+    public UserResponse updateProfile(Long id, UpdateProfileRequest updateProfileRequest) {
+
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new UserException(UserErrorCode.USER_NOT_FOUND)
+        );
+
+        user.updateProfile(
+                updateProfileRequest.getNickname(),
+                updateProfileRequest.getBirth(),
+                updateProfileRequest.getBio()
+        );
+        userRepository.flush();
+
+        return UserResponse.from(user);
+    }
+
 }
