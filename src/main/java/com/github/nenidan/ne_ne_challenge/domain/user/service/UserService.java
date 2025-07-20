@@ -30,4 +30,16 @@ public class UserService {
         return UserResponse.from(userRepository.save(newUser));
     }
 
+    public UserResponse login(LoginRequest loginRequest) {
+
+        User findUser = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(
+                () -> new UserException(UserErrorCode.EMAIL_NOT_FOUND)
+        );
+
+        if(!passwordEncoder.matches(loginRequest.getPassword(), findUser.getPassword())) {
+            throw new UserException(UserErrorCode.INVALID_PASSWORD);
+        }
+
+        return UserResponse.from(findUser);
+    }
 }

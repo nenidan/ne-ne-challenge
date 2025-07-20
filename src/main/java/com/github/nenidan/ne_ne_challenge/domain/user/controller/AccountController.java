@@ -1,6 +1,7 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.controller;
 
 import com.github.nenidan.ne_ne_challenge.domain.user.dto.request.JoinRequest;
+import com.github.nenidan.ne_ne_challenge.domain.user.dto.request.LoginRequest;
 import com.github.nenidan.ne_ne_challenge.domain.user.dto.response.UserResponse;
 import com.github.nenidan.ne_ne_challenge.domain.user.service.UserService;
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
@@ -36,7 +37,18 @@ public class AccountController {
         );
     }
 
+    @PostMapping("/accounts/login")
+    public ResponseEntity<ApiResponse<UserResponse>> login(@RequestBody LoginRequest loginRequest) {
 
+        UserResponse user = userService.login(loginRequest);
+
+        return ApiResponse.success(
+                HttpStatus.OK,
+                "로그인이 완료되었습니다.",
+                user,
+                createAuthHeaders(user)
+        );
+    }
 
 
     public HttpHeaders createAuthHeaders(UserResponse user) {
@@ -49,6 +61,5 @@ public class AccountController {
 
         return headers;
     }
-
 
 }
