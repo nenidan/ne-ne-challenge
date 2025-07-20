@@ -45,6 +45,12 @@ public class UserService {
         return UserResponse.from(findUser);
     }
 
+    public UserResponse getProfile(Long id) {
+        return UserResponse.from(userRepository.findById(id).orElseThrow(
+                () -> new UserException(UserErrorCode.USER_NOT_FOUND)
+        ));
+    }
+
     @Transactional
     public UserResponse updateProfile(Long id, UpdateProfileRequest updateProfileRequest) {
 
@@ -61,5 +67,6 @@ public class UserService {
 
         return UserResponse.from(user);
     }
+
 
 }

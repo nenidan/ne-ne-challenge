@@ -18,6 +18,24 @@ public class ProfileController {
 
     private final UserService userService;
 
+    @GetMapping("/profiles/me")
+    public ResponseEntity<ApiResponse<UserResponse>> getMyProfile(@AuthenticationPrincipal Auth auth) {
+        return ApiResponse.success(
+                HttpStatus.OK,
+                "프로필 조회가 완료되었습니다.",
+                userService.getProfile(auth.getId())
+        );
+    }
+
+    @GetMapping("/profiles/{id}")
+    public ResponseEntity<ApiResponse<UserResponse>> getMyProfile(@PathVariable Long id) {
+        return ApiResponse.success(
+                HttpStatus.OK,
+                "프로필 조회가 완료되었습니다. id: " + id,
+                userService.getProfile(id)
+        );
+    }
+
     @PatchMapping("/profiles/me")
     public ResponseEntity<ApiResponse<UserResponse>> updateMyProfile(
             @AuthenticationPrincipal Auth auth,
