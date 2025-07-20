@@ -7,6 +7,7 @@ import com.github.nenidan.ne_ne_challenge.domain.user.service.UserService;
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
 import com.github.nenidan.ne_ne_challenge.global.security.auth.Auth;
 import com.github.nenidan.ne_ne_challenge.global.security.jwt.JwtUtil;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,7 @@ public class AccountController {
     private final JwtUtil jwtUtil;
 
     @PostMapping("/accounts")
-    public ResponseEntity<ApiResponse<UserResponse>> join(@RequestBody JoinRequest joinRequest) {
+    public ResponseEntity<ApiResponse<UserResponse>> join(@RequestBody @Valid JoinRequest joinRequest) {
 
         UserResponse user = userService.join(joinRequest);
 
@@ -38,7 +39,7 @@ public class AccountController {
     }
 
     @PostMapping("/accounts/login")
-    public ResponseEntity<ApiResponse<UserResponse>> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<ApiResponse<UserResponse>> login(@RequestBody @Valid LoginRequest loginRequest) {
 
         UserResponse user = userService.login(loginRequest);
 

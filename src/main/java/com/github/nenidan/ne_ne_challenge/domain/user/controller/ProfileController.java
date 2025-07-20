@@ -6,6 +6,7 @@ import com.github.nenidan.ne_ne_challenge.domain.user.service.UserService;
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 import com.github.nenidan.ne_ne_challenge.global.security.auth.Auth;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +41,7 @@ public class ProfileController {
     @GetMapping("/profiles")
     public ResponseEntity<ApiResponse<CursorResponse<UserResponse, String>>> searchProfiles(
             @RequestParam(defaultValue = "") String cursor,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "10") @Min(1) int size,
             @RequestParam(defaultValue = "") String keyword
     ) {
         return ApiResponse.success(
