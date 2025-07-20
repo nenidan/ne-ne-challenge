@@ -1,6 +1,7 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.service;
 
 import com.github.nenidan.ne_ne_challenge.domain.user.dto.request.JoinRequest;
+import com.github.nenidan.ne_ne_challenge.domain.user.dto.request.LoginRequest;
 import com.github.nenidan.ne_ne_challenge.domain.user.dto.response.UserResponse;
 import com.github.nenidan.ne_ne_challenge.domain.user.entity.User;
 import com.github.nenidan.ne_ne_challenge.domain.user.exception.UserErrorCode;
@@ -19,20 +20,14 @@ public class UserService {
 
     public UserResponse join(JoinRequest joinRequest) {
 
-        existsByEmail(joinRequest.getEmail());
-
-        User user = joinRequest.toEntity();
-        user.updatePassword(passwordEncoder.encode(user.getPassword()));
-
-        return UserResponse.from(userRepository.save(user));
-    }
-
-
-
-
-    public void existsByEmail(String email) {
-        if (userRepository.existsByEmail(email)) {
+        if(userRepository.findByEmail(joinRequest.getEmail()).isPresent()) {
             throw new UserException(UserErrorCode.DUPLICATE_EMAIL);
         }
+
+        User newUser = joinRequest.toEntity();
+        newUser.updatePassword(passwordEncoder.encode(newUser.getPassword()));
+
+        return UserResponse.from(userRepository.save(newUser));
     }
+
 }
