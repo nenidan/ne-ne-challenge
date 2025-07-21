@@ -56,4 +56,12 @@ public class ChallengeController {
             challengeService.updateChallenge(authUser.getId(), id, request)
         );
     }
+
+    @DeleteMapping("/challenges/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteChallenge(@AuthenticationPrincipal Auth authUser, @PathVariable Long id) {
+        return ApiResponse.success(HttpStatus.OK,
+            "챌린지를 삭제했습니다.",
+            challengeService.deleteChallenge(authUser.getId(), id)
+        );
+    }
 }

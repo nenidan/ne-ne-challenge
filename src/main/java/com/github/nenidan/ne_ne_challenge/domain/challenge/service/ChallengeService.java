@@ -49,6 +49,7 @@ public class ChallengeService {
         return ChallengeResponse.from(savedChallenge);
     }
 
+    // fixme: soft-delete 된 항목 조회 x
     public ChallengeResponse getChallenge(Long id) {
         Challenge foundChallenge = challengeRepository.findById(id).orElseThrow(() -> new ChallengeException(
             ChallengeErrorCode.CHALLENGE_NOT_FOUND));
@@ -56,6 +57,7 @@ public class ChallengeService {
         return ChallengeResponse.from(foundChallenge);
     }
 
+    // fixme: soft-delete 된 항목 조회 x
     public CursorResponse<ChallengeResponse, LocalDateTime> getChallengeList(ChallengeSearchCond cond) {
         int size = cond.getSize();
 
@@ -78,7 +80,7 @@ public class ChallengeService {
 
     /**
      * 챌린지 상태 수정: WAITING → ONGOING → FINISHED 순서로만 가능
-     * 참가비 수정 시에는 차이만큼 다시 지급하거나 지불해야 하며, 시작 후 수정 불가능
+     * 참가비 수정 시에는 차이만큼 다시 지급하거나 지불해야 하며, 시작 후 수정 불가능 → 아직 미구현
      * 불가능한 조건이 존재할 시 모든 변경 취소
      *
      * @param userId:      요청자 id
@@ -113,5 +115,24 @@ public class ChallengeService {
         }
 
         return ChallengeResponse.from(challenge);
+    }
+
+    // fixme: soft-delete 된 항목 조회 x
+    // todo: 여러 번의 리포지토리 호출 조인으로 한 번에? 엔티티 연관관계부터 수정 필요할 듯
+    @Transactional
+    public Void deleteChallenge(Long userId, Long challengeId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+        Challenge challenge = challengeRepository.findById(challengeId)
+            .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND));
+        ChallengeUser challengeUser = challengeUserRepository.findByUserAndChallenge(user, challenge)
+            .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.NOT_MY_CHALLENGE));
+
+        if (!challengeUser.isHost()) {
+            throw new ChallengeException(ChallengeErrorCode.NOT_HOST);
+        }
+
+        challenge.delete();
+        return null;
     }
 }
