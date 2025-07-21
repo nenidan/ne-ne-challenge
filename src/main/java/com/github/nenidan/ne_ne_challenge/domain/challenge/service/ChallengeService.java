@@ -2,11 +2,14 @@ package com.github.nenidan.ne_ne_challenge.domain.challenge.service;
 
 import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.request.ChallengeSearchCond;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.request.CreateChallengeRequest;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.request.UpdateChallengeRequest;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.response.ChallengeResponse;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.entity.Challenge;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.entity.ChallengeUser;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.exception.ChallengeErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.exception.ChallengeException;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.repository.ChallengeRepository;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.repository.ChallengeUserRepository;
 import com.github.nenidan.ne_ne_challenge.domain.user.entity.User;
 import com.github.nenidan.ne_ne_challenge.domain.user.exception.UserErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.user.exception.UserException;
@@ -19,6 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.github.nenidan.ne_ne_challenge.domain.challenge.exception.ChallengeErrorCode.INVALID_STATUS_TRANSITION;
+import static com.github.nenidan.ne_ne_challenge.domain.challenge.type.ChallengeStatus.WAITING;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -29,6 +35,8 @@ public class ChallengeService {
     private final ChallengeRepository challengeRepository;
 
     private final UserRepository userRepository;
+
+    private final ChallengeUserRepository challengeUserRepository;
 
     @Transactional
     public ChallengeResponse createChallenge(CreateChallengeRequest request, Long userId) {
@@ -59,14 +67,51 @@ public class ChallengeService {
             cond.getMaxParticipationFee(),
             cond.getCursor(),
             size + 1
-        ).stream()
-            .map(ChallengeResponse::from)
-            .toList();
+        ).stream().map(ChallengeResponse::from).toList();
 
         boolean hasNext = challengeList.size() > size;
         List<ChallengeResponse> content = hasNext ? challengeList.subList(0, size) : challengeList;
         LocalDateTime nextCursor = hasNext ? challengeList.get(challengeList.size() - 1).getCreatedAt() : null;
 
         return CursorResponse.of(content, nextCursor, hasNext);
+    }
+
+    /**
+     * 챌린지 상태 수정: WAITING → ONGOING → FINISHED 순서로만 가능
+     * 참가비 수정 시에는 차이만큼 다시 지급하거나 지불해야 하며, 시작 후 수정 불가능
+     * 불가능한 조건이 존재할 시 모든 변경 취소
+     *
+     * @param userId:      요청자 id
+     * @param challengeId: 챌린지 id
+     * @param request:     바꿀 정보를 담고 있는 DTO
+     * @return 변경된 챌린지 정보
+     */
+    @Transactional
+    public ChallengeResponse updateChallenge(Long userId, Long challengeId, UpdateChallengeRequest request) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+        Challenge challenge = challengeRepository.findById(challengeId)
+            .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND));
+        ChallengeUser challengeUser = challengeUserRepository.findByUserAndChallenge(user, challenge)
+            .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.NOT_MY_CHALLENGE));
+
+        if (!challengeUser.isHost()) {
+            throw new ChallengeException(ChallengeErrorCode.NOT_HOST);
+        }
+
+        challenge.safeUpdate(request.getName(), request.getDescription(), request.getCategory());
+        challenge.setDueDate(request.getDueAt());
+        int participantsCount = challengeUserRepository.countByChallenge(challenge);
+        challenge.updateParticipantsLimit(participantsCount, request.getMinParticipants(), request.getMaxParticipants());
+
+        // 챌린지 진행 상태 변경(시작)은 다른 수정이 모두 반영된 뒤에 수행
+        if (request.getStatus() != null) {
+            if (request.getStatus() != WAITING) {
+                throw new ChallengeException(INVALID_STATUS_TRANSITION);
+            }
+            challenge.start(participantsCount);
+        }
+
+        return ChallengeResponse.from(challenge);
     }
 }
