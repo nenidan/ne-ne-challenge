@@ -9,8 +9,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum PaymentErrorCode implements ErrorCode {
 
-    ;
-
+    CHARGE_FAILED("포인트 결제에 실패하였습니다.", HttpStatus.BAD_REQUEST);
 
     private final String message;
     private final HttpStatus status;
