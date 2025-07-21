@@ -20,6 +20,7 @@ import com.github.nenidan.ne_ne_challenge.domain.shop.service.ProductService;
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.PagedResponse;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -31,7 +32,7 @@ public class ProductController {
 
     @PostMapping("/products")
     public ResponseEntity<ApiResponse<ProductResponse>> createProduct(
-        @RequestBody CreateProductRequest createProductRequest
+        @RequestBody @Valid CreateProductRequest createProductRequest
     ) {
         ProductResponse productResponse = productService.createProduct(createProductRequest);
         return ApiResponse.success(HttpStatus.CREATED, "상품이 성공적으로 등록되었습니다.", productResponse);
