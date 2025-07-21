@@ -1,5 +1,7 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.controller;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.nenidan.ne_ne_challenge.domain.shop.dto.request.UpdateProductRequest;
@@ -15,6 +18,7 @@ import com.github.nenidan.ne_ne_challenge.domain.shop.dto.response.ProductRespon
 import com.github.nenidan.ne_ne_challenge.domain.shop.dto.request.CreateProductRequest;
 import com.github.nenidan.ne_ne_challenge.domain.shop.service.ProductService;
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
+import com.github.nenidan.ne_ne_challenge.global.dto.PagedResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -48,5 +52,16 @@ public class ProductController {
     ) {
         ProductResponse productResponse = productService.findProduct(id);
         return ApiResponse.success(HttpStatus.OK, "상품이 성공적으로 조회되었습니다.", productResponse);
+    }
+
+    @GetMapping("/products")
+    public ResponseEntity<ApiResponse<PagedResponse<ProductResponse>>> findAllProducts(
+        @RequestParam int page,
+        @RequestParam int size,
+        @RequestParam(required = false) String keyword
+    ) {
+        Page<ProductResponse> productPage = productService.findAllProducts(page, size, keyword);
+        PagedResponse<ProductResponse> pagedResponse = PagedResponse.toPagedResponse(productPage);
+        return ApiResponse.success(HttpStatus.OK, "상품이 성공적으로 조회되었습니다.", pagedResponse);
     }
 }
