@@ -5,7 +5,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.github.nenidan.ne_ne_challenge.domain.shop.dto.request.CreateProductRequest;
 import com.github.nenidan.ne_ne_challenge.domain.shop.dto.request.UpdateProductRequest;
@@ -62,6 +61,15 @@ public class ProductService {
         Pageable pageable = PageRequest.of(page, size);
         Page<Product> productPage = productRepository.findAllProducts(pageable, keyword);
         return productPage.map(ProductResponse::fromEntity);
+    }
+
+    @Transactional
+    public void deleteProduct(Long id) {
+        Product product = productRepository.findById(id).orElseThrow(
+            () -> new ShopException(ShopErrorCode.PRODUCT_NOT_FOUND)
+        );
+
+        product.delete();
     }
 }
 
