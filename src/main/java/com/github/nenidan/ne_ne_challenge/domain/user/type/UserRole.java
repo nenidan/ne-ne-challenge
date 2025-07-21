@@ -8,6 +8,10 @@ import java.util.Arrays;
 public enum UserRole {
     ADMIN, USER;
 
+    public String getAuthority() {
+        return "ROLE_" + this.name();
+    }
+
     public static UserRole of(String role) {
         return Arrays.stream(UserRole.values())
                 .filter(r -> r.name().equalsIgnoreCase(role))

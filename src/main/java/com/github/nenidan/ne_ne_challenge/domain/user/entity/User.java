@@ -28,6 +28,8 @@ public class User extends BaseEntity {
 
     private UserRole role;
 
+    private String nickname;
+
     private LocalDate birth;
 
     private String bio;
