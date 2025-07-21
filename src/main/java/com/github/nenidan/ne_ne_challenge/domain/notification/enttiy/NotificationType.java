@@ -1,6 +1,8 @@
 package com.github.nenidan.ne_ne_challenge.domain.notification.enttiy;
 
 public enum NotificationType {
+	ALL,
+
 	// 챌린지 관련
 	CHALLENGE_STARTED,       // 챌린지가 시작되었을 때
 	CHALLENGE_ENDED,         // 챌린지가 종료되었을 때
