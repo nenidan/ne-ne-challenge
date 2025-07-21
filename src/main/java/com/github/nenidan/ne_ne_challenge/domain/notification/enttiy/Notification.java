@@ -41,4 +41,12 @@ public class Notification extends BaseEntity {
 	@ManyToOne
 	@JoinColumn(name = "sender_id")
 	private User sender;
+
+	public Notification(String title, String content, NotificationType type, User receiver, User sender) {
+		this.title = title;
+		this.content = content;
+		this.type = type;
+		this.receiver = receiver;
+		this.sender = sender;
+	}
 }
