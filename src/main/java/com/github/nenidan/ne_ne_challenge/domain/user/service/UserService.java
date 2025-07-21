@@ -18,11 +18,13 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
+    @Transactional
     public UserResponse join(JoinRequest joinRequest) {
 
         if(userRepository.findByEmail(joinRequest.getEmail()).isPresent()) {
