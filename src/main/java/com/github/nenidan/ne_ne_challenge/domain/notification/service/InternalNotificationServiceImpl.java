@@ -2,8 +2,11 @@ package com.github.nenidan.ne_ne_challenge.domain.notification.service;
 
 import org.springframework.stereotype.Service;
 
+import com.github.nenidan.ne_ne_challenge.domain.notification.dto.request.ReadNotificationRequest;
 import com.github.nenidan.ne_ne_challenge.domain.notification.dto.request.SendNotificationRequest;
 import com.github.nenidan.ne_ne_challenge.domain.notification.enttiy.Notification;
+import com.github.nenidan.ne_ne_challenge.domain.notification.exception.NotificationErrorCode;
+import com.github.nenidan.ne_ne_challenge.domain.notification.exception.NotificationException;
 import com.github.nenidan.ne_ne_challenge.domain.notification.repository.NotificationRepository;
 import com.github.nenidan.ne_ne_challenge.domain.user.entity.User;
 import com.github.nenidan.ne_ne_challenge.domain.user.exception.UserErrorCode;
@@ -43,6 +46,16 @@ public class InternalNotificationServiceImpl implements NotificationService {
 			sender
 		);
 		notificationRepository.save(notification);
+		return null;
+	}
+
+	@Override
+	public Void read(ReadNotificationRequest request, Long id) {
+		Notification notification = notificationRepository.findById(id)
+			.orElseThrow(()->new NotificationException(NotificationErrorCode.NOT_FOUND));
+
+		notification.setRead(request.isRead());
+
 		return null;
 	}
 }
