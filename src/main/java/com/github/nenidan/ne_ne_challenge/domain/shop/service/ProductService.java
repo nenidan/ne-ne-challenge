@@ -41,5 +41,13 @@ public class ProductService {
 
         return ProductResponse.fromEntity(product);
     }
+
+    public ProductResponse findProduct(Long id) {
+        Product product = productRepository.findById(id).orElseThrow(
+            () -> new ShopException(ShopErrorCode.PRODUCT_NOT_FOUND)
+        );
+
+        return ProductResponse.fromEntity(product);
+    }
 }
 

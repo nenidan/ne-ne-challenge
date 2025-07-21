@@ -2,6 +2,7 @@ package com.github.nenidan.ne_ne_challenge.domain.shop.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,5 +40,13 @@ public class ProductController {
     ) {
         ProductResponse productResponse = productService.updateProduct(id, updateProductRequest);
         return ApiResponse.success(HttpStatus.OK, "상품이 성공적으로 수정되었습니다.", productResponse);
+    }
+
+    @GetMapping("/products/{id}")
+    public ResponseEntity<ApiResponse<ProductResponse>> findProduct(
+        @PathVariable Long id
+    ) {
+        ProductResponse productResponse = productService.findProduct(id);
+        return ApiResponse.success(HttpStatus.OK, "상품이 성공적으로 조회되었습니다.", productResponse);
     }
 }
