@@ -48,7 +48,7 @@ public class JwtFilter extends OncePerRequestFilter {
             Claims claims = jwtUtil.extractClaims(jwt);
 
             if (claims == null) {
-                response.sendError(SecurityServletErrorCode.INVALID_JWT.getHttpStatus(), SecurityServletErrorCode.INVALID_JWT.getMessage());
+                SecurityResponseWriter.writeJsonErrorResponse(response, SecurityServletErrorCode.INVALID_JWT);
                 return;
             }
 
