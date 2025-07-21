@@ -8,9 +8,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public class Auth {
 
-    private Long id;
+    private final Long id;
 
-    private String nickname;
+    private final String nickname;
 
-    private UserRole role;
+    private final UserRole role;
 }

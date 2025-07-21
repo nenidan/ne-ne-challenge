@@ -31,7 +31,7 @@ public class AccountController {
         UserResponse user = userService.join(joinRequest);
 
         return ApiResponse.success(
-                HttpStatus.OK,
+                HttpStatus.CREATED,
                 "회원가입이 완료되었습니다.",
                 user,
                 createAuthHeaders(user)

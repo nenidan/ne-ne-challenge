@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 
 @Getter
-public enum SecurityServletErrorCode {
+public enum SecurityServletErrorCode { // Security 관련 에러 코드 - 서블릿 전용 에러 코드
 
     // JWT 관련 오류
     INVALID_JWT_SIGNATURE(HttpServletResponse.SC_UNAUTHORIZED, "유효하지 않는 JWT 서명입니다."),
