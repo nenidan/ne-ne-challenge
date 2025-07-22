@@ -1,16 +1,16 @@
 package com.github.nenidan.ne_ne_challenge.domain.point.entity;
 
 import com.github.nenidan.ne_ne_challenge.domain.point.type.PointReason;
-import com.github.nenidan.ne_ne_challenge.domain.user.entity.User;
 import com.github.nenidan.ne_ne_challenge.global.entity.BaseEntity;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class PointTransaction extends BaseEntity {
 
@@ -19,13 +19,30 @@ public class PointTransaction extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "point_wallet_id", nullable = false)
+    private PointWallet pointWallet;
 
-    private Integer amount;
+    @Column(nullable = false)
+    private int amount;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private PointReason reason;
 
     private String description;
+
+    private PointTransaction(PointWallet pointWallet, int amount, PointReason reason, String description) {
+        this.pointWallet = pointWallet;
+        this.amount = amount;
+        this.reason = reason;
+        this.description = description;
+    }
+
+    public static PointTransaction charge(PointWallet pointWallet, int amount, PointReason reason, String description) {
+        return new PointTransaction(pointWallet, amount, reason, description);
+    }
+
+    public static PointTransaction use(PointWallet pointWallet, int amount, PointReason reason, String description) {
+        return new PointTransaction(pointWallet, -amount, reason, description);
+    }
 }
