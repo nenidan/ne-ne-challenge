@@ -15,6 +15,7 @@ import com.github.nenidan.ne_ne_challenge.domain.shop.service.OrderService;
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -47,5 +48,16 @@ public class OrderController {
     ) {
         OrderResponse orderResponse = orderService.findOrder(id);
         return ApiResponse.success(HttpStatus.OK, "주문이 조회되었습니다.", orderResponse);
+    }
+
+    @GetMapping("/orders")
+    public ResponseEntity<ApiResponse<CursorResponse<OrderResponse, Long>>> findOrder(
+        @RequestParam Long userId,
+        @RequestParam(required = false) Long cursor,
+        @RequestParam(defaultValue = "10") @Min(1) int size,
+        @RequestParam(required = false) String keyword
+    ) {
+        CursorResponse<OrderResponse, Long> allOrder = orderService.findAllOrder(userId, cursor, keyword, size);
+        return ApiResponse.success(HttpStatus.OK, "주문이 조회되었습니다.", allOrder);
     }
 }

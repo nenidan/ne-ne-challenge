@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.github.nenidan.ne_ne_challenge.domain.shop.dto.response.OrderResponse;
-import com.github.nenidan.ne_ne_challenge.domain.shop.dto.response.ProductResponse;
 import com.github.nenidan.ne_ne_challenge.domain.shop.entity.Order;
 import com.github.nenidan.ne_ne_challenge.domain.shop.entity.OrderDetail;
 import com.github.nenidan.ne_ne_challenge.domain.shop.entity.Product;
@@ -14,11 +13,11 @@ import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopException;
 import com.github.nenidan.ne_ne_challenge.domain.shop.repository.OrderRepository;
 import com.github.nenidan.ne_ne_challenge.domain.shop.repository.ProductRepository;
-import com.github.nenidan.ne_ne_challenge.domain.shop.type.OrderStatus;
 import com.github.nenidan.ne_ne_challenge.domain.user.entity.User;
 import com.github.nenidan.ne_ne_challenge.domain.user.exception.UserErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.user.exception.UserException;
 import com.github.nenidan.ne_ne_challenge.domain.user.repository.UserRepository;
+import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -64,4 +63,24 @@ public class OrderService {
 
         return OrderResponse.fromEntity(order);
     }
+
+    public CursorResponse<OrderResponse, Long> findAllOrder(Long userId, Long cursor, String keyword, int size) {
+        if(!userRepository.existsById(userId)) {
+            throw new UserException(UserErrorCode.USER_NOT_FOUND);
+        }
+
+        List<OrderResponse> orderList = orderRepository.findByKeyword(userId, cursor, keyword, size+1)
+            .stream()
+            .map(OrderResponse::fromEntity)
+            .toList();
+
+        boolean hasNext = orderList.size() > size;
+
+        List<OrderResponse> content = hasNext ? orderList.subList(0, size) : orderList;
+
+        Long nextCursor = hasNext ? orderList.get(orderList.size() - 1).getOrderId() : null;
+
+        return new CursorResponse<>(content, nextCursor, orderList.size() > size);
+    }
+
 }
