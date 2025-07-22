@@ -95,7 +95,7 @@ public class ChallengeService {
         Challenge challenge = challengeRepository.findById(challengeId)
             .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND));
         ChallengeUser challengeUser = challengeUserRepository.findByUserAndChallenge(user, challenge)
-            .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.NOT_MY_CHALLENGE));
+            .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.NOT_PARTICIPATING));
 
         if (!challengeUser.isHost()) {
             throw new ChallengeException(ChallengeErrorCode.NOT_HOST);
@@ -125,7 +125,7 @@ public class ChallengeService {
         Challenge challenge = challengeRepository.findById(challengeId)
             .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND));
         ChallengeUser challengeUser = challengeUserRepository.findByUserAndChallenge(user, challenge)
-            .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.NOT_MY_CHALLENGE));
+            .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.NOT_PARTICIPATING));
 
         if (!challengeUser.isHost()) {
             throw new ChallengeException(ChallengeErrorCode.NOT_HOST);

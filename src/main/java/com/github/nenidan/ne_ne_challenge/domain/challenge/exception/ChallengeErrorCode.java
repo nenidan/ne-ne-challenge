@@ -13,7 +13,7 @@ public enum ChallengeErrorCode implements ErrorCode {
     CHALLENGE_ALREADY_FINISHED("이미 종료된 챌린지 입니다.", HttpStatus.BAD_REQUEST),
     CHALLENGE_PARTICIPANT_LIMIT_EXCEEDED("인원수가 부족하거나 초과합니다.", HttpStatus.BAD_REQUEST),
     INVALID_PARTICIPANT_LIMIT("올바르지 않은 인원수 제한입니다.", HttpStatus.BAD_REQUEST),
-    NOT_MY_CHALLENGE("참여 중인 챌린지가 아닙니다.", HttpStatus.FORBIDDEN),
+    NOT_PARTICIPATING("참여 중인 챌린지가 아닙니다.", HttpStatus.FORBIDDEN),
     NOT_HOST("챌린지 수정 권한이 없습니다.", HttpStatus.FORBIDDEN),
     INVALID_STATUS_TRANSITION("해당 상태로 변경할 수 없습니다.", HttpStatus.BAD_REQUEST),
     INVALID_DUE_DATE("올바르지 않은 마감일입니다.", HttpStatus.BAD_REQUEST),

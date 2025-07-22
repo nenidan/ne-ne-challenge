@@ -1,7 +1,10 @@
 package com.github.nenidan.ne_ne_challenge.domain.challenge.service;
 
+import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.request.ChallengeSearchCond;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.request.CreateHistoryRequest;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.request.HistorySearchCond;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.response.ChallengeHistoryResponse;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.response.ChallengeResponse;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.entity.Challenge;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.entity.ChallengeHistory;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.entity.ChallengeUser;
@@ -14,12 +17,14 @@ import com.github.nenidan.ne_ne_challenge.domain.user.entity.User;
 import com.github.nenidan.ne_ne_challenge.domain.user.exception.UserErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.user.exception.UserException;
 import com.github.nenidan.ne_ne_challenge.domain.user.repository.UserRepository;
+import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 import static com.github.nenidan.ne_ne_challenge.domain.challenge.exception.ChallengeErrorCode.ALREADY_VERIFIED;
 
@@ -29,18 +34,21 @@ import static com.github.nenidan.ne_ne_challenge.domain.challenge.exception.Chal
 public class ChallengeHistoryService {
 
     private final UserRepository userRepository;
+
     private final ChallengeRepository challengeRepository;
+
     private final ChallengeUserRepository challengeUserRepository;
+
     private final ChallengeHistoryRepository challengeHistoryRepository;
 
     @Transactional
     public ChallengeHistoryResponse createHistory(CreateHistoryRequest request, Long userId, Long challengeId) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
-        Challenge challenge = challengeRepository.findById(challengeId)
-            .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND));
-        ChallengeUser challengeUser = challengeUserRepository.findByUserAndChallenge(user, challenge)
-            .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.NOT_MY_CHALLENGE));
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+        Challenge challenge = challengeRepository.findById(challengeId).orElseThrow(() -> new ChallengeException(
+            ChallengeErrorCode.CHALLENGE_NOT_FOUND));
+        ChallengeUser challengeUser = challengeUserRepository.findByUserAndChallenge(user,
+            challenge
+        ).orElseThrow(() -> new ChallengeException(ChallengeErrorCode.NOT_PARTICIPATING));
 
         LocalDateTime startOfDay = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
         LocalDateTime endOfDay = startOfDay.plusDays(1);
@@ -49,9 +57,39 @@ public class ChallengeHistoryService {
             throw new ChallengeException(ALREADY_VERIFIED);
         }
 
-        ChallengeHistory newHistory = new ChallengeHistory(user, challenge, request.getContent(), true); // Todo: 현재는 그냥 성공처리
+        ChallengeHistory newHistory = new ChallengeHistory(user,
+            challenge,
+            request.getContent(),
+            true
+        ); // Todo: 현재는 그냥 성공처리
 
         ChallengeHistory savedHistory = challengeHistoryRepository.save(newHistory);
         return ChallengeHistoryResponse.from(savedHistory);
+    }
+
+    public CursorResponse<ChallengeHistoryResponse, LocalDateTime> getHistoryList(Long challengeId,
+        HistorySearchCond cond
+    ) {
+        Long userId = cond.getUserId();
+        int size = cond.getSize();
+
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+        Challenge challenge = challengeRepository.findById(challengeId).orElseThrow(() -> new ChallengeException(
+            ChallengeErrorCode.CHALLENGE_NOT_FOUND));
+        ChallengeUser challengeUser = challengeUserRepository.findByUserAndChallenge(user,
+            challenge
+        ).orElseThrow(() -> new ChallengeException(ChallengeErrorCode.NOT_PARTICIPATING));
+
+        List<ChallengeHistoryResponse> challengeHistoryList = challengeHistoryRepository.getChallengeHistoryList(userId,
+            challengeId,
+            cond.getCursor(),
+            cond.getSize() + 1
+        ).stream().map(ChallengeHistoryResponse::from).toList();
+
+        boolean hasNext = challengeHistoryList.size() > size;
+        List<ChallengeHistoryResponse> content = hasNext ? challengeHistoryList.subList(0, size) : challengeHistoryList;
+        LocalDateTime nextCursor = hasNext ? challengeHistoryList.get(challengeHistoryList.size() - 1).getCreatedAt() : null;
+
+        return CursorResponse.of(content, nextCursor, hasNext);
     }
 }
