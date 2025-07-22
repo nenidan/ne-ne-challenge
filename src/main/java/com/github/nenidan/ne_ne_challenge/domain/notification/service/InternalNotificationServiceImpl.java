@@ -13,6 +13,7 @@ import com.github.nenidan.ne_ne_challenge.domain.notification.enttiy.Notificatio
 import com.github.nenidan.ne_ne_challenge.domain.notification.exception.NotificationErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.notification.exception.NotificationException;
 import com.github.nenidan.ne_ne_challenge.domain.notification.repository.NotificationRepository;
+import com.github.nenidan.ne_ne_challenge.domain.notification.service.fcm.FcmService;
 import com.github.nenidan.ne_ne_challenge.domain.user.entity.User;
 import com.github.nenidan.ne_ne_challenge.domain.user.exception.UserErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.user.exception.UserException;
@@ -27,6 +28,8 @@ import lombok.RequiredArgsConstructor;
 public class InternalNotificationServiceImpl implements NotificationService {
 	private final NotificationRepository notificationRepository;
 	private final UserRepository userRepository;
+
+	private final FcmService fcmService;
 
 	/*
 		알림을 저장하는 기능
@@ -54,6 +57,7 @@ public class InternalNotificationServiceImpl implements NotificationService {
 			receiver,
 			sender
 		);
+		fcmService.send(receiver.getId(), notification.getTitle(), notification.getContent());
 		notificationRepository.save(notification);
 		return null;
 	}
