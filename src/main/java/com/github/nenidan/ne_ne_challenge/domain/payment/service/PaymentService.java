@@ -52,7 +52,7 @@ public class PaymentService {
         return PaymentResponse.from(payment);
     }
 
-    public CursorResponse searchMyPayments(Long userId, Long cursor, int size, PaymentMethod method,
+    public CursorResponse<PaymentResponse, Long> searchMyPayments(Long userId, Long cursor, int size, PaymentMethod method,
         PaymentStatus status, LocalDate startDate, LocalDate endDate) {
 
         LocalDateTime start = (startDate != null) ? startDate.atStartOfDay() : null;

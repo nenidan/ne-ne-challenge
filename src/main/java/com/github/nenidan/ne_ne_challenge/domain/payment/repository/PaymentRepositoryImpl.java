@@ -34,7 +34,7 @@ public class PaymentRepositoryImpl implements PaymentRepositoryCustom {
         StringBuilder sb = new StringBuilder("SELECT p FROM Payment p where p.user.id = :userId");
 
         if (cursor != null) {
-            sb.append(" AND p.id < :cursor");
+            sb.append(" AND p.id <= :cursor");
         }
 
         if (method != null) {
