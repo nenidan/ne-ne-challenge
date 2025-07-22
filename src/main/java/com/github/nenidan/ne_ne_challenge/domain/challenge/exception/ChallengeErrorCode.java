@@ -16,7 +16,8 @@ public enum ChallengeErrorCode implements ErrorCode {
     NOT_MY_CHALLENGE("참여 중인 챌린지가 아닙니다.", HttpStatus.FORBIDDEN),
     NOT_HOST("챌린지 수정 권한이 없습니다.", HttpStatus.FORBIDDEN),
     INVALID_STATUS_TRANSITION("해당 상태로 변경할 수 없습니다.", HttpStatus.BAD_REQUEST),
-    INVALID_DUE_DATE("올바르지 않은 마감일입니다.", HttpStatus.BAD_REQUEST);
+    INVALID_DUE_DATE("올바르지 않은 마감일입니다.", HttpStatus.BAD_REQUEST),
+    ALREADY_VERIFIED("이미 오늘의 기록을 남겼습니다.", HttpStatus.BAD_REQUEST);
 
     private final String message;
     private final HttpStatus status;
