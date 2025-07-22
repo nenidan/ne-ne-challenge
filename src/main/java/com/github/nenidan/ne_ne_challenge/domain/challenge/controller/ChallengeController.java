@@ -5,8 +5,11 @@ import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.request.CreateCha
 import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.request.UpdateChallengeRequest;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.response.ChallengeResponse;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.service.ChallengeService;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.service.ChallengeUserService;
+import com.github.nenidan.ne_ne_challenge.domain.user.dto.response.UserResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +23,8 @@ import java.time.LocalDateTime;
 public class ChallengeController {
 
     private final ChallengeService challengeService;
+
+    private final ChallengeUserService challengeUserService;
 
     @PostMapping("/challenges")
     public ResponseEntity<ApiResponse<ChallengeResponse>> createChallenge(@RequestBody CreateChallengeRequest request) {
@@ -46,5 +51,16 @@ public class ChallengeController {
     @DeleteMapping("/challenges/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteChallenge(@PathVariable Long id, @RequestParam Long userId) {
         return ApiResponse.success(HttpStatus.OK, "챌린지를 삭제했습니다.", challengeService.deleteChallenge(userId, id));
+    }
+
+    @GetMapping("/challenges/{id}/participants")
+    public ResponseEntity<ApiResponse<CursorResponse<UserResponse, Long>>> getChallengeParticipantList(@RequestParam(defaultValue = "0") Long cursor,
+        @RequestParam(defaultValue = "10") @Min(1) int size,
+        @PathVariable Long id
+    ) {
+        return ApiResponse.success(HttpStatus.OK,
+            "챌린지 참가자 목록을 조회했습니다.",
+            challengeUserService.getChallengeParticipantList(id, cursor, size)
+        );
     }
 }
