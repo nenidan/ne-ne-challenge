@@ -34,7 +34,14 @@ public class PaymentController {
 
     @PostMapping("/payments/point")
     public ResponseEntity<ApiResponse<PaymentResponse>> chargePoint(@Valid @RequestBody ChargePointRequest chargePointRequest, @AuthenticationPrincipal Auth auth) {
-        return ApiResponse.success(HttpStatus.CREATED, "결제가 완료되었습니다.", paymentService.chargePoint(auth.getId(), chargePointRequest));
+
+        PaymentResponse paymentResponse = paymentService.chargePoint(auth.getId(), chargePointRequest);
+
+        String message = paymentResponse.getStatus().equals(PaymentStatus.SUCCESS)
+            ? "포인트 충전이 완료되었습니다."
+            : "포인트 충전에 실패했습니다. 관리자에게 문의하세요.";
+
+        return ApiResponse.success(HttpStatus.CREATED, message, paymentResponse);
     }
 
     @GetMapping("/payments")

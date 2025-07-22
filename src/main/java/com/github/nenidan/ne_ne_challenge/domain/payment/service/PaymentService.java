@@ -11,11 +11,16 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.nenidan.ne_ne_challenge.domain.payment.dto.request.ChargePointRequest;
 import com.github.nenidan.ne_ne_challenge.domain.payment.dto.response.PaymentResponse;
 import com.github.nenidan.ne_ne_challenge.domain.payment.entity.Payment;
-import com.github.nenidan.ne_ne_challenge.domain.payment.exception.PaymentErrorCode;
-import com.github.nenidan.ne_ne_challenge.domain.payment.exception.PaymentException;
 import com.github.nenidan.ne_ne_challenge.domain.payment.repository.PaymentRepository;
 import com.github.nenidan.ne_ne_challenge.domain.payment.type.PaymentMethod;
 import com.github.nenidan.ne_ne_challenge.domain.payment.type.PaymentStatus;
+import com.github.nenidan.ne_ne_challenge.domain.point.entity.PointTransaction;
+import com.github.nenidan.ne_ne_challenge.domain.point.entity.PointWallet;
+import com.github.nenidan.ne_ne_challenge.domain.point.exception.PointErrorCode;
+import com.github.nenidan.ne_ne_challenge.domain.point.exception.PointException;
+import com.github.nenidan.ne_ne_challenge.domain.point.repository.PointTransactionRepository;
+import com.github.nenidan.ne_ne_challenge.domain.point.repository.PointWalletRepository;
+import com.github.nenidan.ne_ne_challenge.domain.point.type.PointReason;
 import com.github.nenidan.ne_ne_challenge.domain.user.entity.User;
 import com.github.nenidan.ne_ne_challenge.domain.user.exception.UserErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.user.exception.UserException;
@@ -31,6 +36,8 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final UserRepository userRepository;
+    private final PointWalletRepository pointWalletRepository;
+    private final PointTransactionRepository pointTransactionRepository;
 
     @Transactional
     public PaymentResponse chargePoint(Long userId, ChargePointRequest chargePointRequest) {
@@ -41,12 +48,18 @@ public class PaymentService {
         Payment payment = new Payment(findUser, chargePointRequest.getAmount(), chargePointRequest.getMethod());
         paymentRepository.save(payment);
 
+
         try {
-            // TODO : 생성된 pointWallet(회원가입 시 pointWallet 생성)에 포인트 증감 로직
+            PointWallet pointWallet = pointWalletRepository.findByUserId(findUser.getId())
+                .orElseThrow(() -> new PointException(PointErrorCode.POINT_WALLET_NOT_FOUND));
+            pointWallet.increase(chargePointRequest.getAmount());
+
+            PointTransaction pointTransaction = PointTransaction.charge(pointWallet, chargePointRequest.getAmount(), PointReason.CHARGE, "포인트 구매가 완료되었습니다.");
+            pointTransactionRepository.save(pointTransaction);
+
             payment.succeed();
         } catch (Exception e) {
             payment.fail();
-            throw new PaymentException(PaymentErrorCode.CHARGE_FAILED, e);
         }
 
         return PaymentResponse.from(payment);
@@ -74,4 +87,6 @@ public class PaymentService {
 
         return new CursorResponse<>(content, nextCursor, hasNext);
     }
+
+
 }
