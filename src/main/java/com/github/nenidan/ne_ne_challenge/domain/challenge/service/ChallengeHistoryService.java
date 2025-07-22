@@ -1,10 +1,9 @@
 package com.github.nenidan.ne_ne_challenge.domain.challenge.service;
 
-import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.request.ChallengeSearchCond;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.request.CreateHistoryRequest;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.request.HistorySearchCond;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.response.ChallengeHistoryResponse;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.response.ChallengeResponse;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.response.ChallengeSuccessRateResponse;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.entity.Challenge;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.entity.ChallengeHistory;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.entity.ChallengeUser;
@@ -91,5 +90,24 @@ public class ChallengeHistoryService {
         LocalDateTime nextCursor = hasNext ? challengeHistoryList.get(challengeHistoryList.size() - 1).getCreatedAt() : null;
 
         return CursorResponse.of(content, nextCursor, hasNext);
+    }
+
+    public ChallengeSuccessRateResponse getSuccessRate(Long userId, Long id) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+        Challenge challenge = challengeRepository.findById(id)
+            .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND));
+        if(challenge.getStartedAt() == null) {
+            throw new ChallengeException(ChallengeErrorCode.NOT_STARTED);
+        }
+        ChallengeUser challengeUser = challengeUserRepository.findByUserAndChallenge(user, challenge)
+            .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.NOT_PARTICIPATING));
+
+        long daysFromStart = ChronoUnit.DAYS.between(challenge.getStartedAt().toLocalDate(), LocalDateTime.now().toLocalDate());
+        long totalPeriod = daysFromStart + 1; // 오늘 포함
+        int successfulDays = challengeHistoryRepository.countByChallengeAndUserAndIsSuccessTrue(challenge, user);
+        int successRate = (int) ((successfulDays * 100) / totalPeriod);
+
+        return new ChallengeSuccessRateResponse(successRate);
     }
 }

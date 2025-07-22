@@ -4,6 +4,7 @@ import com.github.nenidan.ne_ne_challenge.domain.challenge.entity.Challenge;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.entity.ChallengeHistory;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.type.ChallengeCategory;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.type.ChallengeStatus;
+import com.github.nenidan.ne_ne_challenge.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -44,4 +45,6 @@ public interface ChallengeHistoryRepository extends JpaRepository<ChallengeHisto
         @Param("cursor") LocalDateTime cursor,
         @Param("limit") int limit
     );
+
+    int countByChallengeAndUserAndIsSuccessTrue(Challenge challenge, User user);
 }

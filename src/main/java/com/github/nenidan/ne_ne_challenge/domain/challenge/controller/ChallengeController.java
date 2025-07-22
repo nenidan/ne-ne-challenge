@@ -4,6 +4,8 @@ import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.request.Challenge
 import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.request.CreateChallengeRequest;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.request.UpdateChallengeRequest;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.response.ChallengeResponse;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.response.ChallengeSuccessRateResponse;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.service.ChallengeHistoryService;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.service.ChallengeService;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.service.ChallengeUserService;
 import com.github.nenidan.ne_ne_challenge.domain.user.dto.response.UserResponse;
@@ -25,6 +27,8 @@ public class ChallengeController {
     private final ChallengeService challengeService;
 
     private final ChallengeUserService challengeUserService;
+
+    private final ChallengeHistoryService challengeHistoryService;
 
     @PostMapping("/challenges")
     public ResponseEntity<ApiResponse<ChallengeResponse>> createChallenge(@RequestBody CreateChallengeRequest request) {
@@ -61,6 +65,16 @@ public class ChallengeController {
         return ApiResponse.success(HttpStatus.OK,
             "챌린지 참가자 목록을 조회했습니다.",
             challengeUserService.getChallengeParticipantList(id, cursor, size)
+        );
+    }
+
+    @GetMapping("/challenges/{id}/success-rate")
+    public ResponseEntity<ApiResponse<ChallengeSuccessRateResponse>> getSuccessRate(@PathVariable Long id,
+        @RequestParam Long userId
+    ) {
+        return ApiResponse.success(HttpStatus.OK,
+            "현재까지의 인증율을 조회했습니다.",
+            challengeHistoryService.getSuccessRate(userId, id)
         );
     }
 }
