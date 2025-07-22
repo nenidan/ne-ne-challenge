@@ -11,6 +11,7 @@ import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopException;
 import com.github.nenidan.ne_ne_challenge.domain.shop.repository.OrderRepository;
 import com.github.nenidan.ne_ne_challenge.domain.shop.repository.ProductRepository;
+import com.github.nenidan.ne_ne_challenge.domain.shop.type.OrderStatus;
 import com.github.nenidan.ne_ne_challenge.domain.user.entity.User;
 import com.github.nenidan.ne_ne_challenge.domain.user.exception.UserErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.user.exception.UserException;
@@ -44,5 +45,13 @@ public class OrderService {
         Order saveOrder = orderRepository.save(order);
 
         return OrderResponse.fromEntity(saveOrder);
+    }
+
+    @Transactional
+    public void cancelOrder(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+            .orElseThrow(()-> new ShopException(ShopErrorCode.ORDER_NOT_FOUND));
+
+        order.delete();
     }
 }

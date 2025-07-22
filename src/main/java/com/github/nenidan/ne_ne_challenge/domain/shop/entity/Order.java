@@ -51,4 +51,14 @@ public class Order extends BaseEntity {
         this.orderDetails.add(orderDetail);
         orderDetail.setOrder(this);
     }
+
+    @Override
+    public void delete() {
+        setStatus(OrderStatus.CANCELED);
+
+        super.delete();
+        for (OrderDetail orderDetail : orderDetails) {
+            orderDetail.delete();
+        }
+    }
 }
