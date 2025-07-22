@@ -77,8 +77,11 @@ public class ChallengeService {
     }
 
     /**
-     * 챌린지 상태 수정: WAITING → ONGOING → FINISHED 순서로만 가능
-     * 참가비 수정 시에는 차이만큼 다시 지급하거나 지불해야 하며, 시작 후 수정 불가능 → 아직 미구현
+     * 챌린지 상태 수정: WAITING → ONGOING만 가능
+     * name, description, category는 자유롭게 변경 가능
+     * dueAt 은 오늘보다 이전으로 설정 불가
+     * minParticipants <= maxParticipants 여야 하며, minParticipants가 현재 참여자보다 작아지면 자동 시작
+     * 참가비 수정 시에는 차이만큼 다시 지급하거나 지불해야 하며, 시작 후 수정 불가 → 아직 미구현
      * 불가능한 조건이 존재할 시 모든 변경 취소
      *
      * @param userId:      요청자 id
