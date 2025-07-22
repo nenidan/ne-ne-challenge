@@ -1,6 +1,7 @@
 package com.github.nenidan.ne_ne_challenge.domain.challenge.entity;
 
 import com.github.nenidan.ne_ne_challenge.domain.user.entity.User;
+import com.github.nenidan.ne_ne_challenge.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,7 @@ import org.hibernate.annotations.SQLRestriction;
 @NoArgsConstructor
 @SQLRestriction("deleted_at IS NULL")
 @Table(name = "challenge_user", uniqueConstraints = {@UniqueConstraint(name = "unique_user_id_challenge_id", columnNames = {"user_id", "challenge_id"})})
-public class ChallengeUser {
+public class ChallengeUser extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

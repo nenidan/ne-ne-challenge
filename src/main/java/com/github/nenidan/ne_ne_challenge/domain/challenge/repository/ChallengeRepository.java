@@ -20,7 +20,7 @@ public interface ChallengeRepository extends JpaRepository<Challenge, Long> {
         FROM challenge c
         LEFT JOIN challenge_user cu ON cu.challenge_id = c.id AND (:userId IS NULL OR cu.user_id = :userId)
         WHERE(:name IS NULL OR c.name LIKE CONCAT('%', :name, '%'))
-                AND (c.deleted_at IS NOT NULL)
+                AND (c.deleted_at IS NULL)
                 AND (:cursor IS NULL OR c.created_at <= :cursor)
                 AND (:status IS NULL OR c.status = :status)
                 AND (:dueAt IS NULL OR c.due_at < :dueAt)
