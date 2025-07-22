@@ -33,4 +33,14 @@ public class PointService {
         PointWallet pointWallet = new PointWallet(findUser);
         pointWalletRepository.save(pointWallet);
     }
+
+    public PointBalanceResponse getMyBalance(Long userId) {
+        User findUser = userRepository.findById(userId)
+            .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+
+        PointWallet pointWallet = pointWalletRepository.findById(findUser.getId())
+            .orElseThrow(() -> new PointException(PointErrorCode.POINT_WALLET_NOT_FOUND));
+
+        return PointBalanceResponse.from(pointWallet);
+    }
 }
