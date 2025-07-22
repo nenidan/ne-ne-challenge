@@ -28,6 +28,7 @@ public class Payment extends BaseEntity {
     private int amount;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private PaymentStatus status;
 
     @Enumerated(EnumType.STRING)
@@ -43,13 +44,13 @@ public class Payment extends BaseEntity {
 
     public Payment(User user, int amount, PaymentMethod method) {
         this.user = user;
+        this.status = PaymentStatus.SUCCESS;
         this.amount = amount;
         this.method = method;
         this.requestedAt = LocalDateTime.now();
     }
 
     public void succeed() {
-        this.status = PaymentStatus.SUCCESS;
         this.confirmedAt = LocalDateTime.now();
     }
 
