@@ -8,6 +8,7 @@ import com.github.nenidan.ne_ne_challenge.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -19,6 +20,7 @@ import static com.github.nenidan.ne_ne_challenge.domain.challenge.type.Challenge
 @Entity
 @Getter
 @NoArgsConstructor
+@SQLRestriction("deleted_at IS NULL")
 public class Challenge extends BaseEntity {
 
     @Id

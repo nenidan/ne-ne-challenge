@@ -49,7 +49,6 @@ public class ChallengeService {
         return ChallengeResponse.from(savedChallenge);
     }
 
-    // fixme: soft-delete 된 항목 조회 x
     public ChallengeResponse getChallenge(Long id) {
         Challenge foundChallenge = challengeRepository.findById(id).orElseThrow(() -> new ChallengeException(
             ChallengeErrorCode.CHALLENGE_NOT_FOUND));
@@ -57,7 +56,6 @@ public class ChallengeService {
         return ChallengeResponse.from(foundChallenge);
     }
 
-    // fixme: soft-delete 된 항목 조회 x
     public CursorResponse<ChallengeResponse, LocalDateTime> getChallengeList(ChallengeSearchCond cond) {
         int size = cond.getSize();
 
@@ -117,7 +115,6 @@ public class ChallengeService {
         return ChallengeResponse.from(challenge);
     }
 
-    // fixme: soft-delete 된 항목 조회 x
     // todo: 여러 번의 리포지토리 호출 조인으로 한 번에? 엔티티 연관관계부터 수정 필요할 듯
     @Transactional
     public Void deleteChallenge(Long userId, Long challengeId) {
