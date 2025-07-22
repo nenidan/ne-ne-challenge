@@ -1,9 +1,12 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.github.nenidan.ne_ne_challenge.domain.shop.dto.response.OrderResponse;
+import com.github.nenidan.ne_ne_challenge.domain.shop.dto.response.ProductResponse;
 import com.github.nenidan.ne_ne_challenge.domain.shop.entity.Order;
 import com.github.nenidan.ne_ne_challenge.domain.shop.entity.OrderDetail;
 import com.github.nenidan.ne_ne_challenge.domain.shop.entity.Product;
@@ -53,5 +56,12 @@ public class OrderService {
             .orElseThrow(()-> new ShopException(ShopErrorCode.ORDER_NOT_FOUND));
 
         order.delete();
+    }
+
+    public OrderResponse findOrder(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+            .orElseThrow(()-> new ShopException(ShopErrorCode.ORDER_NOT_FOUND));
+
+        return OrderResponse.fromEntity(order);
     }
 }

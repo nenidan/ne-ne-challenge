@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.github.nenidan.ne_ne_challenge.domain.shop.dto.response.OrderResponse;
 import com.github.nenidan.ne_ne_challenge.domain.shop.service.OrderService;
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
+import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -38,5 +39,13 @@ public class OrderController {
     ) {
         orderService.cancelOrder(id);
         return ApiResponse.success(HttpStatus.OK, "주문이 취소되었습니다.", null);
+    }
+
+    @GetMapping("/orders/{id}")
+    public ResponseEntity<ApiResponse<OrderResponse>> findOrder(
+        @PathVariable Long id
+    ) {
+        OrderResponse orderResponse = orderService.findOrder(id);
+        return ApiResponse.success(HttpStatus.OK, "주문이 조회되었습니다.", orderResponse);
     }
 }
