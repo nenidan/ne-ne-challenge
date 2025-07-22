@@ -9,7 +9,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum PaymentErrorCode implements ErrorCode {
 
-    CHARGE_FAILED("포인트 결제에 실패하였습니다.", HttpStatus.BAD_REQUEST);
+    CHARGE_FAILED("포인트 결제에 실패하였습니다.", HttpStatus.BAD_REQUEST),
+    PAYMENT_NOT_FOUND("결제 내역을 찾을 수 없습니다.", HttpStatus.BAD_REQUEST);
 
     private final String message;
     private final HttpStatus status;
