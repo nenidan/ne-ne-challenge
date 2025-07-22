@@ -1,6 +1,5 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.controller;
 
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,9 +17,10 @@ import com.github.nenidan.ne_ne_challenge.domain.shop.dto.response.ProductRespon
 import com.github.nenidan.ne_ne_challenge.domain.shop.dto.request.CreateProductRequest;
 import com.github.nenidan.ne_ne_challenge.domain.shop.service.ProductService;
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
-import com.github.nenidan.ne_ne_challenge.global.dto.PagedResponse;
+import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -56,14 +56,12 @@ public class ProductController {
     }
 
     @GetMapping("/products")
-    public ResponseEntity<ApiResponse<PagedResponse<ProductResponse>>> findAllProducts(
-        @RequestParam int page,
-        @RequestParam int size,
+    public ResponseEntity<ApiResponse<CursorResponse<ProductResponse, Long>>> findAllProducts(
+        @RequestParam(required = false) Long cursor,
+        @RequestParam(defaultValue = "10") @Min(1) int size,
         @RequestParam(required = false) String keyword
     ) {
-        Page<ProductResponse> productPage = productService.findAllProducts(page, size, keyword);
-        PagedResponse<ProductResponse> pagedResponse = PagedResponse.toPagedResponse(productPage);
-        return ApiResponse.success(HttpStatus.OK, "상품이 성공적으로 조회되었습니다.", pagedResponse);
+        return ApiResponse.success(HttpStatus.OK, "상품이 성공적으로 조회되었습니다.", productService.findAllProducts(cursor, size, keyword));
     }
 
     @DeleteMapping("/products/{id}")

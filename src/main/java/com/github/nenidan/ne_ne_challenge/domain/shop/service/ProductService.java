@@ -1,8 +1,7 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.service;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +13,7 @@ import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopException;
 import com.github.nenidan.ne_ne_challenge.domain.shop.repository.ProductRepository;
 import com.github.nenidan.ne_ne_challenge.domain.shop.util.ProductMapper;
+import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -53,14 +53,23 @@ public class ProductService {
         return ProductResponse.fromEntity(product);
     }
 
-    public Page<ProductResponse> findAllProducts(
-        int page,
+    public CursorResponse<ProductResponse, Long> findAllProducts(
+        Long cursor,
         int size,
         String keyword
     ) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Product> productPage = productRepository.findAllProducts(pageable, keyword);
-        return productPage.map(ProductResponse::fromEntity);
+        List<ProductResponse> productList = productRepository.findByKeyword(cursor,keyword, size+1)
+            .stream()
+            .map(ProductResponse::fromEntity)
+            .toList();
+
+        boolean hasNext = productList.size() > size;
+
+        List<ProductResponse> content = hasNext ? productList.subList(0, size) : productList;
+
+        Long nextCursor = hasNext ? productList.get(productList.size() - 1).getId() : null;
+
+        return new CursorResponse<>(content, nextCursor, productList.size() > size);
     }
 
     @Transactional
