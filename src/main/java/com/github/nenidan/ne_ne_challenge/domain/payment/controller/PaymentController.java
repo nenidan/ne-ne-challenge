@@ -46,7 +46,7 @@ public class PaymentController {
 
     @GetMapping("/payments")
     public ResponseEntity<ApiResponse<CursorResponse<PaymentResponse, Long>>> searchMyPayments(
-        @RequestParam Long userId,
+        @AuthenticationPrincipal Auth auth,
         @RequestParam(required = false) Long cursor,
         @RequestParam(defaultValue = "10") @Min(1) int size,
         @RequestParam(required = false) PaymentMethod method,
@@ -56,6 +56,6 @@ public class PaymentController {
         return ApiResponse.success(
             HttpStatus.OK,
             "결제 내역 조회가 완료되었습니다.",
-            paymentService.searchMyPayments(userId, cursor, size, method, status, startDate, endDate));
+            paymentService.searchMyPayments(auth.getId(), cursor, size, method, status, startDate, endDate));
     }
 }
