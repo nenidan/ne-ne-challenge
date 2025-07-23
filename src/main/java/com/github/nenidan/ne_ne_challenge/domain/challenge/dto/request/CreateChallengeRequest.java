@@ -10,9 +10,6 @@ import java.time.LocalDate;
 @Getter
 public class CreateChallengeRequest {
 
-    // 요청자 id
-    private Long userId;
-
     // Todo 빈 검증 제약조건
     private String name;
 
