@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.github.nenidan.ne_ne_challenge.domain.shop.dto.OrderFlatProjection;
 import com.github.nenidan.ne_ne_challenge.domain.shop.dto.response.OrderResponse;
 import com.github.nenidan.ne_ne_challenge.domain.shop.entity.Order;
 import com.github.nenidan.ne_ne_challenge.domain.shop.entity.OrderDetail;
@@ -39,10 +40,8 @@ public class OrderService {
 
         Integer productPrice = product.getProductPrice();
 
-        Order order = new Order(user);
         OrderDetail orderDetail = new OrderDetail(product, productPrice);
-
-        order.addOrderDetail(orderDetail);
+        Order order = new Order(user, orderDetail);
 
         Order saveOrder = orderRepository.save(order);
 

@@ -16,15 +16,16 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "orders")
 public class Order extends BaseEntity {
 
@@ -36,19 +37,20 @@ public class Order extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.PERSIST)
-    private final List<OrderDetail> orderDetails = new ArrayList<>();
+    @OneToOne(mappedBy = "order", cascade = CascadeType.PERSIST)
+    private OrderDetail orderDetail;
 
     @Setter
     @Enumerated(EnumType.STRING)
     private OrderStatus status = OrderStatus.PENDING;
 
-    public Order(User user) {
+    public Order(User user, OrderDetail orderDetail) {
         this.user = user;
+        setOrderDetail(orderDetail);
     }
 
-    public void addOrderDetail(OrderDetail orderDetail) {
-        this.orderDetails.add(orderDetail);
+    public void setOrderDetail(OrderDetail orderDetail) {
+        this.orderDetail = orderDetail;
         orderDetail.setOrder(this);
     }
 
@@ -57,8 +59,5 @@ public class Order extends BaseEntity {
         setStatus(OrderStatus.CANCELED);
 
         super.delete();
-        for (OrderDetail orderDetail : orderDetails) {
-            orderDetail.delete();
-        }
     }
 }
