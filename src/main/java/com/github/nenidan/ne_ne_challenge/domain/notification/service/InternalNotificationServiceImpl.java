@@ -83,7 +83,7 @@ public class InternalNotificationServiceImpl implements NotificationService {
 	) {
 		List<Notification> notifications;
 
-		Long cursorId = (cursor == null || cursor == 0) ? 0L : cursor;
+		Long cursorId = cursor == null ? 0L : cursor;
 
 		switch (isRead) { // boolean 타입은 true/ false 만 있어서 메일 읽음/안읽음 처리만 됨 그래서 String 으로 받아서 전체 조회도 가능하게 설정
 			case "false" -> {
