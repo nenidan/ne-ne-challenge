@@ -39,8 +39,8 @@ public class ChallengeService {
     private final ChallengeUserRepository challengeUserRepository;
 
     @Transactional
-    public ChallengeResponse createChallenge(CreateChallengeRequest request, Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+    public ChallengeResponse createChallenge(CreateChallengeRequest request) {
+        User user = userRepository.findById(request.getUserId()).orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
         Challenge newChallenge = request.toEntity();
 
         Challenge savedChallenge = challengeRepository.save(newChallenge);
@@ -84,14 +84,13 @@ public class ChallengeService {
      * 참가비 수정 시에는 차이만큼 다시 지급하거나 지불해야 하며, 시작 후 수정 불가 → 아직 미구현
      * 불가능한 조건이 존재할 시 모든 변경 취소
      *
-     * @param userId:      요청자 id
      * @param challengeId: 챌린지 id
-     * @param request:     바꿀 정보를 담고 있는 DTO
+     * @param request:     요청 정보
      * @return 변경된 챌린지 정보
      */
     @Transactional
-    public ChallengeResponse updateChallenge(Long userId, Long challengeId, UpdateChallengeRequest request) {
-        User user = userRepository.findById(userId)
+    public ChallengeResponse updateChallenge(Long challengeId, UpdateChallengeRequest request) {
+        User user = userRepository.findById(request.getUserId())
             .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
         Challenge challenge = challengeRepository.findById(challengeId)
             .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND));

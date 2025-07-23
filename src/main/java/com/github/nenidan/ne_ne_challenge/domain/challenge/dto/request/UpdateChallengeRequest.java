@@ -9,6 +9,9 @@ import java.time.LocalDate;
 @Getter
 public class UpdateChallengeRequest {
 
+    // 요청자의 userId
+    private Long userId;
+
     private String name;
 
     private String description;
