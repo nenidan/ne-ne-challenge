@@ -28,9 +28,4 @@ public class ChallengeSearchCond {
     private LocalDateTime cursor = LocalDateTime.of(9999, 12, 31, 23, 59, 59);
 
     private int size = 10;
-
-    @Override
-    public String toString() {
-        return "ChallengeSearchCond{" + "userId=" + userId + ", name='" + name + '\'' + ", status=" + status + ", dueAt=" + dueAt + ", category=" + category + ", maxParticipationFee=" + maxParticipationFee + ", cursor=" + cursor + ", size=" + size + '}';
-    }
 }
