@@ -54,7 +54,7 @@ public class PaymentService {
                 .orElseThrow(() -> new PointException(PointErrorCode.POINT_WALLET_NOT_FOUND));
             pointWallet.increase(chargePointRequest.getAmount());
 
-            PointTransaction pointTransaction = PointTransaction.charge(pointWallet, chargePointRequest.getAmount(), PointReason.CHARGE, "포인트 구매가 완료되었습니다.");
+            PointTransaction pointTransaction = PointTransaction.createChargeTransaction(pointWallet, chargePointRequest.getAmount(), PointReason.CHARGE, "포인트 구매가 완료되었습니다.");
             pointTransactionRepository.save(pointTransaction);
 
             payment.succeed();
