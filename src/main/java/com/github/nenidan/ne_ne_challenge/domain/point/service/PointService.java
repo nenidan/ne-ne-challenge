@@ -64,7 +64,7 @@ public class PointService {
         PointWallet pointWallet = pointWalletRepository.findByUserId(findUser.getId())
             .orElseThrow(() -> new PointException(PointErrorCode.POINT_WALLET_NOT_FOUND));
 
-        List<PointHistoryResponse> pointHistoryList = pointTransactionRepository.searchMyPointHistory(pointWallet.getId(), cursor, size + 1, reason, start, end)
+        List<PointHistoryResponse> pointHistoryList = pointTransactionRepository.searchMyPointHistory(pointWallet.getId(), cursor, reason, start, end, size + 1)
             .stream()
             .map(PointHistoryResponse::from)
             .toList();

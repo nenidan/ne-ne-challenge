@@ -74,7 +74,7 @@ public class PaymentService {
         User findUser = userRepository.findById(userId)
             .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 
-        List<PaymentResponse> paymentList = paymentRepository.searchPayments(findUser.getId(), cursor, size + 1, method, status, start, end)
+        List<PaymentResponse> paymentList = paymentRepository.searchPayments(findUser.getId(), cursor, method, status, start, end, size + 1)
             .stream()
             .map(PaymentResponse::from)
             .toList();
