@@ -35,4 +35,23 @@ public class OrderResponse {
             order.getDeletedAt()
         );
     }
+
+    public static OrderResponse fromProjection(OrderFlatProjection order) {
+        return new OrderResponse(
+            order.getOrderId(),
+            order.getUserId(),
+            new OrderDetailDto(
+                new ProductDto(
+                    order.getProductId(),
+                    order.getProductName(),
+                    order.getProductDescription()
+                ),
+                order.getPriceAtOrder()
+            ),
+            OrderStatus.valueOf(order.getStatus()),
+            order.getCreatedAt(),
+            order.getUpdatedAt(),
+            order.getDeletedAt()
+        );
+    }
 }

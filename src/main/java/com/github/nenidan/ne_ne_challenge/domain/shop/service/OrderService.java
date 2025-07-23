@@ -70,7 +70,7 @@ public class OrderService {
 
         List<OrderResponse> orderList = orderRepository.findByKeyword(userId, cursor, keyword, size+1)
             .stream()
-            .map(OrderResponse::fromEntity)
+            .map(OrderResponse::fromProjection)
             .toList();
 
         boolean hasNext = orderList.size() > size;
