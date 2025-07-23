@@ -12,9 +12,11 @@ import com.github.nenidan.ne_ne_challenge.domain.user.dto.response.UserResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 import jakarta.validation.constraints.Min;
+import com.github.nenidan.ne_ne_challenge.global.security.auth.Auth;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -31,30 +33,45 @@ public class ChallengeController {
     private final ChallengeHistoryService challengeHistoryService;
 
     @PostMapping("/challenges")
-    public ResponseEntity<ApiResponse<ChallengeResponse>> createChallenge(@RequestBody CreateChallengeRequest request) {
-        return ApiResponse.success(HttpStatus.CREATED, "챌린지를 생성했습니다.", challengeService.createChallenge(request));
+    public ResponseEntity<ApiResponse<ChallengeResponse>> createChallenge(@AuthenticationPrincipal Auth authUser,
+        @RequestBody CreateChallengeRequest request
+    ) {
+        return ApiResponse.success(HttpStatus.CREATED,
+            "챌린지를 생성했습니다.",
+            challengeService.createChallenge(request, authUser.getId())
+        );
     }
 
     @GetMapping("/challenges/{id}")
     public ResponseEntity<ApiResponse<ChallengeResponse>> getChallenge(@PathVariable Long id) {
-        return ApiResponse.success(HttpStatus.OK, "챌린지를 조회했습니다.", challengeService.getChallenge(id));
+        return ApiResponse.success(HttpStatus.OK,
+            "챌린지를 조회했습니다.",
+            challengeService.getChallenge(id)
+        );
     }
 
     @GetMapping("/challenges")
     public ResponseEntity<ApiResponse<CursorResponse<ChallengeResponse, LocalDateTime>>> getChallengeList(@ModelAttribute ChallengeSearchCond cond) {
-        return ApiResponse.success(HttpStatus.OK, "챌린지 목록을 조회했습니다.", challengeService.getChallengeList(cond));
+        return ApiResponse.success(HttpStatus.OK,
+            "챌린지 목록을 조회했습니다.",
+            challengeService.getChallengeList(cond)
+        );
     }
 
     @PatchMapping("/challenges/{id}")
-    public ResponseEntity<ApiResponse<ChallengeResponse>> updateChallenge(@RequestBody UpdateChallengeRequest request,
-        @PathVariable Long id
-    ) {
-        return ApiResponse.success(HttpStatus.OK, "챌린지 정보를 수정했습니다.", challengeService.updateChallenge(id, request));
+    public ResponseEntity<ApiResponse<ChallengeResponse>> updateChallenge(@AuthenticationPrincipal Auth authUser, @RequestBody UpdateChallengeRequest request, @PathVariable Long id) {
+        return ApiResponse.success(HttpStatus.OK,
+            "챌린지 정보를 수정했습니다.",
+            challengeService.updateChallenge(authUser.getId(), id, request)
+        );
     }
 
     @DeleteMapping("/challenges/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteChallenge(@PathVariable Long id, @RequestParam Long userId) {
-        return ApiResponse.success(HttpStatus.OK, "챌린지를 삭제했습니다.", challengeService.deleteChallenge(userId, id));
+    public ResponseEntity<ApiResponse<Void>> deleteChallenge(@AuthenticationPrincipal Auth authUser, @PathVariable Long id) {
+        return ApiResponse.success(HttpStatus.OK,
+            "챌린지를 삭제했습니다.",
+            challengeService.deleteChallenge(authUser.getId(), id)
+        );
     }
 
     @GetMapping("/challenges/{id}/participants")
