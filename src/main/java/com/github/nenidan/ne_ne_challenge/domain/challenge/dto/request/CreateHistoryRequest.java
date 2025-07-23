@@ -6,5 +6,7 @@ import lombok.Getter;
 @Getter
 public class CreateHistoryRequest {
 
+    private Long userId;
+
     private String content;
 }

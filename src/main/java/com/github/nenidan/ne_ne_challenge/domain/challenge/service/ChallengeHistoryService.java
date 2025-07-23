@@ -41,7 +41,8 @@ public class ChallengeHistoryService {
     private final ChallengeHistoryRepository challengeHistoryRepository;
 
     @Transactional
-    public ChallengeHistoryResponse createHistory(CreateHistoryRequest request, Long userId, Long challengeId) {
+    public ChallengeHistoryResponse createHistory(CreateHistoryRequest request, Long challengeId) {
+        Long userId = request.getUserId();
         User user = userRepository.findById(userId).orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
         Challenge challenge = challengeRepository.findById(challengeId).orElseThrow(() -> new ChallengeException(
             ChallengeErrorCode.CHALLENGE_NOT_FOUND));
@@ -60,7 +61,7 @@ public class ChallengeHistoryService {
             challenge,
             request.getContent(),
             true
-        ); // Todo: 현재는 그냥 성공처리
+        ); // Todo: 현재는 별도의 인증 절차 없이 성공 처리
 
         ChallengeHistory savedHistory = challengeHistoryRepository.save(newHistory);
         return ChallengeHistoryResponse.from(savedHistory);
