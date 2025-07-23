@@ -42,15 +42,15 @@ public class PaymentService {
     @Transactional
     public PaymentResponse chargePoint(Long userId, ChargePointRequest chargePointRequest) {
 
-        User findUser = userRepository.findById(userId)
+        User foundUser = userRepository.findById(userId)
             .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 
-        Payment payment = new Payment(findUser, chargePointRequest.getAmount(), chargePointRequest.getMethod());
+        Payment payment = new Payment(foundUser, chargePointRequest.getAmount(), chargePointRequest.getMethod());
         paymentRepository.save(payment);
 
 
         try {
-            PointWallet pointWallet = pointWalletRepository.findByUserId(findUser.getId())
+            PointWallet pointWallet = pointWalletRepository.findByUserId(foundUser.getId())
                 .orElseThrow(() -> new PointException(PointErrorCode.POINT_WALLET_NOT_FOUND));
             pointWallet.increase(chargePointRequest.getAmount());
 
