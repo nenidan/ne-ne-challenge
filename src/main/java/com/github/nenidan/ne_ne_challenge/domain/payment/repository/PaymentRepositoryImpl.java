@@ -1,7 +1,9 @@
 package com.github.nenidan.ne_ne_challenge.domain.payment.repository;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
@@ -12,10 +14,8 @@ import com.github.nenidan.ne_ne_challenge.domain.payment.type.PaymentStatus;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
-import lombok.RequiredArgsConstructor;
 
 @Repository
-@RequiredArgsConstructor
 public class PaymentRepositoryImpl implements PaymentRepositoryCustom {
 
     @PersistenceContext
@@ -31,52 +31,42 @@ public class PaymentRepositoryImpl implements PaymentRepositoryCustom {
         LocalDateTime startDate,
         LocalDateTime endDate) {
 
-        StringBuilder sb = new StringBuilder("SELECT p FROM Payment p where p.user.id = :userId");
+        StringBuilder sb = new StringBuilder("SELECT p FROM Payment p WHERE p.user.id = :userId");
+        Map<String, Object> params = new HashMap<>();
+        params.put("userId", userId);
 
         if (cursor != null) {
             sb.append(" AND p.id <= :cursor");
+            params.put("cursor", cursor);
         }
 
         if (method != null) {
             sb.append(" AND p.method = :method");
+            params.put("method", method);
         }
 
         if (status != null) {
             sb.append(" AND p.status = :status");
+            params.put("status", status);
         }
 
         if (startDate != null) {
             sb.append(" AND p.updatedAt >= :startDate");
+            params.put("startDate", startDate);
         }
 
         if (endDate != null) {
             sb.append(" AND p.updatedAt <= :endDate");
+            params.put("endDate", endDate);
         }
 
         sb.append(" ORDER BY p.id DESC");
 
         TypedQuery<Payment> query = em.createQuery(sb.toString(), Payment.class)
-            .setParameter("userId", userId)
             .setMaxResults(limit);
 
-        if (cursor != null) {
-            query.setParameter("cursor", cursor);
-        }
-
-        if (method != null) {
-            query.setParameter("method", method);
-        }
-
-        if (status != null) {
-            query.setParameter("status", status);
-        }
-
-        if (startDate != null) {
-            query.setParameter("startDate", startDate);
-        }
-
-        if (endDate != null) {
-            query.setParameter("endDate", endDate);
+        for (Map.Entry<String, Object> entry : params.entrySet()) {
+            query.setParameter(entry.getKey(), entry.getValue());
         }
 
         return query.getResultList();
