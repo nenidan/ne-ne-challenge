@@ -29,13 +29,13 @@ public class PointController {
     private final PointService pointService;
 
     @GetMapping("/points")
-    public ResponseEntity<ApiResponse<PointBalanceResponse>> getMyBalance(@AuthenticationPrincipal Auth auth) {
-        return ApiResponse.success(HttpStatus.OK, "포인트 잔액을 조회하였습니다.", pointService.getMyBalance(auth.getId()));
+    public ResponseEntity<ApiResponse<PointBalanceResponse>> getMyBalance(@RequestParam Long userId) {
+        return ApiResponse.success(HttpStatus.OK, "포인트 잔액을 조회하였습니다.", pointService.getMyBalance(userId));
     }
 
     @GetMapping("/points/history")
     public ResponseEntity<ApiResponse<CursorResponse<PointHistoryResponse, Long>>> searchMyPointHistory(
-        @AuthenticationPrincipal Auth auth,
+        @RequestParam Long userId,
         @RequestParam(required = false) Long cursor,
         @RequestParam(defaultValue = "10") @Min(1) int size,
         @RequestParam(required = false) PointReason reason,
@@ -45,7 +45,7 @@ public class PointController {
         return ApiResponse.success(
             HttpStatus.OK,
             "포인트 이력을 조회하였습니다.",
-            pointService.searchMyPointHistory(auth.getId(), cursor, size, reason, startDate, endDate)
+            pointService.searchMyPointHistory(userId, cursor, size, reason, startDate, endDate)
         );
     }
 }
