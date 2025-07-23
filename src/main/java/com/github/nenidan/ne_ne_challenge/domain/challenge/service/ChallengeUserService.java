@@ -1,14 +1,17 @@
 package com.github.nenidan.ne_ne_challenge.domain.challenge.service;
 
-import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.response.inner.InnerChallengeHistoryResponse;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.response.inner.InnerChallengeUserResponse;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.response.ChallengeHistoryResponse;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.entity.Challenge;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.entity.ChallengeUser;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.exception.ChallengeErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.exception.ChallengeException;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.repository.ChallengeRepository;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.repository.ChallengeUserRepository;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.type.ChallengeStatus;
+import com.github.nenidan.ne_ne_challenge.domain.point.entity.PointWallet;
+import com.github.nenidan.ne_ne_challenge.domain.point.exception.PointErrorCode;
+import com.github.nenidan.ne_ne_challenge.domain.point.exception.PointException;
+import com.github.nenidan.ne_ne_challenge.domain.point.repository.PointWalletRepository;
 import com.github.nenidan.ne_ne_challenge.domain.user.dto.response.UserResponse;
 import com.github.nenidan.ne_ne_challenge.domain.user.entity.User;
 import com.github.nenidan.ne_ne_challenge.domain.user.exception.UserErrorCode;
@@ -32,13 +35,30 @@ public class ChallengeUserService {
 
     private final ChallengeUserRepository challengeUserRepository;
 
+    private final PointWalletRepository pointWalletRepository;
+
     @Transactional
     public void joinChallenge(long userId, long challengeId, boolean isHost) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
         Challenge challenge = challengeRepository.findById(challengeId)
             .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND));
 
-        // Todo 사용자의 포인트 검증
+        if (challenge.getStatus() != ChallengeStatus.WAITING)
+            throw new ChallengeException(ChallengeErrorCode.NOT_WAITING);
+
+        long currentParticipantCount = challengeUserRepository.countByChallengeId(challengeId);
+        if(currentParticipantCount == challenge.getMaxParticipants()) {
+            throw new ChallengeException(ChallengeErrorCode.FULL);
+        }
+
+        // 포인트를 직접 조회하고 예외를 던지는 것이 아니라 차감을 요청하고 결과를 받아야 책임 분리가 잘 된 구조
+        // 현재 PointService가 차감 메소드를 제공하고 있지 않아 일단은 PointWalletRepository에서 직접 PointWallet 엔티티를 가져와서 처리해야 함
+        // 심지어 예외도 포인트 도메인 예외를 던져야 함
+        PointWallet pointWallet = pointWalletRepository.findByUserId(userId).orElseThrow(() -> new PointException(
+            PointErrorCode.POINT_WALLET_NOT_FOUND));
+
+        pointWallet.decrease(challenge.getParticipationFee());
+
         challenge.addParticipant(user);
         ChallengeUser challengeUser = new ChallengeUser(user, challenge, isHost);
 

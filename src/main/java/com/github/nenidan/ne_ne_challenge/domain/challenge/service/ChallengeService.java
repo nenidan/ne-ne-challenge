@@ -4,7 +4,6 @@ import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.request.Challenge
 import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.request.CreateChallengeRequest;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.request.UpdateChallengeRequest;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.response.ChallengeResponse;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.response.inner.InnerChallengeHistoryResponse;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.response.inner.InnerChallengeResponse;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.entity.Challenge;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.entity.ChallengeUser;
@@ -24,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.github.nenidan.ne_ne_challenge.domain.challenge.exception.ChallengeErrorCode.ALREADY_PARTICIPATED;
 import static com.github.nenidan.ne_ne_challenge.domain.challenge.exception.ChallengeErrorCode.INVALID_STATUS_TRANSITION;
 import static com.github.nenidan.ne_ne_challenge.domain.challenge.type.ChallengeStatus.WAITING;
 
@@ -43,8 +43,8 @@ public class ChallengeService {
     @Transactional
     public ChallengeResponse createChallenge(CreateChallengeRequest request, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
-        Challenge newChallenge = request.toEntity();
 
+        Challenge newChallenge = request.toEntity();
         Challenge savedChallenge = challengeRepository.save(newChallenge);
         challengeUserService.joinChallenge(user.getId(), savedChallenge.getId(), true);
 
@@ -143,5 +143,19 @@ public class ChallengeService {
         return challengeRepository.findAll().stream() // 메모리 부족 주의
             .map(InnerChallengeResponse::from)
             .toList();
+    }
+
+    @Transactional
+    public ChallengeResponse joinChallenge(Long userId, Long challengeId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+        Challenge challenge = challengeRepository.findById(challengeId)
+            .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND));
+        boolean alreadyParticipated = challengeUserRepository.existsByUserAndChallenge(user, challenge);
+        if(alreadyParticipated) throw new ChallengeException(ALREADY_PARTICIPATED);
+
+        challengeUserService.joinChallenge(userId, challengeId, false);
+
+        return ChallengeResponse.from(challenge);
     }
 }
