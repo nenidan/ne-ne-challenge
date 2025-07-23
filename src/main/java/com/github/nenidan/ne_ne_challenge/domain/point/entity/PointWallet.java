@@ -18,7 +18,6 @@ public class PointWallet extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "point_wallet_id")
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
