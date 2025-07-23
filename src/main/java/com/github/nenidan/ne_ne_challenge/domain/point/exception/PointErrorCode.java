@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum PointErrorCode implements ErrorCode{
     INSUFFICIENT_BALANCE("포인트가 부족합니다.", HttpStatus.BAD_REQUEST),
-    POINT_WALLET_NOT_FOUND("포인트 지갑이 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
+    POINT_WALLET_NOT_FOUND("포인트 지갑이 존재하지 않습니다.", HttpStatus.NOT_FOUND);
 
     private final String message;
     private final HttpStatus status;
