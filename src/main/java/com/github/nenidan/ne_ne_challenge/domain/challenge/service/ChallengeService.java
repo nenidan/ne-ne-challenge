@@ -4,6 +4,8 @@ import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.request.Challenge
 import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.request.CreateChallengeRequest;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.request.UpdateChallengeRequest;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.response.ChallengeResponse;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.response.inner.InnerChallengeHistoryResponse;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.response.inner.InnerChallengeResponse;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.entity.Challenge;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.entity.ChallengeUser;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.exception.ChallengeErrorCode;
@@ -134,5 +136,12 @@ public class ChallengeService {
 
         challenge.delete();
         return null;
+    }
+
+    // 초기 통계값 개발을 위한 전체 데이터 반환 메소드
+    public List<InnerChallengeResponse> getAllChallengeList() {
+        return challengeRepository.findAll().stream() // 메모리 부족 주의
+            .map(InnerChallengeResponse::from)
+            .toList();
     }
 }
