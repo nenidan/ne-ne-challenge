@@ -4,6 +4,8 @@ import com.github.nenidan.ne_ne_challenge.global.entity.BaseEntity;
 import com.github.nenidan.ne_ne_challenge.notification.domain.vo.ReceiverInfo;
 import com.github.nenidan.ne_ne_challenge.notification.domain.vo.SenderInfo;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -35,9 +37,11 @@ public class Notification extends BaseEntity {
 	private boolean isRead;
 
 	@Embedded
+	@AttributeOverride(name = "id", column = @Column(name = "receiver_id"))
 	private ReceiverInfo receiver;
 
 	@Embedded
+	@AttributeOverride(name = "id", column = @Column(name = "sender_id"))
 	private SenderInfo sender;
 
 	public Notification(String title, String content, NotificationType type, Long receiverId, Long senderId) {
