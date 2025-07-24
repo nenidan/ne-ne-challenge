@@ -1,5 +1,7 @@
 package com.github.nenidan.ne_ne_challenge.global.config;
 
+import static com.github.nenidan.ne_ne_challenge.domain.user.type.UserRole.*;
+
 import com.github.nenidan.ne_ne_challenge.global.security.handler.CustomAccessDeniedHandler;
 import com.github.nenidan.ne_ne_challenge.global.security.handler.CustomAuthenticationEntryPoint;
 import com.github.nenidan.ne_ne_challenge.global.security.jwt.JwtFilter;
@@ -47,6 +49,17 @@ public class SecurityConfig {
                         .requestMatchers("/health", "/error").permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/api/accounts/**").permitAll()
+
+                        // product
+                        .requestMatchers(HttpMethod.POST, "/api/products").hasRole(ADMIN.name())
+                        .requestMatchers(HttpMethod.GET , "/api/products/**").permitAll()
+                        .requestMatchers(HttpMethod.PATCH, "/api/products/**").hasRole(ADMIN.name())
+                        .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasRole(ADMIN.name())
+
+                        // order
+                        .requestMatchers(HttpMethod.POST, "/api/orders").hasRole(USER.name())
+                        .requestMatchers(HttpMethod.PATCH, "/api/orders/**").hasRole(USER.name())
+                        .requestMatchers(HttpMethod.GET, "/api/orders/**").hasRole(USER.name())
 
                         .requestMatchers("/api/**").authenticated()
 
