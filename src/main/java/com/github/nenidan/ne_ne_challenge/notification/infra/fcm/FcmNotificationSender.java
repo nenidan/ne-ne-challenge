@@ -2,8 +2,6 @@ package com.github.nenidan.ne_ne_challenge.notification.infra.fcm;
 
 import org.springframework.stereotype.Component;
 
-import com.github.nenidan.ne_ne_challenge.notification.domain.exception.NotificationErrorCode;
-import com.github.nenidan.ne_ne_challenge.notification.domain.exception.NotificationException;
 import com.github.nenidan.ne_ne_challenge.notification.infra.NotificationSender;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
@@ -22,7 +20,7 @@ public class FcmNotificationSender implements NotificationSender {
 
 	@Override
 	public void send(Long userId, String title, String content) {
-		FcmToken token = getFcmToken(userId);
+		FcmToken token = getFcmToken(userId); // USER ID 가 null 일 경우는 예외처리 어떻게 한담?
 
 		Notification notification = Notification.builder()
 			.setTitle(title)
@@ -38,11 +36,12 @@ public class FcmNotificationSender implements NotificationSender {
 			log.info("FCM 전송 성공 - userId={}, token={}, response={}", userId, token, response);
 		} catch (FirebaseMessagingException e) {
 			log.error("FCM 전송 실패 - userId={}, token={}", userId, token, e);
+			throw new FcmException(FcmErrorCode.INTERNAL_SERVER_ERROR);
 		}
 	}
 
 	private FcmToken getFcmToken(Long userId) {
 		return fcmTokenRepository.findByUserId(userId)
-			.orElseThrow(() -> new NotificationException(NotificationErrorCode.NOT_FOUND)); // 임시 에러코드
+			.orElseThrow(() -> new FcmException(FcmErrorCode.NOT_FOUND));
 	}
 }
