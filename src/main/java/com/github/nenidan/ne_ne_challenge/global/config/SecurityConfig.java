@@ -49,6 +49,8 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.POST, "/api/accounts/**").permitAll()
 
+                        .requestMatchers("/internal/**").permitAll()
+
                         .requestMatchers("/api/**").authenticated()
 
                         .anyRequest().denyAll()
