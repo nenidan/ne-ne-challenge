@@ -8,15 +8,15 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.nenidan.ne_ne_challenge.dto.UserResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 import com.github.nenidan.ne_ne_challenge.notification.application.client.UserClient;
+import com.github.nenidan.ne_ne_challenge.notification.application.dto.request.ReadNotificationRequest;
+import com.github.nenidan.ne_ne_challenge.notification.application.dto.request.SendNotificationRequest;
+import com.github.nenidan.ne_ne_challenge.notification.application.dto.response.NotificationResponse;
+import com.github.nenidan.ne_ne_challenge.notification.application.sender.NotificationSender;
 import com.github.nenidan.ne_ne_challenge.notification.domain.entity.Notification;
 import com.github.nenidan.ne_ne_challenge.notification.domain.entity.NotificationType;
 import com.github.nenidan.ne_ne_challenge.notification.domain.exception.NotificationErrorCode;
 import com.github.nenidan.ne_ne_challenge.notification.domain.exception.NotificationException;
-import com.github.nenidan.ne_ne_challenge.notification.dto.request.ReadNotificationRequest;
-import com.github.nenidan.ne_ne_challenge.notification.dto.request.SendNotificationRequest;
-import com.github.nenidan.ne_ne_challenge.notification.dto.response.NotificationResponse;
-import com.github.nenidan.ne_ne_challenge.notification.infra.NotificationSender;
-import com.github.nenidan.ne_ne_challenge.notification.infra.repository.jpa.NotificationRepository;
+import com.github.nenidan.ne_ne_challenge.notification.domain.interfaces.NotificationRepository;
 
 import lombok.RequiredArgsConstructor;
 

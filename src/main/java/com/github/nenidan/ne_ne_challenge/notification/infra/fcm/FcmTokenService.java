@@ -5,7 +5,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.github.nenidan.ne_ne_challenge.notification.dto.request.FcmTokenRequest;
+import com.github.nenidan.ne_ne_challenge.notification.application.dto.request.FcmTokenRequest;
 
 import lombok.RequiredArgsConstructor;
 

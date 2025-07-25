@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.github.nenidan.ne_ne_challenge.notification.domain.entity.Notification;
 
-public interface NotificationRepository extends JpaRepository<Notification, Long> {
+public interface JpaNotificationRepository extends JpaRepository<Notification, Long> {
 
 	@Query(value = """
 		SELECT *
@@ -41,4 +41,5 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 		@Param("type") String type,
 		@Param("cursorId") Long cursorId,
 		@Param("size") int size);
+
 }

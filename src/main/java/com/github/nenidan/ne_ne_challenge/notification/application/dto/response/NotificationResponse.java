@@ -1,4 +1,4 @@
-package com.github.nenidan.ne_ne_challenge.notification.dto.response;
+package com.github.nenidan.ne_ne_challenge.notification.application.dto.response;
 
 import java.time.LocalDateTime;
 

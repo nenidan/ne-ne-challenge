@@ -1,4 +1,4 @@
-package com.github.nenidan.ne_ne_challenge.notification.dto.request;
+package com.github.nenidan.ne_ne_challenge.notification.application.dto.request;
 
 import com.github.nenidan.ne_ne_challenge.notification.infra.fcm.Platform;
 

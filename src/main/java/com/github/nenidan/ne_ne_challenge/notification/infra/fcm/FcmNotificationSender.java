@@ -2,7 +2,7 @@ package com.github.nenidan.ne_ne_challenge.notification.infra.fcm;
 
 import org.springframework.stereotype.Component;
 
-import com.github.nenidan.ne_ne_challenge.notification.infra.NotificationSender;
+import com.github.nenidan.ne_ne_challenge.notification.application.sender.NotificationSender;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;

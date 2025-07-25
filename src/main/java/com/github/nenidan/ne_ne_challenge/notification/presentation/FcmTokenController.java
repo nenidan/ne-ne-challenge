@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
-import com.github.nenidan.ne_ne_challenge.notification.dto.request.FcmTokenRequest;
+import com.github.nenidan.ne_ne_challenge.notification.application.dto.request.FcmTokenRequest;
 import com.github.nenidan.ne_ne_challenge.notification.infra.fcm.FcmTokenService;
 
 import lombok.RequiredArgsConstructor;

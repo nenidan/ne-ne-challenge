@@ -1,4 +1,4 @@
-package com.github.nenidan.ne_ne_challenge.notification.infra;
+package com.github.nenidan.ne_ne_challenge.notification.application.sender;
 
 import com.github.nenidan.ne_ne_challenge.notification.infra.fcm.Platform;
 

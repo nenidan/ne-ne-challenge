@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 import com.github.nenidan.ne_ne_challenge.notification.application.NotificationService;
+import com.github.nenidan.ne_ne_challenge.notification.application.dto.request.ReadNotificationRequest;
+import com.github.nenidan.ne_ne_challenge.notification.application.dto.request.SendNotificationRequest;
+import com.github.nenidan.ne_ne_challenge.notification.application.dto.response.NotificationResponse;
 import com.github.nenidan.ne_ne_challenge.notification.domain.entity.NotificationType;
-import com.github.nenidan.ne_ne_challenge.notification.dto.request.ReadNotificationRequest;
-import com.github.nenidan.ne_ne_challenge.notification.dto.request.SendNotificationRequest;
-import com.github.nenidan.ne_ne_challenge.notification.dto.response.NotificationResponse;
 
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
