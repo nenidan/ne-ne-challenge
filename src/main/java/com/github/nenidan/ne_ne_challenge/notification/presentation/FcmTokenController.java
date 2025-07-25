@@ -25,7 +25,7 @@ public class FcmTokenController {
 		return ApiResponse.success(
 			HttpStatus.OK,
 			"FCM 토큰 저장완료",
-			fcmTokenService.saveToken(userId, request.getToken())
+			fcmTokenService.saveToken(userId, request)
 		);
 	}
 }

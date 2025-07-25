@@ -46,7 +46,7 @@ public class NotificationService {
 			sender == null ? null : sender.getId()
 		);
 
-		notificationSender.send(receiver.getId(), notification.getTitle(), notification.getContent());
+		notificationSender.send(receiver.getId(), notificationRequest.getPlatform(), notification.getTitle(), notification.getContent());
 		notificationRepository.save(notification);
 		return null;
 	}
