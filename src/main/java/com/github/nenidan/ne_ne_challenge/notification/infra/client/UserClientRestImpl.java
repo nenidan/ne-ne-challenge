@@ -1,4 +1,4 @@
-package com.github.nenidan.ne_ne_challenge.notification.application.client;
+package com.github.nenidan.ne_ne_challenge.notification.infra.client;
 
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
@@ -11,6 +11,7 @@ import com.github.nenidan.ne_ne_challenge.domain.user.exception.UserErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.user.exception.UserException;
 import com.github.nenidan.ne_ne_challenge.dto.UserResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
+import com.github.nenidan.ne_ne_challenge.notification.application.client.UserClient;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
