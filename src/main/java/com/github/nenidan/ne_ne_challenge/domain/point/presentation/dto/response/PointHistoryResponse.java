@@ -1,14 +1,14 @@
-package com.github.nenidan.ne_ne_challenge.domain.point.dto.response;
+package com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.response;
 
-import com.github.nenidan.ne_ne_challenge.domain.point.entity.PointTransaction;
-import com.github.nenidan.ne_ne_challenge.domain.point.type.PointReason;
+import com.github.nenidan.ne_ne_challenge.domain.point.domain.PointTransaction;
+import com.github.nenidan.ne_ne_challenge.domain.point.domain.type.PointReason;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class PointHistoryResponse {
 
     private Long pointTransactionId;

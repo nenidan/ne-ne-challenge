@@ -1,4 +1,4 @@
-package com.github.nenidan.ne_ne_challenge.domain.point.repository;
+package com.github.nenidan.ne_ne_challenge.domain.point.infrastructure.repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -7,10 +7,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.github.nenidan.ne_ne_challenge.domain.point.entity.PointTransaction;
-import com.github.nenidan.ne_ne_challenge.domain.point.type.PointReason;
+import com.github.nenidan.ne_ne_challenge.domain.point.domain.PointTransaction;
+import com.github.nenidan.ne_ne_challenge.domain.point.domain.type.PointReason;
 
-public interface PointTransactionRepository extends JpaRepository<PointTransaction, Long>{
+public interface JpaPointTransactionRepository extends JpaRepository<PointTransaction, Long>{
 
     @Query(value = "SELECT * FROM point_transaction p " +
         "WHERE p.point_wallet_id = :pointWalletId " +
