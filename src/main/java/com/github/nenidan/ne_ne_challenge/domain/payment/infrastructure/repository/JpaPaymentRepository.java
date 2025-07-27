@@ -1,4 +1,4 @@
-package com.github.nenidan.ne_ne_challenge.domain.payment.repository;
+package com.github.nenidan.ne_ne_challenge.domain.payment.infrastructure.repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -7,11 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.github.nenidan.ne_ne_challenge.domain.payment.entity.Payment;
-import com.github.nenidan.ne_ne_challenge.domain.payment.type.PaymentMethod;
-import com.github.nenidan.ne_ne_challenge.domain.payment.type.PaymentStatus;
+import com.github.nenidan.ne_ne_challenge.domain.payment.domain.model.Payment;
 
-public interface PaymentRepository extends JpaRepository<Payment, Long> {
+public interface JpaPaymentRepository extends JpaRepository<Payment, Long> {
 
     @Query(value = "SELECT * FROM payment p " +
         "WHERE p.user_id = :userId " +
@@ -26,8 +24,8 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     List<Payment> searchPayments(
         @Param("userId") Long userId,
         @Param("cursor") Long cursor,
-        @Param("method") PaymentMethod method,
-        @Param("status") PaymentStatus status,
+        @Param("method") String method,
+        @Param("status") String status,
         @Param("startDate") LocalDateTime startDate,
         @Param("endDate") LocalDateTime endDate,
         @Param("limit") int limit

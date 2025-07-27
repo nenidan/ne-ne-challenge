@@ -1,6 +1,4 @@
-package com.github.nenidan.ne_ne_challenge.domain.payment.dto.request;
-
-import com.github.nenidan.ne_ne_challenge.domain.payment.type.PaymentMethod;
+package com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.request;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -13,5 +11,5 @@ public class ChargePointRequest {
     private int amount;
 
     @NotNull(message = "결제 수단을 입력해주세요.")
-    private PaymentMethod method;
+    private String method;
 }
