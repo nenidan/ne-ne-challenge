@@ -1,6 +1,6 @@
-package com.github.nenidan.ne_ne_challenge.domain.point.entity;
+package com.github.nenidan.ne_ne_challenge.domain.point.domain;
 
-import com.github.nenidan.ne_ne_challenge.domain.point.type.PointReason;
+import com.github.nenidan.ne_ne_challenge.domain.point.domain.type.PointReason;
 import com.github.nenidan.ne_ne_challenge.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

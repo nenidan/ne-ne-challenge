@@ -1,13 +1,11 @@
-package com.github.nenidan.ne_ne_challenge.domain.point.entity;
+package com.github.nenidan.ne_ne_challenge.domain.point.domain;
 
 
 import com.github.nenidan.ne_ne_challenge.domain.point.exception.PointErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.point.exception.PointException;
-import com.github.nenidan.ne_ne_challenge.domain.user.entity.User;
 import com.github.nenidan.ne_ne_challenge.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -20,15 +18,20 @@ public class PointWallet extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", unique = true)
-    private User user;
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
     private int balance;
 
-    public PointWallet(User user) {
-        this.user = user;
+    private PointWallet(Long userId) {
+        this.userId = userId;
         this.balance = 0;
+    }
+
+    public static PointWallet createPointWallet(Long userId) {
+        return new PointWallet(
+            userId
+        );
     }
 
     public void increase(int amount) {
