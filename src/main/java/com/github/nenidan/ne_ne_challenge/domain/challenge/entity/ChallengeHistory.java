@@ -4,10 +4,14 @@ import com.github.nenidan.ne_ne_challenge.domain.user.entity.User;
 import com.github.nenidan.ne_ne_challenge.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
-public class ChallengeLog extends BaseEntity {
+@NoArgsConstructor
+@SQLRestriction("deleted_at IS NULL")
+public class ChallengeHistory extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,4 +28,11 @@ public class ChallengeLog extends BaseEntity {
     private String content; // Todo: 인증방식 변경
 
     private boolean isSuccess;
+
+    public ChallengeHistory(User user, Challenge challenge, String content, boolean isSuccess) {
+        this.user = user;
+        this.challenge = challenge;
+        this.content = content;
+        this.isSuccess = isSuccess;
+    }
 }
