@@ -1,6 +1,6 @@
 package com.github.nenidan.ne_ne_challenge.domain.challenge.dto.response.inner;
 
-import com.github.nenidan.ne_ne_challenge.domain.challenge.entity.ChallengeLog;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.entity.ChallengeHistory;
 import com.github.nenidan.ne_ne_challenge.global.dto.InnerResponseBase;
 import lombok.Getter;
 
@@ -36,7 +36,7 @@ public class InnerChallengeHistoryResponse extends InnerResponseBase {
         this.isSuccess = isSuccess;
     }
 
-    public static InnerChallengeHistoryResponse from(ChallengeLog challengeHistory) {
+    public static InnerChallengeHistoryResponse from(ChallengeHistory challengeHistory) {
         return new InnerChallengeHistoryResponse(challengeHistory.getCreatedAt(),
             challengeHistory.getUpdatedAt(),
             challengeHistory.getDeletedAt(),
