@@ -4,7 +4,6 @@ import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.request.Challenge
 import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.request.CreateChallengeRequest;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.request.UpdateChallengeRequest;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.response.ChallengeResponse;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.response.inner.InnerChallengeHistoryResponse;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.response.inner.InnerChallengeResponse;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.entity.Challenge;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.entity.ChallengeUser;
@@ -12,6 +11,12 @@ import com.github.nenidan.ne_ne_challenge.domain.challenge.exception.ChallengeEr
 import com.github.nenidan.ne_ne_challenge.domain.challenge.exception.ChallengeException;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.repository.ChallengeRepository;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.repository.ChallengeUserRepository;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.type.ChallengeStatus;
+import com.github.nenidan.ne_ne_challenge.domain.point.entity.PointWallet;
+import com.github.nenidan.ne_ne_challenge.domain.point.exception.PointErrorCode;
+import com.github.nenidan.ne_ne_challenge.domain.point.exception.PointException;
+import com.github.nenidan.ne_ne_challenge.domain.point.repository.PointWalletRepository;
+import com.github.nenidan.ne_ne_challenge.domain.user.dto.response.UserResponse;
 import com.github.nenidan.ne_ne_challenge.domain.user.entity.User;
 import com.github.nenidan.ne_ne_challenge.domain.user.exception.UserErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.user.exception.UserException;
@@ -22,10 +27,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
-import static com.github.nenidan.ne_ne_challenge.domain.challenge.exception.ChallengeErrorCode.INVALID_STATUS_TRANSITION;
-import static com.github.nenidan.ne_ne_challenge.domain.challenge.type.ChallengeStatus.WAITING;
+import static com.github.nenidan.ne_ne_challenge.domain.challenge.exception.ChallengeErrorCode.*;
+import static com.github.nenidan.ne_ne_challenge.domain.challenge.type.ChallengeStatus.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -34,17 +40,21 @@ public class ChallengeService {
 
     private final ChallengeUserService challengeUserService;
 
+    private final ChallengeHistoryService challengeHistoryService;
+
     private final ChallengeRepository challengeRepository;
 
     private final UserRepository userRepository;
 
     private final ChallengeUserRepository challengeUserRepository;
 
+    private final PointWalletRepository pointWalletRepository;
+
     @Transactional
     public ChallengeResponse createChallenge(CreateChallengeRequest request, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
-        Challenge newChallenge = request.toEntity();
 
+        Challenge newChallenge = request.toEntity();
         Challenge savedChallenge = challengeRepository.save(newChallenge);
         challengeUserService.joinChallenge(user.getId(), savedChallenge.getId(), true);
 
@@ -52,8 +62,8 @@ public class ChallengeService {
     }
 
     public ChallengeResponse getChallenge(Long id) {
-        Challenge foundChallenge = challengeRepository.findById(id).orElseThrow(() -> new ChallengeException(
-            ChallengeErrorCode.CHALLENGE_NOT_FOUND));
+        Challenge foundChallenge = challengeRepository.findById(id)
+            .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND));
 
         return ChallengeResponse.from(foundChallenge);
     }
@@ -82,8 +92,8 @@ public class ChallengeService {
      * 챌린지 상태 수정: WAITING → ONGOING만 가능
      * name, description, category는 자유롭게 변경 가능
      * dueAt 은 오늘보다 이전으로 설정 불가
-     * minParticipants <= maxParticipants 여야 하며, minParticipants가 현재 참여자보다 작아지면 자동 시작
-     * 참가비 수정 시에는 차이만큼 다시 지급하거나 지불해야 하며, 시작 후 수정 불가 → 아직 미구현
+     * minParticipants <= maxParticipants
+     * 참가비는 생성 후 시작 불가
      * 불가능한 조건이 존재할 시 모든 변경 취소
      *
      * @param userId:      요청자 id
@@ -93,8 +103,7 @@ public class ChallengeService {
      */
     @Transactional
     public ChallengeResponse updateChallenge(Long userId, Long challengeId, UpdateChallengeRequest request) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
         Challenge challenge = challengeRepository.findById(challengeId)
             .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND));
         ChallengeUser challengeUser = challengeUserRepository.findByUserAndChallenge(user, challenge)
@@ -106,25 +115,80 @@ public class ChallengeService {
 
         challenge.safeUpdate(request.getName(), request.getDescription(), request.getCategory());
         challenge.setDueDate(request.getDueAt());
-        int participantsCount = challengeUserRepository.countByChallenge(challenge);
-        challenge.updateParticipantsLimit(participantsCount, request.getMinParticipants(), request.getMaxParticipants());
 
-        // 챌린지 진행 상태 변경(시작)은 다른 수정이 모두 반영된 뒤에 수행
-        if (request.getStatus() != null) {
-            if (request.getStatus() != WAITING) {
-                throw new ChallengeException(INVALID_STATUS_TRANSITION);
+        int participantsCount = challengeUserRepository.countByChallenge(challenge);
+        if (request.getMinParticipants() != null || request.getMaxParticipants() != null) {
+            challenge.updateParticipantsLimit(participantsCount,
+                request.getMinParticipants(),
+                request.getMaxParticipants()
+            );
+        }
+
+        // 챌린지 진행 상태 변경은 다른 수정이 모두 반영된 뒤에 수행
+        ChallengeStatus newStatus = request.getStatus();
+        ChallengeStatus currentStatus = challenge.getStatus();
+        if (newStatus != null) {
+            if (newStatus == WAITING) {
+                if (currentStatus != WAITING) {
+                    throw new ChallengeException(INVALID_STATUS_TRANSITION);
+                }
+            } else if (newStatus == ONGOING) {
+                challenge.start(participantsCount);
+            } else if (newStatus == FINISHED) {
+                challenge.finish();
+                distributeTotalFeeToWinners(challenge.getId(), challenge.getTotalFee());
             }
-            challenge.start(participantsCount);
         }
 
         return ChallengeResponse.from(challenge);
     }
 
+    private void distributeTotalFeeToWinners(long challengeId, int totalFee) {
+        List<Long> winners = getWinners(challengeId);
+
+        if (winners.isEmpty()) return;
+
+        int reward = totalFee / winners.size();
+        for (Long winner : winners) {
+            PointWallet pointWallet = pointWalletRepository.findById(winner)
+                .orElseThrow(() -> new PointException(PointErrorCode.POINT_WALLET_NOT_FOUND)); // fixme
+            pointWallet.increase(reward);
+        }
+    }
+
+    private List<Long> getWinners(Long challengeId) {
+        Long cursor = 1L;
+        List<Long> participantIdList;
+        Long nextCursor;
+        List<Long> winners = new ArrayList<>();
+
+        do {
+            CursorResponse<UserResponse, Long> response = challengeUserService.getChallengeParticipantList(challengeId,
+                cursor,
+                20
+            );
+            nextCursor = response.getNextCursor();
+            participantIdList = response.getContent().stream().map(UserResponse::getId).toList();
+
+            for (Long participantId : participantIdList) {
+                int successRate = challengeHistoryService.getSuccessRate(participantId, challengeId).getSuccessRate();
+                if (successRate >= 70) {
+                    winners.add(participantId);
+                }
+            }
+
+            cursor = nextCursor;
+        } while (cursor != null);
+
+        return winners;
+    }
+
+
+
     // todo: 여러 번의 리포지토리 호출 조인으로 한 번에? 엔티티 연관관계부터 수정 필요할 듯
     @Transactional
     public Void deleteChallenge(Long userId, Long challengeId) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
         Challenge challenge = challengeRepository.findById(challengeId)
             .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND));
         ChallengeUser challengeUser = challengeUserRepository.findByUserAndChallenge(user, challenge)
@@ -141,7 +205,19 @@ public class ChallengeService {
     // 초기 통계값 개발을 위한 전체 데이터 반환 메소드
     public List<InnerChallengeResponse> getAllChallengeList() {
         return challengeRepository.findAll().stream() // 메모리 부족 주의
-            .map(InnerChallengeResponse::from)
-            .toList();
+            .map(InnerChallengeResponse::from).toList();
+    }
+
+    @Transactional
+    public ChallengeResponse joinChallenge(Long userId, Long challengeId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+        Challenge challenge = challengeRepository.findById(challengeId)
+            .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND));
+        boolean alreadyParticipated = challengeUserRepository.existsByUserAndChallenge(user, challenge);
+        if (alreadyParticipated) throw new ChallengeException(ALREADY_PARTICIPATED);
+
+        challengeUserService.joinChallenge(userId, challengeId, false);
+
+        return ChallengeResponse.from(challenge);
     }
 }

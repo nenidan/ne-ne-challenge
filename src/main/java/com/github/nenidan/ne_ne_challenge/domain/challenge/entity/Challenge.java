@@ -1,5 +1,6 @@
 package com.github.nenidan.ne_ne_challenge.domain.challenge.entity;
 
+import com.github.nenidan.ne_ne_challenge.domain.challenge.exception.ChallengeErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.exception.ChallengeException;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.type.ChallengeCategory;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.type.ChallengeStatus;
@@ -96,23 +97,31 @@ public class Challenge extends BaseEntity {
         status = ONGOING;
     }
 
-    public void setDueDate(LocalDate dueAt) {
-        if (status != WAITING) throw new ChallengeException(CHALLENGE_ALREADY_STARTED);
-        if (dueAt.isBefore(ChronoLocalDate.from(LocalDateTime.now()))) throw new ChallengeException(INVALID_DUE_DATE);
+    public void finish() {
+        if (status != ONGOING || startedAt == null) throw new ChallengeException(NOT_STARTED);
+        if (dueAt.isAfter(LocalDate.now())) throw new ChallengeException(ChallengeErrorCode.STILL_ONGOING);
 
-        this.dueAt = dueAt;
+        status = FINISHED;
     }
 
-    public void updateParticipantsLimit(int currentParticipants, int minParticipants, int maxParticipants) {
+    public void setDueDate(LocalDate dueAt) {
+        if (dueAt != null) {
+            if (status != WAITING) throw new ChallengeException(CHALLENGE_ALREADY_STARTED);
+            if (dueAt.isBefore(ChronoLocalDate.from(LocalDateTime.now()))) throw new ChallengeException(INVALID_DUE_DATE);
+
+            this.dueAt = dueAt;
+        }
+    }
+
+    public void updateParticipantsLimit(int currentParticipants, Integer minParticipants, Integer maxParticipants) {
+        minParticipants = minParticipants == null ? this.minParticipants : minParticipants;
+        maxParticipants = maxParticipants == null ? this.maxParticipants : maxParticipants;
+
         if (status != WAITING) throw new ChallengeException(CHALLENGE_ALREADY_STARTED);
         if (minParticipants > maxParticipants || currentParticipants > maxParticipants)
             throw new ChallengeException(INVALID_PARTICIPANT_LIMIT);
 
         this.minParticipants = minParticipants;
         this.maxParticipants = maxParticipants;
-
-        if (this.minParticipants <= currentParticipants) {
-            start(currentParticipants);
-        }
     }
 }
