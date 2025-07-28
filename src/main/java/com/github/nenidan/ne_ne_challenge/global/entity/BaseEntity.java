@@ -23,8 +23,7 @@ public abstract class BaseEntity {
     @LastModifiedDate
     protected LocalDateTime updatedAt;
 
-    @Column(name = "modified_at", nullable = false)
-    protected LocalDateTime deletedAt;
+    protected LocalDateTime deletedAt = null;
 
     // Soft Delete 메서드
     public void delete() {

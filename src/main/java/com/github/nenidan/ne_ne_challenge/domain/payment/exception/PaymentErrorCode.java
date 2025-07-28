@@ -8,9 +8,7 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 @Getter
 public enum PaymentErrorCode implements ErrorCode {
-
     ;
-
 
     private final String message;
     private final HttpStatus status;
