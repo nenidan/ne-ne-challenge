@@ -38,4 +38,18 @@ public class StockEntity extends BaseEntity {
         this.productId = productId;
         this.quantity = quantity;
     }
+    public void increaseStock(int quantity) {
+        this.quantity += quantity;
+    }
+
+
+    public void decreaseStock(int quantity) {
+        if(quantity <= 0) {
+            throw new ShopException(ShopErrorCode.INVALID_DECREASE_QUANTITY);
+        }
+        if(this.quantity < quantity) {
+            throw new ShopException(ShopErrorCode.OUT_OF_STOCK);
+        }
+        this.quantity -= quantity;
+    }
 }
