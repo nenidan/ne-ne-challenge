@@ -2,7 +2,7 @@ package com.github.nenidan.ne_ne_challenge.domain.shop.product.domain;
 
 import java.util.List;
 
-import com.github.nenidan.ne_ne_challenge.domain.shop.product.domain.vo.ProductId;
+import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 
 public interface ProductRepository {
     Product save(Product product);

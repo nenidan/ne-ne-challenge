@@ -1,5 +1,7 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo;
 
+import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
+
 import lombok.Getter;
 
 @Getter

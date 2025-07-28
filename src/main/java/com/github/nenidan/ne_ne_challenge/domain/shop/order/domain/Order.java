@@ -3,8 +3,8 @@ package com.github.nenidan.ne_ne_challenge.domain.shop.order.domain;
 import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopException;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.OrderDetail;
-import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.OrderId;
-import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.UserId;
+import com.github.nenidan.ne_ne_challenge.domain.shop.vo.OrderId;
+import com.github.nenidan.ne_ne_challenge.domain.shop.vo.UserId;
 
 import lombok.Getter;
 
@@ -17,7 +17,7 @@ public class Order {
     private OrderStatus orderStatus;
     private boolean canceled = false;
 
-    public Order(UserId userid, OrderDetail orderDetail) {
+    private Order(UserId userid, OrderDetail orderDetail) {
         this.userid = userid;
         this.orderDetail = orderDetail;
     }

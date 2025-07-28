@@ -1,4 +1,4 @@
-package com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo;
+package com.github.nenidan.ne_ne_challenge.domain.shop.vo;
 
 import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopException;
@@ -6,12 +6,13 @@ import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopException;
 import lombok.Getter;
 
 @Getter
-public class ProductId {
+public class OrderId {
+
     private final Long value;
 
-    public ProductId(Long value) {
+    public OrderId(Long value) {
         if (value == null || value <= 0) {
-            throw new ShopException(ShopErrorCode.PRODUCT_NOT_FOUND);
+            throw new ShopException(ShopErrorCode.ORDER_NOT_FOUND);
         }
         this.value = value;
     }

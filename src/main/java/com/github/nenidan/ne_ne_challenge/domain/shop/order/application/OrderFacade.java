@@ -4,10 +4,10 @@ import org.springframework.stereotype.Component;
 
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.OrderResponse;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.OrderedProduct;
-import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.OrderId;
-import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.ProductId;
-import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.UserId;
+import com.github.nenidan.ne_ne_challenge.domain.shop.vo.OrderId;
+import com.github.nenidan.ne_ne_challenge.domain.shop.vo.UserId;
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto.ProductResponse;
+import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 import com.github.nenidan.ne_ne_challenge.domain.user.dto.response.UserResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 

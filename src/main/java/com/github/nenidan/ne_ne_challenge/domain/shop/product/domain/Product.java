@@ -2,7 +2,7 @@ package com.github.nenidan.ne_ne_challenge.domain.shop.product.domain;
 
 import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopException;
-import com.github.nenidan.ne_ne_challenge.domain.shop.product.domain.vo.ProductId;
+import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 
 import lombok.Getter;
 import lombok.Setter;

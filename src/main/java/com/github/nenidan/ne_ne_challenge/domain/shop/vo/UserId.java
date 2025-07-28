@@ -1,4 +1,4 @@
-package com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo;
+package com.github.nenidan.ne_ne_challenge.domain.shop.vo;
 
 import com.github.nenidan.ne_ne_challenge.domain.user.exception.UserErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.user.exception.UserException;
