@@ -28,12 +28,6 @@ public class OrderService {
 
     @Transactional
     public OrderResponse createOrder(UserId userId, OrderedProduct orderedProduct) {
-        if (userId == null) {
-            throw new ShopException(UserErrorCode.USER_NOT_FOUND);
-        }
-        if (orderedProduct == null) {
-            throw new ShopException(ShopErrorCode.PRODUCT_NOT_FOUND);
-        }
 
         OrderDetail orderDetail = new OrderDetail(
             orderedProduct.getProductId(),

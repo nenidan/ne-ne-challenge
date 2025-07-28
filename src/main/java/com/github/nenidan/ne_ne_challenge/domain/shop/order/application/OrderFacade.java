@@ -7,31 +7,34 @@ import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.Orde
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.OrderId;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.ProductId;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.UserId;
-import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.ProductService;
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto.ProductResponse;
+import com.github.nenidan.ne_ne_challenge.domain.user.dto.response.UserResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 
 @Component
 public class OrderFacade {
 
     private final OrderService orderService;
-    private final ProductService productService;
+    private final ProductRestClient productRestClient;
+    private final UserRestClient userRestClient;
 
-    public OrderFacade(OrderService orderService, ProductService productFacade) {
+    public OrderFacade(OrderService orderService,  ProductRestClient productRestClient, UserRestClient userRestClient) {
         this.orderService = orderService;
-        this.productService = productFacade;
+        this.productRestClient = productRestClient;
+        this.userRestClient = userRestClient;
     }
 
     public OrderResponse createOrder (Long userId, Long productId) {
-        // RestClient로 productId, userId 통신으로 OrderedProduct orderedProduct
-        ProductResponse product = productService.findProduct(productId);
+        UserResponse user = userRestClient.getUser(userId);
+        ProductResponse product = productRestClient.getProduct(productId);
+
         OrderedProduct orderedProduct = new OrderedProduct(
             new ProductId(product.getId()),
             product.getName(),
             product.getDescription(),
             product.getPrice()
         );
-        return orderService.createOrder(new UserId(userId), orderedProduct);
+        return orderService.createOrder(new UserId(user.getId()), orderedProduct);
     }
 
     public void cancelOrder (Long orderId) {

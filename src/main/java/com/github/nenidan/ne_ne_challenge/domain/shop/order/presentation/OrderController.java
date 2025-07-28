@@ -2,6 +2,7 @@ package com.github.nenidan.ne_ne_challenge.domain.shop.order.presentation;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +15,7 @@ import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.OrderFac
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.OrderResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
+import com.github.nenidan.ne_ne_challenge.global.security.auth.Auth;
 
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -27,10 +29,10 @@ public class OrderController {
 
     @PostMapping("/orders")
     public ResponseEntity<ApiResponse<OrderResponse>> createOrder(
-        @RequestParam Long userId,
+        @AuthenticationPrincipal Auth auth,
         @RequestParam Long productId
     ) {
-        OrderResponse orderResponse = orderFacade.createOrder(userId, productId);
+        OrderResponse orderResponse = orderFacade.createOrder(auth.getId(), productId);
         return ApiResponse.success(HttpStatus.CREATED, "주문이 생성되었습니다.", orderResponse);
     }
 
