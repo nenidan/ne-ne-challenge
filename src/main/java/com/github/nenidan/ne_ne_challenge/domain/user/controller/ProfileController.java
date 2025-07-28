@@ -30,7 +30,7 @@ public class ProfileController {
     }
 
     @GetMapping("/profiles/{id}")
-    public ResponseEntity<ApiResponse<UserResponse>> getMyProfile(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<UserResponse>> getProfile(@PathVariable Long id) {
         return ApiResponse.success(
                 HttpStatus.OK,
                 "프로필 조회가 완료되었습니다. id: " + id,
