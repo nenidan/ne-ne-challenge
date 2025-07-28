@@ -4,6 +4,8 @@ import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.request.Challenge
 import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.request.CreateChallengeRequest;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.request.UpdateChallengeRequest;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.response.ChallengeResponse;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.response.inner.InnerChallengeHistoryResponse;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.dto.response.inner.InnerChallengeResponse;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.entity.Challenge;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.entity.ChallengeUser;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.exception.ChallengeErrorCode;
@@ -96,7 +98,7 @@ public class ChallengeService {
         Challenge challenge = challengeRepository.findById(challengeId)
             .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND));
         ChallengeUser challengeUser = challengeUserRepository.findByUserAndChallenge(user, challenge)
-            .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.NOT_MY_CHALLENGE));
+            .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.NOT_PARTICIPATING));
 
         if (!challengeUser.isHost()) {
             throw new ChallengeException(ChallengeErrorCode.NOT_HOST);
@@ -126,7 +128,7 @@ public class ChallengeService {
         Challenge challenge = challengeRepository.findById(challengeId)
             .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND));
         ChallengeUser challengeUser = challengeUserRepository.findByUserAndChallenge(user, challenge)
-            .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.NOT_MY_CHALLENGE));
+            .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.NOT_PARTICIPATING));
 
         if (!challengeUser.isHost()) {
             throw new ChallengeException(ChallengeErrorCode.NOT_HOST);
@@ -134,5 +136,12 @@ public class ChallengeService {
 
         challenge.delete();
         return null;
+    }
+
+    // 초기 통계값 개발을 위한 전체 데이터 반환 메소드
+    public List<InnerChallengeResponse> getAllChallengeList() {
+        return challengeRepository.findAll().stream() // 메모리 부족 주의
+            .map(InnerChallengeResponse::from)
+            .toList();
     }
 }
