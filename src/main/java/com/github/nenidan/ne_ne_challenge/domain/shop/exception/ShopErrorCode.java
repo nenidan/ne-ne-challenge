@@ -11,7 +11,10 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum ShopErrorCode implements ErrorCode {
     PRODUCT_NOT_FOUND("상품을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
-    ORDER_NOT_FOUND("주문을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+    PRODUCT_ALREADY_DELETED("이미 삭제된 상품입니다.", HttpStatus.CONFLICT),
+    ORDER_NOT_FOUND("주문 내역을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    ORDER_ALREADY_CANCELED("이미 취소된 주문입니다.", HttpStatus.CONFLICT),
+    ORDER_DETAIL_NOT_FOUND("주문 상세 내역을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
 
     private final String message;
     private final HttpStatus status;
