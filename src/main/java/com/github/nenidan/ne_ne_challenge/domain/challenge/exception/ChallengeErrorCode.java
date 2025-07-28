@@ -21,7 +21,8 @@ public enum ChallengeErrorCode implements ErrorCode {
     NOT_STARTED("아직 시작하지 않은 챌린지입니다.", HttpStatus.BAD_REQUEST),
     ALREADY_PARTICIPATED("같은 챌린지에 참여 이력이 있습니다.", HttpStatus.BAD_REQUEST),
     NOT_WAITING("챌린지가 대기 중이 아닙니다.", HttpStatus.BAD_REQUEST),
-    FULL("참가자가 가득찼습니다.", HttpStatus.BAD_REQUEST);
+    FULL("참가자가 가득찼습니다.", HttpStatus.BAD_REQUEST),
+    STILL_ONGOING("진행중인 챌린지를 강제로 종료할 수 없습니다", HttpStatus.BAD_REQUEST);
 
     // Todo 비즈니스 규칙 위반에 대한 예외가 400보다 409가 적합한지, 일단은 그냥 400
 

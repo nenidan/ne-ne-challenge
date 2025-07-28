@@ -47,7 +47,7 @@ public class ChallengeUserService {
             throw new ChallengeException(ChallengeErrorCode.NOT_WAITING);
 
         long currentParticipantCount = challengeUserRepository.countByChallengeId(challengeId);
-        if(currentParticipantCount == challenge.getMaxParticipants()) {
+        if(currentParticipantCount >= challenge.getMaxParticipants()) {
             throw new ChallengeException(ChallengeErrorCode.FULL);
         }
 
