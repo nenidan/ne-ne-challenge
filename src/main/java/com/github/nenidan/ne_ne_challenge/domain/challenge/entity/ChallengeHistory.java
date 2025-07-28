@@ -12,8 +12,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,8 +19,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @SQLRestriction("deleted_at IS NULL")
-@Table(name = "challenge_user", uniqueConstraints = {@UniqueConstraint(name = "unique_user_id_challenge_id", columnNames = {"user_id", "challenge_id"})})
-public class ChallengeUser extends BaseEntity {
+public class ChallengeHistory extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,11 +33,14 @@ public class ChallengeUser extends BaseEntity {
     @JoinColumn(name = "challenge_id")
     private Challenge challenge;
 
-    private boolean isHost;
+    private String content; // Todo: 인증방식 변경
 
-    public ChallengeUser(User user, Challenge challenge, boolean isHost) {
+    private boolean isSuccess;
+
+    public ChallengeHistory(User user, Challenge challenge, String content, boolean isSuccess) {
         this.user = user;
         this.challenge = challenge;
-        this.isHost = isHost;
+        this.content = content;
+        this.isSuccess = isSuccess;
     }
 }

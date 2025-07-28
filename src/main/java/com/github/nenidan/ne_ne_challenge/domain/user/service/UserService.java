@@ -1,5 +1,12 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.service;
 
+import java.util.List;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.github.nenidan.ne_ne_challenge.domain.point.service.PointService;
 import com.github.nenidan.ne_ne_challenge.domain.user.dto.request.JoinRequest;
 import com.github.nenidan.ne_ne_challenge.domain.user.dto.request.LoginRequest;
 import com.github.nenidan.ne_ne_challenge.domain.user.dto.request.UpdateProfileRequest;
@@ -9,12 +16,8 @@ import com.github.nenidan.ne_ne_challenge.domain.user.exception.UserErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.user.exception.UserException;
 import com.github.nenidan.ne_ne_challenge.domain.user.repository.UserRepository;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +26,7 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final PointService pointService;
 
     @Transactional
     public UserResponse join(JoinRequest joinRequest) {
@@ -38,7 +42,12 @@ public class UserService {
         User newUser = joinRequest.toEntity();
         newUser.updatePassword(passwordEncoder.encode(newUser.getPassword()));
 
-        return UserResponse.from(userRepository.save(newUser));
+        User savedUser = userRepository.save(newUser);
+
+        // 포인트 지갑 추가
+        pointService.createWallet(savedUser.getId());
+
+        return UserResponse.from(savedUser);
     }
 
     public UserResponse login(LoginRequest loginRequest) {
