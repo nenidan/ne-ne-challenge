@@ -20,8 +20,8 @@ public class InternalProfileController {
 
     @GetMapping("/profiles/{id}")
     public ResponseEntity<UserResponse> getProfile(@PathVariable Long id) {
-        return ResponseEntity.ok().body(userMapper.toResponse(
-                userFacade.getProfile(id)
-        ));
+        return ResponseEntity.ok().body(
+                userMapper.toResponse(userFacade.getProfile(id))
+        );
     }
 }
