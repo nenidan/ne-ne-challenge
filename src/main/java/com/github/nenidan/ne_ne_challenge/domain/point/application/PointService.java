@@ -30,7 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PointService {
 
-    private final PointRepository pointRepository;
     private final PointWalletRepository pointWalletRepository;
     private final PointTransactionRepository pointTransactionRepository;
 
