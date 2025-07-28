@@ -2,6 +2,7 @@ package com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion;
 
 import java.util.List;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,18 +11,24 @@ import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto.Pro
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto.UpdateProductRequest;
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.domain.Product;
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.domain.ProductRepository;
-import com.github.nenidan.ne_ne_challenge.domain.shop.product.domain.vo.ProductId;
+import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
+import com.github.nenidan.ne_ne_challenge.domain.shop.vo.StockRegisteredEvent;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class ProductService {
 
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
-    public ProductService(ProductRepository productRepository, ProductMapper productMapper) {
+    public ProductService(ProductRepository productRepository, ProductMapper productMapper, ApplicationEventPublisher applicationEventPublisher) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @Transactional
@@ -32,6 +39,7 @@ public class ProductService {
             createProductRequest.getProductPrice()
         );
         Product saveProduct = productRepository.save(product);
+        applicationEventPublisher.publishEvent(new StockRegisteredEvent(saveProduct.getProductId()));
         return ProductResponse.fromEntity(saveProduct);
     }
 
