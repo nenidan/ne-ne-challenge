@@ -85,6 +85,7 @@ jobs:
             docker stop my-app || true
             docker rm my-app || true
             docker run -d -p 8080:8080 --name my-app \
+              -v /home/ubuntu/firebase-key.json:/app/firebase/firebase-key.json \
               -e SPRING_PROFILES_ACTIVE=prod \
               -e DB_URL=${{ secrets.DB_URL }} \
               -e DB_USERNAME=${{ secrets.DB_USERNAME }} \

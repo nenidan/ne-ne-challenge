@@ -26,6 +26,10 @@ jwt:
   secret:
     key: ${SECRET_KEY}
 
+firebase:
+  config:
+    path: /home/ubuntu/firebase-key.json
+
 ---
 spring:
   config:
