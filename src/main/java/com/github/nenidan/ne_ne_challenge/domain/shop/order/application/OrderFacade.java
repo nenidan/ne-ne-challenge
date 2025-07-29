@@ -18,13 +18,13 @@ public class OrderFacade {
     private final ProductRestClient productRestClient;
     private final UserRestClient userRestClient;
 
-    public OrderFacade(OrderService orderService,  ProductRestClient productRestClient, UserRestClient userRestClient) {
+    public OrderFacade(OrderService orderService, ProductRestClient productRestClient, UserRestClient userRestClient) {
         this.orderService = orderService;
         this.productRestClient = productRestClient;
         this.userRestClient = userRestClient;
     }
 
-    public OrderResponse createOrder (Long userId, Long productId) {
+    public OrderResponse createOrder (Long userId, Long productId, int quantity) {
         UserResponse user = userRestClient.getUser(userId);
         ProductResponse product = productRestClient.getProduct(productId);
 
@@ -34,7 +34,7 @@ public class OrderFacade {
             product.getDescription(),
             product.getPrice()
         );
-        return orderService.createOrder(new UserId(user.getId()), orderedProduct);
+        return orderService.createOrder(new UserId(user.getId()), orderedProduct, quantity);
     }
 
     public void cancelOrder (Long orderId) {

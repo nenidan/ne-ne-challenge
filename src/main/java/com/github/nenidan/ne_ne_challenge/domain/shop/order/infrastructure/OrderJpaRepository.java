@@ -14,12 +14,13 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, Long> {
         " o.id AS order_id, "+
         " o.user_id," +
         " o.status," +
-        "od.product_id, " +
+        " od.product_id, " +
         " od.product_name, " +
         " od.product_description, " +
-        " od.price_at_order " +
+        " od.price_at_order, " +
+        " od.quantity " +
         "FROM orders o " +
-        "JOIN order_detail_entity od ON o.id = od.order_id " +
+        "JOIN order_detail od ON o.id = od.order_id " +
         "WHERE o.user_id = :userId " +
         "AND (:cursor IS NULL OR o.id <= :cursor) " +
         "AND (:keyword IS NULL OR od.product_name LIKE CONCAT('%', :keyword, '%')) " +

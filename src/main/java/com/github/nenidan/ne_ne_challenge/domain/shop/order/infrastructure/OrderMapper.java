@@ -18,7 +18,8 @@ public class OrderMapper {
                 order.getOrderDetail().getProductId().getValue(),
                 order.getOrderDetail().getNameAtOrder(),
                 order.getOrderDetail().getDescriptionAtOrder(),
-                order.getOrderDetail().getPriceAtOrder()
+                order.getOrderDetail().getPriceAtOrder(),
+                order.getOrderDetail().getQuantity()
             )
         );
         if (order.isCanceled()) {
@@ -35,7 +36,8 @@ public class OrderMapper {
                 new ProductId(orderEntity.getOrderDetailEntity().getProductId()),
                 orderEntity.getOrderDetailEntity().getProductName(),
                 orderEntity.getOrderDetailEntity().getProductDescription(),
-                orderEntity.getOrderDetailEntity().getPriceAtOrder()
+                orderEntity.getOrderDetailEntity().getPriceAtOrder(),
+                orderEntity.getOrderDetailEntity().getQuantity()
             ),
             orderEntity.getStatus()
         );
@@ -53,7 +55,8 @@ public class OrderMapper {
                 new ProductId(orderFlatProjection.getProductId()),
                 orderFlatProjection.getProductName(),
                 orderFlatProjection.getProductDescription(),
-                orderFlatProjection.getPriceAtOrder()
+                orderFlatProjection.getPriceAtOrder(),
+                orderFlatProjection.getQuantity()
             ),
             OrderStatus.valueOf(orderFlatProjection.getStatus())
         );

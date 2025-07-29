@@ -39,12 +39,17 @@ public class OrderDetailEntity extends BaseEntity {
     private String productDescription;
 
     @Column(nullable = false)
-    private Integer priceAtOrder;
+    private int priceAtOrder;
 
-    public OrderDetailEntity(Long productId, String productName, String productDescription, Integer priceAtOrder) {
+    @Column(nullable = false)
+    private int quantity;
+
+    public OrderDetailEntity(Long productId, String productName, String productDescription, int priceAtOrder,
+        int quantity) {
         this.productId = productId;
         this.productName = productName;
         this.productDescription = productDescription;
         this.priceAtOrder = priceAtOrder;
+        this.quantity = quantity;
     }
 }

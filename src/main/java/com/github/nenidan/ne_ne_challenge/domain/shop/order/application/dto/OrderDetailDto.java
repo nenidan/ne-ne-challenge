@@ -14,13 +14,15 @@ public class OrderDetailDto {
     private final String productName;
     private final String productDescription;
     private final Integer priceAtOrder;
+    private final int quantity;
 
     public static OrderDetailDto fromEntity(OrderDetail orderDetail) {
         return new OrderDetailDto(
             orderDetail.getProductId().getValue(),
             orderDetail.getNameAtOrder(),
             orderDetail.getDescriptionAtOrder(),
-            orderDetail.getPriceAtOrder()
+            orderDetail.getPriceAtOrder(),
+            orderDetail.getQuantity()
         );
     }
 }
