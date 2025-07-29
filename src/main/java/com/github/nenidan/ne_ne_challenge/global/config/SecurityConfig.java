@@ -61,6 +61,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/api/orders/**").hasRole(USER.name())
                         .requestMatchers(HttpMethod.GET, "/api/orders/**").hasRole(USER.name())
 
+                        // stock
+                        .requestMatchers(HttpMethod.PATCH, "/api/stocks/**").hasRole(USER.name())
+                        .requestMatchers(HttpMethod.GET, "/api/stocks/**").permitAll()
+
                         .requestMatchers("/api/**").authenticated()
 
                         .anyRequest().denyAll()
