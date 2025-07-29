@@ -1,22 +1,24 @@
 package com.github.nenidan.ne_ne_challenge.global.security.jwt;
 
+import java.security.Key;
+import java.util.Base64;
+import java.util.Date;
+import java.util.regex.Pattern;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
 import com.github.nenidan.ne_ne_challenge.domain.user.type.UserRole;
 import com.github.nenidan.ne_ne_challenge.global.security.auth.Auth;
 import com.github.nenidan.ne_ne_challenge.global.security.exception.CustomSecurityException;
 import com.github.nenidan.ne_ne_challenge.global.security.exception.SecurityErrorCode;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
-import java.security.Key;
-import java.util.Base64;
-import java.util.Date;
-import java.util.regex.Pattern;
 
 @Component
 public class JwtUtil {
@@ -26,7 +28,7 @@ public class JwtUtil {
 
     private static final long TOKEN_TIME = 60 * 60 * 1000L;
 
-    @Value("${jwt.secret.key}")
+    @Value("IfthisgetssiolenitsabigproblemIfthelengthThistoosortytthesecurityisnotisufficientsoanerroroccurs")
     private String secretKey;
     private Key key;
     private static final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
