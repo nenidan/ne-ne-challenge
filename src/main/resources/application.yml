@@ -27,7 +27,6 @@ jwt:
     key: ${SECRET_KEY}
 
 ---
-
 spring:
   config:
     activate:
@@ -39,7 +38,6 @@ spring:
     password: '0000'
 
 ---
-
 spring:
   config:
     activate:
