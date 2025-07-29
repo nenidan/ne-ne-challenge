@@ -1,0 +1,11 @@
+# 테스트 환경 전용 설정
+spring:
+  datasource:
+    # H2 데이터베이스를 사용하도록 설정
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop

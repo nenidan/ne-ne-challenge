@@ -1,10 +1,5 @@
 package com.github.nenidan.ne_ne_challenge.global.config;
 
-import com.github.nenidan.ne_ne_challenge.global.security.handler.CustomAccessDeniedHandler;
-import com.github.nenidan.ne_ne_challenge.global.security.handler.CustomAuthenticationEntryPoint;
-import com.github.nenidan.ne_ne_challenge.global.security.jwt.JwtFilter;
-import com.github.nenidan.ne_ne_challenge.global.security.jwt.JwtUtil;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -17,6 +12,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
+
+import com.github.nenidan.ne_ne_challenge.global.security.handler.CustomAccessDeniedHandler;
+import com.github.nenidan.ne_ne_challenge.global.security.handler.CustomAuthenticationEntryPoint;
+import com.github.nenidan.ne_ne_challenge.global.security.jwt.JwtFilter;
+import com.github.nenidan.ne_ne_challenge.global.security.jwt.JwtUtil;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
@@ -49,7 +51,8 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.POST, "/api/accounts/**").permitAll()
 
-                        .requestMatchers("/api/**").authenticated()
+                        .requestMatchers("/api/**").permitAll()
+                        //requestMatchers("/api/**").authenticated()
 
                         .anyRequest().denyAll()
                 )
