@@ -25,4 +25,9 @@ public class ReviewFacade {
         ProductResponse product = productRestClient.getProduct(productId);
         return reviewService.createReview(new UserId(user.getId()), new ProductId(product.getId()), rating);
     }
+
+    public ReviewResponse updateReview(Long userId, Long productId, int  rating) {
+        ProductResponse product = productRestClient.getProduct(productId);
+        return reviewService.updateReview(new UserId(userId), new ProductId(product.getId()), rating);
+    }
 }

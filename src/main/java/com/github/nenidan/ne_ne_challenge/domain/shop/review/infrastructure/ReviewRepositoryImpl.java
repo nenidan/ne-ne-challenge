@@ -31,4 +31,19 @@ public class ReviewRepositoryImpl implements ReviewRepository {
     public boolean exists(UserId userId, ProductId productId) {
         return reviewJpaRepository.existsByUserIdAndProductId(userId.getValue(), productId.getValue());
     }
+
+    @Override
+    public Review findById(UserId userId, ProductId productId) {
+        ReviewEntity reviewEntity = reviewJpaRepository.findByUserIdAndProductId(userId.getValue(), productId.getValue())
+            .orElseThrow(() -> new ShopException(ShopErrorCode.REVIEW_NOT_FOUND));
+        return ReviewMapper.toDomain(reviewEntity);
+    }
+
+    @Override
+    public Review update(Review review) {
+        ReviewEntity reviewEntity = reviewJpaRepository.findByUserIdAndProductId(review.getUserId().getValue(), review.getProductId().getValue())
+            .orElseThrow(() -> new ShopException(ShopErrorCode.REVIEW_NOT_FOUND));
+        reviewEntity.update(review.getRating());
+        return ReviewMapper.toDomain(reviewEntity);
+    }
 }

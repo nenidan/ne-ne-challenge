@@ -34,4 +34,13 @@ public class ReviewController {
     ){
         return ApiResponse.success(HttpStatus.CREATED, "평점이 생성되었습니다.", reviewFacade.createReview(auth.getId(), productId, reviewRequest.getRating()));
     }
+
+    @PatchMapping("/products/{productId}/reviews")
+    public ResponseEntity<ApiResponse<ReviewResponse>> updateReview(
+        @AuthenticationPrincipal Auth auth,
+        @PathVariable Long productId,
+        @RequestBody ReviewRequest reviewRequest
+    ) {
+        return ApiResponse.success(HttpStatus.OK, "평점이 수정되었습니다.", reviewFacade.updateReview(auth.getId(), productId, reviewRequest.getRating()));
+    }
 }

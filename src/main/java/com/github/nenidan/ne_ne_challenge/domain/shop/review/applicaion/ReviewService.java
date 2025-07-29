@@ -32,4 +32,12 @@ public class ReviewService {
         Review saveReview = reviewRepository.save(review);
         return ReviewResponse.fromEntity(saveReview);
     }
+
+    @Transactional
+    public ReviewResponse updateReview(UserId userId, ProductId productId, int rating){
+        Review review = reviewRepository.findById(userId, productId);
+        review.updateRating(rating);
+        Review update = reviewRepository.update(review);
+        return ReviewResponse.fromEntity(update);
+    }
 }
