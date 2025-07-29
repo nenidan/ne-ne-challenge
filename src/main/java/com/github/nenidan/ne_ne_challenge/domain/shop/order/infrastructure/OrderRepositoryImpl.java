@@ -8,8 +8,8 @@ import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopException;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.Order;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.OrderRepository;
-import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.OrderId;
-import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.UserId;
+import com.github.nenidan.ne_ne_challenge.domain.shop.vo.OrderId;
+import com.github.nenidan.ne_ne_challenge.domain.shop.vo.UserId;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.infrastructure.entity.OrderEntity;
 
 @Repository

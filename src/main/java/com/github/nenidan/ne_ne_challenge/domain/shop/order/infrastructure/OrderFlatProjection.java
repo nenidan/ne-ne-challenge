@@ -7,6 +7,7 @@ public interface OrderFlatProjection {
     Long getProductId();
     String getProductName();
     String getProductDescription();
-    Integer getPriceAtOrder();
+    int getPriceAtOrder();
+    int getQuantity();
 }
 

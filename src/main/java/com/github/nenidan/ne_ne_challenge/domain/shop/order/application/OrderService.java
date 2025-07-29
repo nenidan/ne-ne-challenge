@@ -2,18 +2,18 @@ package com.github.nenidan.ne_ne_challenge.domain.shop.order.application;
 
 import java.util.List;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopErrorCode;
-import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopException;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.OrderResponse;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.OrderedProduct;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.Order;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.OrderDetail;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.OrderRepository;
-import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.OrderId;
-import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.UserId;
+import com.github.nenidan.ne_ne_challenge.domain.shop.vo.OrderId;
+import com.github.nenidan.ne_ne_challenge.domain.shop.vo.StockUpdateEvent;
+import com.github.nenidan.ne_ne_challenge.domain.shop.vo.UserId;
 import com.github.nenidan.ne_ne_challenge.domain.user.exception.UserErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.user.exception.UserException;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
@@ -21,22 +21,28 @@ import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 @Service
 public class OrderService {
     private final OrderRepository orderRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
-    public OrderService(OrderRepository orderRepository) {
+    public OrderService(OrderRepository orderRepository, ApplicationEventPublisher applicationEventPublisher) {
         this.orderRepository = orderRepository;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @Transactional
-    public OrderResponse createOrder(UserId userId, OrderedProduct orderedProduct) {
+    public OrderResponse createOrder(UserId userId, OrderedProduct orderedProduct, int quantity) {
 
         OrderDetail orderDetail = new OrderDetail(
             orderedProduct.getProductId(),
             orderedProduct.getProductName(),
             orderedProduct.getProductDescription(),
-            orderedProduct.getPriceAtOrder()
+            orderedProduct.getPriceAtOrder(),
+            quantity
         );
         Order order = Order.create(userId, orderDetail);
         Order saveOrder = orderRepository.createOrder(order);
+
+        // 재고 감소
+        applicationEventPublisher.publishEvent(new StockUpdateEvent(orderedProduct.getProductId(), quantity));
 
         return OrderResponse.fromEntity(saveOrder);
     }

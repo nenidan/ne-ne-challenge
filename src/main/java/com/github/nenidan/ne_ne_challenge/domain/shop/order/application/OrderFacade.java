@@ -4,10 +4,10 @@ import org.springframework.stereotype.Component;
 
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.OrderResponse;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.OrderedProduct;
-import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.OrderId;
-import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.ProductId;
-import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.UserId;
+import com.github.nenidan.ne_ne_challenge.domain.shop.vo.OrderId;
+import com.github.nenidan.ne_ne_challenge.domain.shop.vo.UserId;
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto.ProductResponse;
+import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 import com.github.nenidan.ne_ne_challenge.domain.user.dto.response.UserResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 
@@ -18,13 +18,13 @@ public class OrderFacade {
     private final ProductRestClient productRestClient;
     private final UserRestClient userRestClient;
 
-    public OrderFacade(OrderService orderService,  ProductRestClient productRestClient, UserRestClient userRestClient) {
+    public OrderFacade(OrderService orderService, ProductRestClient productRestClient, UserRestClient userRestClient) {
         this.orderService = orderService;
         this.productRestClient = productRestClient;
         this.userRestClient = userRestClient;
     }
 
-    public OrderResponse createOrder (Long userId, Long productId) {
+    public OrderResponse createOrder (Long userId, Long productId, int quantity) {
         UserResponse user = userRestClient.getUser(userId);
         ProductResponse product = productRestClient.getProduct(productId);
 
@@ -34,7 +34,7 @@ public class OrderFacade {
             product.getDescription(),
             product.getPrice()
         );
-        return orderService.createOrder(new UserId(user.getId()), orderedProduct);
+        return orderService.createOrder(new UserId(user.getId()), orderedProduct, quantity);
     }
 
     public void cancelOrder (Long orderId) {

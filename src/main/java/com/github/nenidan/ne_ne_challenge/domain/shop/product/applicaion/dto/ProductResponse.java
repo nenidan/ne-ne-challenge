@@ -16,7 +16,7 @@ public class ProductResponse {
 
     public static ProductResponse fromEntity(Product product) {
         return new ProductResponse(
-            product.getProductId().getProductId(),
+            product.getProductId().getValue(),
             product.getProductName(),
             product.getProductDescription(),
             product.getProductPrice()

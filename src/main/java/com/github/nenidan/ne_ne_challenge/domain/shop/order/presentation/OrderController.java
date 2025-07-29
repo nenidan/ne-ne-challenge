@@ -30,9 +30,10 @@ public class OrderController {
     @PostMapping("/orders")
     public ResponseEntity<ApiResponse<OrderResponse>> createOrder(
         @AuthenticationPrincipal Auth auth,
-        @RequestParam Long productId
+        @RequestParam Long productId,
+        @RequestParam int quantity
     ) {
-        OrderResponse orderResponse = orderFacade.createOrder(auth.getId(), productId);
+        OrderResponse orderResponse = orderFacade.createOrder(auth.getId(), productId, quantity);
         return ApiResponse.success(HttpStatus.CREATED, "주문이 생성되었습니다.", orderResponse);
     }
 
@@ -54,12 +55,12 @@ public class OrderController {
 
     @GetMapping("/orders")
     public ResponseEntity<ApiResponse<CursorResponse<OrderResponse, Long>>> findOrder(
-        @RequestParam Long userId,
+        @AuthenticationPrincipal Auth auth,
         @RequestParam(required = false) Long cursor,
         @RequestParam(defaultValue = "10") @Min(1) int size,
         @RequestParam(required = false) String keyword
     ) {
-        CursorResponse<OrderResponse, Long> allOrder = orderFacade.findAllOrders(userId, cursor, size, keyword);
+        CursorResponse<OrderResponse, Long> allOrder = orderFacade.findAllOrders(auth.getId(), cursor, size, keyword);
         return ApiResponse.success(HttpStatus.OK, "주문이 조회되었습니다.", allOrder);
     }
 }

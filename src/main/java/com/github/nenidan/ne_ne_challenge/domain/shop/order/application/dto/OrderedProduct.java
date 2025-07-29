@@ -1,6 +1,6 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto;
 
-import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.ProductId;
+import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 
 import lombok.Getter;
 

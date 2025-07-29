@@ -3,11 +3,11 @@ package com.github.nenidan.ne_ne_challenge.domain.shop.order.infrastructure;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.Order;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.OrderDetail;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.OrderStatus;
-import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.OrderId;
-import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.ProductId;
-import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.UserId;
+import com.github.nenidan.ne_ne_challenge.domain.shop.vo.OrderId;
+import com.github.nenidan.ne_ne_challenge.domain.shop.vo.UserId;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.infrastructure.entity.OrderDetailEntity;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.infrastructure.entity.OrderEntity;
+import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 
 public class OrderMapper {
 
@@ -18,7 +18,8 @@ public class OrderMapper {
                 order.getOrderDetail().getProductId().getValue(),
                 order.getOrderDetail().getNameAtOrder(),
                 order.getOrderDetail().getDescriptionAtOrder(),
-                order.getOrderDetail().getPriceAtOrder()
+                order.getOrderDetail().getPriceAtOrder(),
+                order.getOrderDetail().getQuantity()
             )
         );
         if (order.isCanceled()) {
@@ -35,7 +36,8 @@ public class OrderMapper {
                 new ProductId(orderEntity.getOrderDetailEntity().getProductId()),
                 orderEntity.getOrderDetailEntity().getProductName(),
                 orderEntity.getOrderDetailEntity().getProductDescription(),
-                orderEntity.getOrderDetailEntity().getPriceAtOrder()
+                orderEntity.getOrderDetailEntity().getPriceAtOrder(),
+                orderEntity.getOrderDetailEntity().getQuantity()
             ),
             orderEntity.getStatus()
         );
@@ -53,7 +55,8 @@ public class OrderMapper {
                 new ProductId(orderFlatProjection.getProductId()),
                 orderFlatProjection.getProductName(),
                 orderFlatProjection.getProductDescription(),
-                orderFlatProjection.getPriceAtOrder()
+                orderFlatProjection.getPriceAtOrder(),
+                orderFlatProjection.getQuantity()
             ),
             OrderStatus.valueOf(orderFlatProjection.getStatus())
         );
