@@ -18,13 +18,13 @@ public class StockRepositoryImpl implements StockRepository {
     private final StockJpaRepository stockJpaRepository;
 
     @Override
-    public void createStock(ProductId productId) {
+    public void save(ProductId productId) {
         StockEntity stockEntity = new StockEntity(productId.getValue());
         stockJpaRepository.save(stockEntity);
     }
 
     @Override
-    public Stock increaseStock(ProductId productId, int quantity) {
+    public Stock increase(ProductId productId, int quantity) {
         StockEntity stockEntity = stockJpaRepository.findByProductId(productId.getValue())
             .orElseThrow(() -> new ShopException(ShopErrorCode.PRODUCT_NOT_FOUND));
 
@@ -33,11 +33,19 @@ public class StockRepositoryImpl implements StockRepository {
     }
 
     @Override
-    public Stock decreaseStock(ProductId productId, int quantity) {
+    public void decrease(ProductId productId, int quantity) {
         StockEntity stockEntity = stockJpaRepository.findByProductId(productId.getValue())
             .orElseThrow(() -> new ShopException(ShopErrorCode.PRODUCT_NOT_FOUND));
 
         stockEntity.decreaseStock(quantity);
+        StockMapper.toDomain(stockEntity);
+    }
+
+    @Override
+    public Stock findById(ProductId productId) {
+        StockEntity stockEntity = stockJpaRepository.findByProductId(productId.getValue())
+            .orElseThrow(() -> new ShopException(ShopErrorCode.PRODUCT_NOT_FOUND));
+
         return StockMapper.toDomain(stockEntity);
     }
 }

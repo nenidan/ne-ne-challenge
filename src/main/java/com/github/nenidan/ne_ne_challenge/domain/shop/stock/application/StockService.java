@@ -18,18 +18,23 @@ public class StockService {
 
     @Transactional
     public void createStock(Long productId) {
-        stockRepository.createStock(new ProductId(productId));
+        stockRepository.save(new ProductId(productId));
     }
 
     @Transactional
     public StockResponse increaseStock(Long productId, int quantity) {
-        Stock stock = stockRepository.increaseStock(new ProductId(productId), quantity);
+        Stock stock = stockRepository.increase(new ProductId(productId), quantity);
         return StockResponse.from(stock);
     }
 
     @Transactional
-    public StockResponse decreaseStock(Long productId, int quantity) {
-        Stock stock = stockRepository.decreaseStock(new ProductId(productId), quantity);
+    public void decreaseStock(Long productId, int quantity) {
+        stockRepository.decrease(new ProductId(productId), quantity);
+    }
+
+    @Transactional(readOnly = true)
+    public StockResponse getStock(Long productId) {
+        Stock stock = stockRepository.findById(new ProductId(productId));
         return  StockResponse.from(stock);
     }
 }
