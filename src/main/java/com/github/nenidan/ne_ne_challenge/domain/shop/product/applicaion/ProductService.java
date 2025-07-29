@@ -12,6 +12,7 @@ import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto.Upd
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.domain.Product;
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.domain.ProductRepository;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
+import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ReviewDeleteEvent;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.StockRegisteredEvent;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 
@@ -82,5 +83,6 @@ public class ProductService {
         Product product = productRepository.findById(new ProductId(productId));
         product.delete();
         productRepository.delete(new ProductId(productId));
+        applicationEventPublisher.publishEvent(new ReviewDeleteEvent(new ProductId(productId)));
     }
 }

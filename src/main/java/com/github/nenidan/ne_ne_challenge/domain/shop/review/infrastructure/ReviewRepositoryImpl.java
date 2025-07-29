@@ -46,4 +46,10 @@ public class ReviewRepositoryImpl implements ReviewRepository {
         reviewEntity.update(review.getRating());
         return ReviewMapper.toDomain(reviewEntity);
     }
+
+    @Override
+    public void deleteAllReviewByProductId(ProductId productId) {
+        reviewJpaRepository.deleteAllByProductId(productId.getValue(),
+            LocalDateTime.now());
+    }
 }

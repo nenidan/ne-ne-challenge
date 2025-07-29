@@ -8,4 +8,5 @@ public interface ReviewRepository {
     boolean exists(UserId userId, ProductId productId);
     Review findById(UserId userId, ProductId productId);
     Review update(Review review);
+    void deleteAllReviewByProductId(ProductId productId);
 }

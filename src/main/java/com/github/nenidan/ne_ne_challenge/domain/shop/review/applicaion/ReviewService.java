@@ -1,5 +1,7 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.review.applicaion;
 
+import java.time.LocalDateTime;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,5 +41,10 @@ public class ReviewService {
         review.updateRating(rating);
         Review update = reviewRepository.update(review);
         return ReviewResponse.fromEntity(update);
+    }
+
+    @Transactional
+    public void deleteAllReviewByProductId(ProductId productId){
+        reviewRepository.deleteAllReviewByProductId(productId);
     }
 }

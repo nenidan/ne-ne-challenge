@@ -30,4 +30,9 @@ public class ReviewFacade {
         ProductResponse product = productRestClient.getProduct(productId);
         return reviewService.updateReview(new UserId(userId), new ProductId(product.getId()), rating);
     }
+
+    public void deleteAllReviewBy(Long productId) {
+        ProductResponse product = productRestClient.getProduct(productId);
+        reviewService.deleteAllReviewByProductId(new ProductId(product.getId()));
+    }
 }
