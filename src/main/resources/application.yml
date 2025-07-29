@@ -28,7 +28,7 @@ jwt:
 
 firebase:
   config:
-    path: /app/firebase-key.json
+    path: /app/firebase/firebase-key.json
 
 ---
 spring:
