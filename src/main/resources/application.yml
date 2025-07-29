@@ -33,9 +33,9 @@ spring:
       on-profile: dev
 
   datasource:
-    url: jdbc:mysql://database-2.cboqoig00r5d.ap-northeast-2.rds.amazonaws.com/testDB
-    username: 'root'
-    password: 'nenechell123'
+    url: jdbc:mysql://localhost:3306/capital
+    username: root
+    password: '0000'
 
 ---
 spring:
