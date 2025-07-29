@@ -80,7 +80,6 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           # EC2 서버에 접속해서 아래 스크립트를 순서대로 실행시킬 거임.
           script: |
-          
             docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/my-spring-app:latest
             docker stop my-app || true
