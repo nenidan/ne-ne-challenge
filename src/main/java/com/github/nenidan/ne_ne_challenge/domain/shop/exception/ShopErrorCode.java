@@ -18,7 +18,10 @@ public enum ShopErrorCode implements ErrorCode {
     STOCK_NOT_FOUND("재고를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     OUT_OF_STOCK("재고가 부족합니다.", HttpStatus.BAD_REQUEST),
     INVALID_DECREASE_QUANTITY("재고 감소에 음수 또는 0이 들어올 수 없습니다.", HttpStatus.BAD_REQUEST),
-    INVALID_ACTION("지원하지 않는 기능입니다.",  HttpStatus.BAD_REQUEST);
+    INVALID_ACTION("지원하지 않는 기능입니다.",  HttpStatus.BAD_REQUEST),
+    REVIEW_VALUE_INVALID("리뷰 점수는 1 이상 5이하여야 합니다.", HttpStatus.BAD_REQUEST),
+    REVIEW_ALREADY_EXISTS("이미 리뷰가 존재합니다.", HttpStatus.CONFLICT),
+    REVIEW_NOT_FOUND("리뷰 점수가 존재하지 않습니다.", HttpStatus.NOT_FOUND);
 
     private final String message;
     private final HttpStatus status;
