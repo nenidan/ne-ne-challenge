@@ -7,12 +7,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.OrderFacade;
-import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.OrderResponse;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.CreateOrderCommand;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.FindCursorOrderCommand;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.OrderResult;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.presentation.dto.CreateOrderRequest;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.presentation.dto.OrderResponse;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.presentation.mapper.OrderPresentationMapper;
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 import com.github.nenidan.ne_ne_challenge.global.security.auth.Auth;
@@ -30,10 +36,11 @@ public class OrderController {
     @PostMapping("/orders")
     public ResponseEntity<ApiResponse<OrderResponse>> createOrder(
         @AuthenticationPrincipal Auth auth,
-        @RequestParam Long productId,
-        @RequestParam int quantity
+        @RequestBody CreateOrderRequest createOrderRequest
     ) {
-        OrderResponse orderResponse = orderFacade.createOrder(auth.getId(), productId, quantity);
+        CreateOrderCommand createOrderCommand = OrderPresentationMapper.toCreateOrderCommand(auth.getId(), createOrderRequest);
+        OrderResult orderResult = orderFacade.createOrder(createOrderCommand);
+        OrderResponse orderResponse = OrderPresentationMapper.fromOrderResult(orderResult);
         return ApiResponse.success(HttpStatus.CREATED, "주문이 생성되었습니다.", orderResponse);
     }
 
@@ -49,7 +56,8 @@ public class OrderController {
     public ResponseEntity<ApiResponse<OrderResponse>> findOrder(
         @PathVariable Long id
     ) {
-        OrderResponse orderResponse = orderFacade.findOrder(id);
+        OrderResult orderResult = orderFacade.findOrder(id);
+        OrderResponse orderResponse = OrderPresentationMapper.fromOrderResult(orderResult);
         return ApiResponse.success(HttpStatus.OK, "주문이 조회되었습니다.", orderResponse);
     }
 
@@ -60,7 +68,11 @@ public class OrderController {
         @RequestParam(defaultValue = "10") @Min(1) int size,
         @RequestParam(required = false) String keyword
     ) {
-        CursorResponse<OrderResponse, Long> allOrder = orderFacade.findAllOrders(auth.getId(), cursor, size, keyword);
-        return ApiResponse.success(HttpStatus.OK, "주문이 조회되었습니다.", allOrder);
+        FindCursorOrderCommand findCursorOrderCommand = OrderPresentationMapper.toFindCursorOrderCommand(auth.getId(),
+            cursor, size, keyword);
+        CursorResponse<OrderResult, Long> orders = orderFacade.findAllOrders(findCursorOrderCommand);
+        CursorResponse<OrderResponse, Long> orderResponseLongCursorResponse = OrderPresentationMapper.fromCursorOrderResult(
+            orders);
+        return ApiResponse.success(HttpStatus.OK, "주문이 조회되었습니다.", orderResponseLongCursorResponse);
     }
 }

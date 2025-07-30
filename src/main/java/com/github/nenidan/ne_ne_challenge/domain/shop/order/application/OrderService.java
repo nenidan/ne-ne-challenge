@@ -6,13 +6,12 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.OrderResponse;
-import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.OrderedProduct;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.OrderResult;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.Order;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.OrderDetail;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.OrderRepository;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.OrderId;
-import com.github.nenidan.ne_ne_challenge.domain.shop.vo.StockUpdateEvent;
+import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.event.StockUpdateEvent;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.UserId;
 import com.github.nenidan.ne_ne_challenge.domain.user.exception.UserErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.user.exception.UserException;
@@ -29,22 +28,19 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderResponse createOrder(UserId userId, OrderedProduct orderedProduct, int quantity) {
-
-        OrderDetail orderDetail = new OrderDetail(
-            orderedProduct.getProductId(),
-            orderedProduct.getProductName(),
-            orderedProduct.getProductDescription(),
-            orderedProduct.getPriceAtOrder(),
-            quantity
-        );
+    public OrderResult createOrder(UserId userId, OrderDetail orderDetail) {
         Order order = Order.create(userId, orderDetail);
         Order saveOrder = orderRepository.createOrder(order);
 
         // 재고 감소
-        applicationEventPublisher.publishEvent(new StockUpdateEvent(orderedProduct.getProductId(), quantity));
+        applicationEventPublisher.publishEvent(
+            new StockUpdateEvent(
+                saveOrder.getOrderDetail().getProductId(),
+                saveOrder.getOrderDetail().getQuantity()
+            )
+        );
 
-        return OrderResponse.fromEntity(saveOrder);
+        return OrderResult.fromEntity(saveOrder);
     }
 
     @Transactional
@@ -55,26 +51,26 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public OrderResponse findOrder(OrderId orderId) {
+    public OrderResult findOrder(OrderId orderId) {
         Order order = orderRepository.findOrder(orderId);
 
-        return OrderResponse.fromEntity(order);
+        return OrderResult.fromEntity(order);
     }
 
     @Transactional(readOnly = true)
-    public CursorResponse<OrderResponse, Long> findAllOrder(UserId userId, Long cursor, int size, String keyword) {
+    public CursorResponse<OrderResult, Long> findAllOrder(UserId userId, Long cursor, int size, String keyword) {
         if(userId == null) {
             throw new UserException(UserErrorCode.USER_NOT_FOUND);
         }
 
-        List<OrderResponse> orderList = orderRepository.findAllOrders(userId, cursor, keyword, size+1)
+        List<OrderResult> orderList = orderRepository.findAllOrders(userId, cursor, keyword, size+1)
             .stream()
-            .map(OrderResponse::fromEntity)
+            .map(OrderResult::fromEntity)
             .toList();
 
         boolean hasNext = orderList.size() > size;
 
-        List<OrderResponse> content = hasNext ? orderList.subList(0, size) : orderList;
+        List<OrderResult> content = hasNext ? orderList.subList(0, size) : orderList;
 
         Long nextCursor = hasNext ? orderList.get(orderList.size() - 1).getOrderId() : null;
 

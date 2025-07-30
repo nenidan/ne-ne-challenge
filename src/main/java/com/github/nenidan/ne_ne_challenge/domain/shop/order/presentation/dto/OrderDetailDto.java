@@ -1,4 +1,4 @@
-package com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto;
+package com.github.nenidan.ne_ne_challenge.domain.shop.order.presentation.dto;
 
 
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.OrderDetail;

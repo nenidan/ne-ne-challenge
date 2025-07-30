@@ -2,11 +2,15 @@ package com.github.nenidan.ne_ne_challenge.domain.shop.order.application;
 
 import org.springframework.stereotype.Component;
 
-import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.OrderResponse;
-import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.OrderedProduct;
+import com.github.nenidan.ne_ne_challenge.domain.shop.global.ProductRestClient;
+import com.github.nenidan.ne_ne_challenge.domain.shop.global.UserRestClient;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.CreateOrderCommand;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.FindCursorOrderCommand;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.OrderResult;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.OrderDetail;
+import com.github.nenidan.ne_ne_challenge.domain.shop.product.presentation.dto.ProductResponse;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.OrderId;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.UserId;
-import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto.ProductResponse;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 import com.github.nenidan.ne_ne_challenge.domain.user.dto.response.UserResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
@@ -24,28 +28,34 @@ public class OrderFacade {
         this.userRestClient = userRestClient;
     }
 
-    public OrderResponse createOrder (Long userId, Long productId, int quantity) {
-        UserResponse user = userRestClient.getUser(userId);
-        ProductResponse product = productRestClient.getProduct(productId);
+    public OrderResult createOrder (CreateOrderCommand createOrderRequest) {
+        UserResponse user = userRestClient.getUser(createOrderRequest.getUserId().getValue());
+        ProductResponse product = productRestClient.getProduct(createOrderRequest.getProductId().getValue());
 
-        OrderedProduct orderedProduct = new OrderedProduct(
+        OrderDetail orderDetail = new OrderDetail(
             new ProductId(product.getId()),
             product.getName(),
             product.getDescription(),
-            product.getPrice()
+            product.getPrice(),
+            createOrderRequest.getQuantity()
         );
-        return orderService.createOrder(new UserId(user.getId()), orderedProduct, quantity);
+        return orderService.createOrder(new UserId(user.getId()), orderDetail);
     }
 
     public void cancelOrder (Long orderId) {
         orderService.cancelOrder(new OrderId(orderId));
     }
 
-    public OrderResponse findOrder (Long orderId) {
+    public OrderResult findOrder (Long orderId) {
         return orderService.findOrder(new OrderId(orderId));
     }
 
-    public CursorResponse<OrderResponse, Long> findAllOrders (Long userId, Long cursor, int size, String keyword) {
-        return orderService.findAllOrder(new UserId(userId), cursor, size, keyword);
+    public CursorResponse<OrderResult, Long> findAllOrders (FindCursorOrderCommand findCursorOrderCommand) {
+        return orderService.findAllOrder(
+            findCursorOrderCommand.getUserId(),
+            findCursorOrderCommand.getCursor(),
+            findCursorOrderCommand.getSize(),
+            findCursorOrderCommand.getKeyword()
+        );
     }
 }

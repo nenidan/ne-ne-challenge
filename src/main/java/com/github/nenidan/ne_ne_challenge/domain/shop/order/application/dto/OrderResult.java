@@ -8,18 +8,18 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class OrderResponse {
+public class OrderResult {
 
     private final Long orderId;
     private final Long userId;
-    private final OrderDetailDto orderDetail;
+    private final OrderDetailResultDto orderDetail;
     private final OrderStatus status;
 
-    public static OrderResponse fromEntity(Order order) {
-        return new OrderResponse(
+    public static OrderResult fromEntity(Order order) {
+        return new OrderResult(
             order.getOrderId().getValue(),
             order.getUserid().getValue(),
-            OrderDetailDto.fromEntity(order.getOrderDetail()),
+            OrderDetailResultDto.fromEntity(order.getOrderDetail()),
             order.getOrderStatus()
         );
     }

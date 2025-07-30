@@ -1,8 +1,9 @@
-package com.github.nenidan.ne_ne_challenge.domain.shop.order.infrastructure;
+package com.github.nenidan.ne_ne_challenge.domain.shop.order.infrastructure.mapper;
 
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.Order;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.OrderDetail;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.OrderStatus;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.infrastructure.OrderFlatProjection;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.OrderId;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.UserId;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.infrastructure.entity.OrderDetailEntity;
