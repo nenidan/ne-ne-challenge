@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -103,7 +104,10 @@ public class ChallengeHistoryService {
         ChallengeUser challengeUser = challengeUserRepository.findByUserAndChallenge(user, challenge)
             .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.NOT_PARTICIPATING));
 
-        long daysFromStart = ChronoUnit.DAYS.between(challenge.getStartedAt().toLocalDate(), LocalDateTime.now().toLocalDate());
+        LocalDate today = LocalDate.now();
+        LocalDate dueDate = challenge.getDueAt();
+        LocalDate endDate = today.isAfter(dueDate) ? dueDate : today;
+        long daysFromStart = ChronoUnit.DAYS.between(challenge.getStartedAt().toLocalDate(), endDate);
         long totalPeriod = daysFromStart + 1; // 오늘 포함
         int successfulDays = challengeHistoryRepository.countByChallengeAndUserAndIsSuccessTrue(challenge, user);
         int successRate = (int) ((successfulDays * 100) / totalPeriod);

@@ -11,8 +11,8 @@ import com.github.nenidan.ne_ne_challenge.domain.challenge.service.ChallengeUser
 import com.github.nenidan.ne_ne_challenge.domain.user.dto.response.UserResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
-import jakarta.validation.constraints.Min;
 import com.github.nenidan.ne_ne_challenge.global.security.auth.Auth;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -93,5 +93,12 @@ public class ChallengeController {
             "현재까지의 인증율을 조회했습니다.",
             challengeHistoryService.getSuccessRate(userId, id)
         );
+    }
+
+    @PostMapping("/challenges/{id}/join")
+    public ResponseEntity<ApiResponse<ChallengeResponse>> joinChallenge(@PathVariable Long id,
+        @AuthenticationPrincipal Auth authUser
+    ) {
+        return ApiResponse.success(HttpStatus.OK, "챌린지에 참가했습니다.", challengeService.joinChallenge(authUser.getId(), id));
     }
 }
