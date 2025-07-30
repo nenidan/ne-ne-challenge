@@ -4,8 +4,9 @@ import org.springframework.stereotype.Component;
 
 import com.github.nenidan.ne_ne_challenge.domain.shop.global.ProductRestClient;
 import com.github.nenidan.ne_ne_challenge.domain.shop.global.UserRestClient;
-import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto.ProductResponse;
-import com.github.nenidan.ne_ne_challenge.domain.shop.review.applicaion.dto.ReviewResponse;
+import com.github.nenidan.ne_ne_challenge.domain.shop.product.presentation.dto.ProductResponse;
+import com.github.nenidan.ne_ne_challenge.domain.shop.review.applicaion.dto.ReviewCommand;
+import com.github.nenidan.ne_ne_challenge.domain.shop.review.applicaion.dto.ReviewResult;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.UserId;
 import com.github.nenidan.ne_ne_challenge.domain.user.dto.response.UserResponse;
@@ -20,15 +21,16 @@ public class ReviewFacade {
     private final UserRestClient userRestClient;
     private final ProductRestClient productRestClient;
 
-    public ReviewResponse createReview(Long userId, Long productId, int rating){
-        UserResponse user = userRestClient.getUser(userId);
-        ProductResponse product = productRestClient.getProduct(productId);
-        return reviewService.createReview(new UserId(user.getId()), new ProductId(product.getId()), rating);
+    public ReviewResult createReview(ReviewCommand reviewCommand){
+        UserResponse user = userRestClient.getUser(reviewCommand.getUserId().getValue());
+        ProductResponse product = productRestClient.getProduct(reviewCommand.getProductId().getValue());
+        return reviewService.createReview(new UserId(user.getId()), new ProductId(product.getId()), reviewCommand.getRating());
     }
 
-    public ReviewResponse updateReview(Long userId, Long productId, int  rating) {
-        ProductResponse product = productRestClient.getProduct(productId);
-        return reviewService.updateReview(new UserId(userId), new ProductId(product.getId()), rating);
+    public ReviewResult updateReview(ReviewCommand reviewCommand) {
+        UserResponse user = userRestClient.getUser(reviewCommand.getUserId().getValue());
+        ProductResponse product = productRestClient.getProduct(reviewCommand.getProductId().getValue());
+        return reviewService.updateReview(new UserId(user.getId()), new ProductId(product.getId()), reviewCommand.getRating());
     }
 
     public void deleteAllReviewBy(Long productId) {

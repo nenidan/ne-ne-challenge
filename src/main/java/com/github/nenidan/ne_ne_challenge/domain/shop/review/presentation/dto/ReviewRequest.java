@@ -1,4 +1,4 @@
-package com.github.nenidan.ne_ne_challenge.domain.shop.review.applicaion.dto;
+package com.github.nenidan.ne_ne_challenge.domain.shop.review.presentation.dto;
 
 import org.hibernate.validator.constraints.Range;
 

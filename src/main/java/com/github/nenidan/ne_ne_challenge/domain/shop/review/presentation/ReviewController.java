@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.nenidan.ne_ne_challenge.domain.shop.review.applicaion.ReviewFacade;
-import com.github.nenidan.ne_ne_challenge.domain.shop.review.applicaion.dto.ReviewRequest;
-import com.github.nenidan.ne_ne_challenge.domain.shop.review.applicaion.dto.ReviewResponse;
+import com.github.nenidan.ne_ne_challenge.domain.shop.review.applicaion.dto.ReviewCommand;
+import com.github.nenidan.ne_ne_challenge.domain.shop.review.presentation.dto.ReviewRequest;
+import com.github.nenidan.ne_ne_challenge.domain.shop.review.presentation.dto.ReviewResponse;
+import com.github.nenidan.ne_ne_challenge.domain.shop.review.presentation.mapper.ReviewPresentationMapper;
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
 import com.github.nenidan.ne_ne_challenge.global.security.auth.Auth;
 
@@ -32,15 +34,19 @@ public class ReviewController {
         @PathVariable Long productId,
         @RequestBody @Valid ReviewRequest reviewRequest
     ){
-        return ApiResponse.success(HttpStatus.CREATED, "평점이 생성되었습니다.", reviewFacade.createReview(auth.getId(), productId, reviewRequest.getRating()));
+        ReviewCommand reviewCommand = ReviewPresentationMapper.toReviewCommand(auth.getId(), productId, reviewRequest);
+        ReviewResponse reviewResponse = ReviewPresentationMapper.fromReviewResult(reviewFacade.createReview(reviewCommand));
+        return ApiResponse.success(HttpStatus.CREATED, "평점이 생성되었습니다.", reviewResponse);
     }
 
     @PatchMapping("/products/{productId}/reviews")
     public ResponseEntity<ApiResponse<ReviewResponse>> updateReview(
         @AuthenticationPrincipal Auth auth,
         @PathVariable Long productId,
-        @RequestBody ReviewRequest reviewRequest
+        @RequestBody @Valid ReviewRequest reviewRequest
     ) {
-        return ApiResponse.success(HttpStatus.OK, "평점이 수정되었습니다.", reviewFacade.updateReview(auth.getId(), productId, reviewRequest.getRating()));
+        ReviewCommand reviewCommand = ReviewPresentationMapper.toReviewCommand(auth.getId(), productId, reviewRequest);
+        ReviewResponse reviewResponse = ReviewPresentationMapper.fromReviewResult(reviewFacade.updateReview(reviewCommand));
+        return ApiResponse.success(HttpStatus.OK, "평점이 수정되었습니다.", reviewResponse);
     }
 }

@@ -5,7 +5,7 @@ import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import com.github.nenidan.ne_ne_challenge.domain.shop.review.applicaion.ReviewFacade;
-import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ReviewDeleteEvent;
+import com.github.nenidan.ne_ne_challenge.domain.shop.review.domain.event.ReviewDeleteEvent;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

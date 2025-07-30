@@ -1,13 +1,11 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.review.applicaion;
 
-import java.time.LocalDateTime;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopException;
-import com.github.nenidan.ne_ne_challenge.domain.shop.review.applicaion.dto.ReviewResponse;
+import com.github.nenidan.ne_ne_challenge.domain.shop.review.applicaion.dto.ReviewResult;
 import com.github.nenidan.ne_ne_challenge.domain.shop.review.domain.Review;
 import com.github.nenidan.ne_ne_challenge.domain.shop.review.domain.ReviewRepository;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
@@ -22,7 +20,7 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
 
     @Transactional
-    public ReviewResponse createReview(UserId userId, ProductId productId, int rating){
+    public ReviewResult createReview(UserId userId, ProductId productId, int rating){
         if (reviewRepository.exists(userId, productId)) {
             throw new ShopException(ShopErrorCode.REVIEW_ALREADY_EXISTS);
         }
@@ -32,15 +30,15 @@ public class ReviewService {
             rating
         );
         Review saveReview = reviewRepository.save(review);
-        return ReviewResponse.fromEntity(saveReview);
+        return ReviewResult.fromEntity(saveReview);
     }
 
     @Transactional
-    public ReviewResponse updateReview(UserId userId, ProductId productId, int rating){
+    public ReviewResult updateReview(UserId userId, ProductId productId, int rating){
         Review review = reviewRepository.findById(userId, productId);
         review.updateRating(rating);
         Review update = reviewRepository.update(review);
-        return ReviewResponse.fromEntity(update);
+        return ReviewResult.fromEntity(update);
     }
 
     @Transactional

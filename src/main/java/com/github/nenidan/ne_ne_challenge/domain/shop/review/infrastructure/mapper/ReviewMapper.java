@@ -1,4 +1,4 @@
-package com.github.nenidan.ne_ne_challenge.domain.shop.review.infrastructure;
+package com.github.nenidan.ne_ne_challenge.domain.shop.review.infrastructure.mapper;
 
 import com.github.nenidan.ne_ne_challenge.domain.shop.review.domain.Review;
 import com.github.nenidan.ne_ne_challenge.domain.shop.review.infrastructure.entity.ReviewEntity;
