@@ -7,14 +7,14 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class StockResponse {
+public class AddStockResult {
 
     private final Long StockId;
     private final Long ProductId;
     private final int quantity;
 
-    public static StockResponse from(Stock stock){
-        return new StockResponse(
+    public static AddStockResult from(Stock stock){
+        return new AddStockResult(
             stock.getStockId().getValue(),
             stock.getProductId().getValue(),
             stock.getQuantity()

@@ -5,8 +5,10 @@ import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import com.github.nenidan.ne_ne_challenge.domain.shop.stock.application.StockService;
-import com.github.nenidan.ne_ne_challenge.domain.shop.vo.StockUpdateEvent;
-import com.github.nenidan.ne_ne_challenge.domain.shop.vo.StockRegisteredEvent;
+import com.github.nenidan.ne_ne_challenge.domain.shop.stock.application.dto.AddStockCommand;
+import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.event.StockUpdateEvent;
+import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.event.StockRegisteredEvent;
+import com.github.nenidan.ne_ne_challenge.domain.shop.stock.presentation.mapper.AddStockMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +27,7 @@ public class StockEventHandler {
 
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void stockUpdateHandler(StockUpdateEvent stockUpdateEvent) {
-        stockService.decreaseStock(stockUpdateEvent.getProductId().getValue(), stockUpdateEvent.getQuantity());
+        AddStockCommand addStockCommand = AddStockMapper.fromStockUpdateEvent(stockUpdateEvent);
+        stockService.decreaseStock(addStockCommand);
     }
 }

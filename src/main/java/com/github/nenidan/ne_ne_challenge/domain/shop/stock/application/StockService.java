@@ -3,7 +3,8 @@ package com.github.nenidan.ne_ne_challenge.domain.shop.stock.application;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.github.nenidan.ne_ne_challenge.domain.shop.stock.application.dto.StockResponse;
+import com.github.nenidan.ne_ne_challenge.domain.shop.stock.application.dto.AddStockCommand;
+import com.github.nenidan.ne_ne_challenge.domain.shop.stock.application.dto.AddStockResult;
 import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.Stock;
 import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.StockRepository;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
@@ -22,19 +23,19 @@ public class StockService {
     }
 
     @Transactional
-    public StockResponse increaseStock(Long productId, int quantity) {
-        Stock stock = stockRepository.increase(new ProductId(productId), quantity);
-        return StockResponse.from(stock);
+    public AddStockResult increaseStock(AddStockCommand addStockCommand) {
+        Stock stock = stockRepository.increase(addStockCommand.getProductId(), addStockCommand.getQuantity());
+        return AddStockResult.from(stock);
     }
 
     @Transactional
-    public void decreaseStock(Long productId, int quantity) {
-        stockRepository.decrease(new ProductId(productId), quantity);
+    public void decreaseStock(AddStockCommand addStockCommand) {
+        stockRepository.decrease(addStockCommand.getProductId(), addStockCommand.getQuantity());
     }
 
     @Transactional(readOnly = true)
-    public StockResponse getStock(Long productId) {
+    public AddStockResult getStock(Long productId) {
         Stock stock = stockRepository.findById(new ProductId(productId));
-        return  StockResponse.from(stock);
+        return  AddStockResult.from(stock);
     }
 }
