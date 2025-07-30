@@ -15,9 +15,9 @@ public class UpdateChallengeRequest {
 
     private ChallengeStatus status;
 
-    private int minParticipants;
+    private Integer minParticipants;
 
-    private int maxParticipants;
+    private Integer maxParticipants;
 
     private LocalDate dueAt;
 
