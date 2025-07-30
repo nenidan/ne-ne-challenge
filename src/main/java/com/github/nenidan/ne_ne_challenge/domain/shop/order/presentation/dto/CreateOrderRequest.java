@@ -1,7 +1,5 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.order.presentation.dto;
 
-import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -9,6 +7,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CreateOrderRequest {
 
-    private final ProductId productId;
+    private final Long productId;
     private final int quantity;
 }

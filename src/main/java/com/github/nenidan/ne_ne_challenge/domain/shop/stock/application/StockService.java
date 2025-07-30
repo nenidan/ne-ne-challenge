@@ -38,4 +38,11 @@ public class StockService {
         Stock stock = stockRepository.findById(new ProductId(productId));
         return  AddStockResult.from(stock);
     }
+
+    @Transactional
+    public void deleteStock(Long productId) {
+        Stock stock = stockRepository.findById(new ProductId(productId));
+        stock.checkDeletableOnlyIfStockEmpty();
+        stockRepository.delete(new ProductId(productId));
+    }
 }

@@ -7,4 +7,5 @@ public interface StockRepository {
     Stock increase(ProductId productId, int quantity);
     void decrease(ProductId productId, int quantity);
     Stock findById(ProductId productId);
+    void delete(ProductId productId);
 }

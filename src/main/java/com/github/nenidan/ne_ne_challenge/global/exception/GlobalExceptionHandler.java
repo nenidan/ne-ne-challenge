@@ -1,7 +1,5 @@
 package com.github.nenidan.ne_ne_challenge.global.exception;
 
-import java.util.Objects;
-
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
 import com.github.nenidan.ne_ne_challenge.global.security.exception.CustomSecurityException;
 import lombok.extern.slf4j.Slf4j;

@@ -48,4 +48,13 @@ public class StockRepositoryImpl implements StockRepository {
 
         return StockMapper.toDomain(stockEntity);
     }
+
+    @Override
+    public void delete(ProductId productId) {
+        StockEntity stockEntity = stockJpaRepository.findByProductId(productId.getValue())
+            .orElseThrow(() -> new ShopException(ShopErrorCode.PRODUCT_NOT_FOUND));
+
+
+        stockEntity.delete();
+    }
 }

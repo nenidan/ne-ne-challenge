@@ -8,6 +8,7 @@ import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.Orde
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.presentation.dto.CreateOrderRequest;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.presentation.dto.OrderDetailDto;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.presentation.dto.OrderResponse;
+import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.UserId;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 
@@ -16,7 +17,7 @@ public class OrderPresentationMapper {
     public static CreateOrderCommand toCreateOrderCommand(Long userId, CreateOrderRequest createOrderRequest){
         return new CreateOrderCommand(
             new UserId(userId),
-            createOrderRequest.getProductId(),
+            new ProductId(createOrderRequest.getProductId()),
             createOrderRequest.getQuantity()
         );
     }

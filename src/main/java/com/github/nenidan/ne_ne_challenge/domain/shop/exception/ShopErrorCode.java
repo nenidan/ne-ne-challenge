@@ -16,6 +16,7 @@ public enum ShopErrorCode implements ErrorCode {
     ORDER_ALREADY_CANCELED("이미 취소된 주문입니다.", HttpStatus.CONFLICT),
     ORDER_DETAIL_NOT_FOUND("주문 상세 내역을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     STOCK_NOT_FOUND("재고를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    STOCK_NOT_EMPTY("재고가 비어있지 않습니다. ", HttpStatus.CONFLICT),
     OUT_OF_STOCK("재고가 부족합니다.", HttpStatus.BAD_REQUEST),
     INVALID_DECREASE_QUANTITY("재고 감소에 음수 또는 0이 들어올 수 없습니다.", HttpStatus.BAD_REQUEST),
     INVALID_ACTION("지원하지 않는 기능입니다.",  HttpStatus.BAD_REQUEST),
