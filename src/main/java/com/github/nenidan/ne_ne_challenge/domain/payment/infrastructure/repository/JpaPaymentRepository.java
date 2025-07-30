@@ -2,6 +2,7 @@ package com.github.nenidan.ne_ne_challenge.domain.payment.infrastructure.reposit
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -30,4 +31,6 @@ public interface JpaPaymentRepository extends JpaRepository<Payment, Long> {
         @Param("endDate") LocalDateTime endDate,
         @Param("limit") int limit
     );
+
+    Optional<Payment> findByOrderId(String orderId);
 }

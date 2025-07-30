@@ -7,11 +7,12 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class PaymentResult {
+public class PaymentConfirmResult {
 
     private String orderId;
     private int amount;
     private String method;
     private String status;
-    private LocalDateTime processedAt;
+    private String orderName;
+    private LocalDateTime approvedAt;
 }

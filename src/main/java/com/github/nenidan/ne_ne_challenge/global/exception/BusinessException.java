@@ -9,4 +9,9 @@ public class BusinessException extends RuntimeException {
         super(errorCode.getMessage()); // 부모 클래스에 메시지 전달
         this.errorCode = errorCode;
     }
+
+    public BusinessException(ErrorCode errorCode, Throwable cause) {
+        super(errorCode.getMessage(), cause);
+        this.errorCode = errorCode;
+    }
 }
