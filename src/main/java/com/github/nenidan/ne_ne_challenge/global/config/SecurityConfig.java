@@ -51,9 +51,6 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.POST, "/api/accounts/**").permitAll()
 
-
-                        .requestMatchers("/internal/**").permitAll()
-
                         // product
                         .requestMatchers(HttpMethod.POST, "/api/products").hasRole(ADMIN.name())
                         .requestMatchers(HttpMethod.GET , "/api/products/**").permitAll()
@@ -64,7 +61,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/orders").hasRole(USER.name())
                         .requestMatchers(HttpMethod.PATCH, "/api/orders/**").hasRole(USER.name())
                         .requestMatchers(HttpMethod.GET, "/api/orders/**").hasRole(USER.name())
-
 
                         .requestMatchers("/api/**").authenticated()
 

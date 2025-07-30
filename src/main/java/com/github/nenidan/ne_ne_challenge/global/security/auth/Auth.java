@@ -1,5 +1,6 @@
 package com.github.nenidan.ne_ne_challenge.global.security.auth;
 
+import com.github.nenidan.ne_ne_challenge.domain.user.type.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -11,5 +12,5 @@ public class Auth {
 
     private final String nickname;
 
-    private final Role role;
+    private final UserRole role;
 }

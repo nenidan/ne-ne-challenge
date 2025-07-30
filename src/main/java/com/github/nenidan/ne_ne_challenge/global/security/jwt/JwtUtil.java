@@ -1,7 +1,7 @@
 package com.github.nenidan.ne_ne_challenge.global.security.jwt;
 
+import com.github.nenidan.ne_ne_challenge.domain.user.type.UserRole;
 import com.github.nenidan.ne_ne_challenge.global.security.auth.Auth;
-import com.github.nenidan.ne_ne_challenge.global.security.auth.Role;
 import com.github.nenidan.ne_ne_challenge.global.security.exception.CustomSecurityException;
 import com.github.nenidan.ne_ne_challenge.global.security.exception.SecurityErrorCode;
 import io.jsonwebtoken.Claims;
@@ -78,7 +78,7 @@ public class JwtUtil {
         return new Auth(
                 Long.parseLong(claims.getSubject()),
                 claims.get("nickname", String.class),
-                Role.of(claims.get("role", String.class))
+                UserRole.of(claims.get("role", String.class))
         );
     }
 
