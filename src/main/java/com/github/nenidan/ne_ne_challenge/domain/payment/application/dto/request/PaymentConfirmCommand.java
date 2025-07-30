@@ -1,13 +1,15 @@
 package com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@Getter
 @AllArgsConstructor
-public class ChargePointCommand {
-    private int amount;
-    private String method;
-}
+@Getter
+public class PaymentConfirmCommand {
 
+    private String paymentKey;
+
+    private String orderId;
+
+    private int amount;
+}

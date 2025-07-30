@@ -10,6 +10,6 @@ public class PaymentException extends BusinessException {
     }
 
     public PaymentException(ErrorCode errorCode, Exception e) {
-        super(errorCode);
+        super(errorCode, e);
     }
 }
