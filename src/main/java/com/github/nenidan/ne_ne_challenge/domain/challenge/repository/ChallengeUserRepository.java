@@ -31,4 +31,8 @@ public interface ChallengeUserRepository extends JpaRepository<ChallengeUser, Lo
         LIMIT :limit
         """, nativeQuery = true)
     List<User> getParticipantList(@Param("challenge_id") Long id, @Param("cursor") Long cursor, @Param("limit") int limit);
+
+    boolean existsByUserAndChallenge(User user, Challenge challenge);
+
+    long countByChallengeId(long challengeId);
 }
