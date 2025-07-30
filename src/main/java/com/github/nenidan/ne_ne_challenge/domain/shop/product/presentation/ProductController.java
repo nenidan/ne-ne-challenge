@@ -13,9 +13,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.ProductService;
-import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto.UpdateProductRequest;
-import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto.ProductResponse;
-import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto.CreateProductRequest;
+import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto.UpdateProductCommand;
+import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto.ProductResult;
+import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto.CreateProductCommand;
+import com.github.nenidan.ne_ne_challenge.domain.shop.product.presentation.dto.CreateProductRequest;
+import com.github.nenidan.ne_ne_challenge.domain.shop.product.presentation.dto.ProductResponse;
+import com.github.nenidan.ne_ne_challenge.domain.shop.product.presentation.dto.UpdateProductRequest;
+import com.github.nenidan.ne_ne_challenge.domain.shop.product.presentation.mapper.ProductPresentationMapper;
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 
@@ -36,7 +40,10 @@ public class ProductController {
     public ResponseEntity<ApiResponse<ProductResponse>> createProduct(
         @RequestBody @Valid CreateProductRequest createProductRequest
     ) {
-        ProductResponse productResponse = productService.createProduct(createProductRequest);
+        CreateProductCommand createProductCommand = ProductPresentationMapper.toCreateProductCommand(
+            createProductRequest);
+        ProductResult productResult = productService.createProduct(createProductCommand);
+        ProductResponse productResponse = ProductPresentationMapper.fromProductResult(productResult);
         return ApiResponse.success(HttpStatus.CREATED, "상품이 성공적으로 등록되었습니다.", productResponse);
     }
 
@@ -45,7 +52,10 @@ public class ProductController {
         @PathVariable Long id,
         @RequestBody UpdateProductRequest updateProductRequest
     ) {
-        ProductResponse productResponse = productService.updateProduct(id, updateProductRequest);
+        UpdateProductCommand updateProductCommand = ProductPresentationMapper.toUpdateProductCommand(id,
+            updateProductRequest);
+        ProductResult productResult = productService.updateProduct(id, updateProductCommand);
+        ProductResponse productResponse = ProductPresentationMapper.fromProductResult(productResult);
         return ApiResponse.success(HttpStatus.OK, "상품이 성공적으로 수정되었습니다.", productResponse);
     }
 
@@ -53,7 +63,8 @@ public class ProductController {
     public ResponseEntity<ApiResponse<ProductResponse>> findProduct(
         @PathVariable Long id
     ) {
-        ProductResponse productResponse = productService.findProduct(id);
+        ProductResult productResult = productService.findProduct(id);
+        ProductResponse productResponse = ProductPresentationMapper.fromProductResult(productResult);
         return ApiResponse.success(HttpStatus.OK, "상품이 성공적으로 조회되었습니다.", productResponse);
     }
 
@@ -63,7 +74,10 @@ public class ProductController {
         @RequestParam(defaultValue = "10") @Min(1) int size,
         @RequestParam(required = false) String keyword
     ) {
-        return ApiResponse.success(HttpStatus.OK, "상품이 성공적으로 조회되었습니다.", productService.findAllProducts(cursor, size, keyword));
+        CursorResponse<ProductResult, Long> products = productService.findAllProducts(cursor, size, keyword);
+        CursorResponse<ProductResponse, Long> productResponseLongCursorResponse = ProductPresentationMapper.fromCursorProductResult(
+            products);
+        return ApiResponse.success(HttpStatus.OK, "상품이 성공적으로 조회되었습니다.", productResponseLongCursorResponse);
     }
 
     @DeleteMapping("/products/{id}")

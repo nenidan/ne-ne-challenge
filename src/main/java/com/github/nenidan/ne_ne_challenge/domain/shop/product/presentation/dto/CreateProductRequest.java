@@ -1,4 +1,4 @@
-package com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto;
+package com.github.nenidan.ne_ne_challenge.domain.shop.product.presentation.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

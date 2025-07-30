@@ -5,10 +5,9 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class UpdateProductRequest {
+public class CreateProductCommand {
 
     private final String productName;
     private final String productDescription;
     private final Integer productPrice;
 }
-

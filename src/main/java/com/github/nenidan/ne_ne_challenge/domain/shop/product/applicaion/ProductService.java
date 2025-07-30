@@ -6,14 +6,14 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto.CreateProductRequest;
-import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto.ProductResponse;
-import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto.UpdateProductRequest;
+import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto.CreateProductCommand;
+import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto.ProductResult;
+import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto.UpdateProductCommand;
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.domain.Product;
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.domain.ProductRepository;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
-import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ReviewDeleteEvent;
-import com.github.nenidan.ne_ne_challenge.domain.shop.vo.StockRegisteredEvent;
+import com.github.nenidan.ne_ne_challenge.domain.shop.review.domain.event.ReviewDeleteEvent;
+import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.event.StockRegisteredEvent;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 
 import lombok.extern.slf4j.Slf4j;
@@ -33,47 +33,47 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductResponse createProduct(CreateProductRequest createProductRequest) {
+    public ProductResult createProduct(CreateProductCommand createProductCommand) {
         Product product = Product.create(
-            createProductRequest.getProductName(),
-            createProductRequest.getProductDescription(),
-            createProductRequest.getProductPrice()
+            createProductCommand.getProductName(),
+            createProductCommand.getProductDescription(),
+            createProductCommand.getProductPrice()
         );
         Product saveProduct = productRepository.save(product);
         applicationEventPublisher.publishEvent(new StockRegisteredEvent(saveProduct.getProductId()));
-        return ProductResponse.fromEntity(saveProduct);
+        return ProductResult.fromEntity(saveProduct);
     }
 
     @Transactional
-    public ProductResponse updateProduct(Long productId, UpdateProductRequest updateProductRequest) {
+    public ProductResult updateProduct(Long productId, UpdateProductCommand updateProductCommand) {
         Product product = productRepository.findById(new ProductId(productId));
-        productMapper.updateProductFromDto(updateProductRequest, product);
+        productMapper.updateProductFromDto(updateProductCommand, product);
         Product updateProduct = productRepository.update(new ProductId(productId), product);
-        return ProductResponse.fromEntity(updateProduct);
+        return ProductResult.fromEntity(updateProduct);
     }
 
     @Transactional(readOnly = true)
-    public ProductResponse findProduct(Long productId) {
+    public ProductResult findProduct(Long productId) {
         Product product = productRepository.findById(new ProductId(productId));
-        return ProductResponse.fromEntity(product);
+        return ProductResult.fromEntity(product);
     }
 
     @Transactional(readOnly = true)
-    public CursorResponse<ProductResponse, Long> findAllProducts(
+    public CursorResponse<ProductResult, Long> findAllProducts(
         Long cursor,
         int size,
         String keyword
     ) {
-        List<ProductResponse> productList = productRepository.findAllByCursor(cursor,size+1, keyword)
+        List<ProductResult> productList = productRepository.findAllByCursor(cursor,size+1, keyword)
             .stream()
-            .map(ProductResponse::fromEntity)
+            .map(ProductResult::fromEntity)
             .toList();
 
         boolean hasNext = productList.size() > size;
 
-        List<ProductResponse> content = hasNext ? productList.subList(0, size) : productList;
+        List<ProductResult> content = hasNext ? productList.subList(0, size) : productList;
 
-        Long nextCursor = hasNext ? productList.get(productList.size() - 1).getId() : null;
+        Long nextCursor = hasNext ? productList.get(productList.size() - 1).getId().getValue() : null;
 
         return new CursorResponse<>(content, nextCursor, productList.size() > size);
     }

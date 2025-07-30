@@ -1,18 +1,15 @@
-package com.github.nenidan.ne_ne_challenge.domain.shop.order.infrastructure;
+package com.github.nenidan.ne_ne_challenge.domain.shop.global;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClientResponseException;
 
 import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopException;
-import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.ProductRestClient;
-import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto.ProductResponse;
+import com.github.nenidan.ne_ne_challenge.domain.shop.product.presentation.dto.ProductResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
 
 import jakarta.annotation.PostConstruct;
