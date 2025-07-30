@@ -50,6 +50,19 @@ dependencies {
 
 	testImplementation 'org.mockito:mockito-core:5.18.0'
 
+	/*
+	Notification : QueryDLS 쓰는 이유
+	- 조건 분기가 많다.
+	- 커서 기반 처리
+	- Enum 같은 도메인 타입 필터링
+	- 문법 오류 확인이 어렵다.
+	 */
+	implementation 'com.querydsl:querydsl-jpa:5.1.0:jakarta'
+	annotationProcessor "com.querydsl:querydsl-apt:5.1.0:jakarta"
+	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+
+
 }
 
 tasks.named('test') {
