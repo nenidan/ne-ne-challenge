@@ -28,7 +28,7 @@ public class JwtUtil {
 
     private static final long TOKEN_TIME = 60 * 60 * 1000L;
 
-    @Value("IfthisgetssiolenitsabigproblemIfthelengthThistoosortytthesecurityisnotisufficientsoanerroroccurs")
+    @Value("${jwt.secret.key}")
     private String secretKey;
     private Key key;
     private static final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
