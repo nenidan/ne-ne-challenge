@@ -1,16 +1,10 @@
-package com.github.nenidan.ne_ne_challenge.notification.domain.interfaces;
+package com.github.nenidan.ne_ne_challenge.notification.domain.repository;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.github.nenidan.ne_ne_challenge.notification.domain.entity.Notification;
 
-public interface NotificationRepository{
-
-	void save(Notification notification);
-
-	Optional<Notification> findById(Long id);
-
+public interface QNotificationRepository {
 	List<Notification> findAllByUserIdAndIsReadWithType(
 		Long userId,
 		boolean isRead,

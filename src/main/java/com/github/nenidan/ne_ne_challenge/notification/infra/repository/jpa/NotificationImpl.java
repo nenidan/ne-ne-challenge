@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 import com.github.nenidan.ne_ne_challenge.notification.domain.entity.Notification;
-import com.github.nenidan.ne_ne_challenge.notification.domain.interfaces.NotificationRepository;
+import com.github.nenidan.ne_ne_challenge.notification.domain.repository.NotificationRepository;
 
 import lombok.RequiredArgsConstructor;
 

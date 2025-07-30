@@ -16,7 +16,7 @@ import com.github.nenidan.ne_ne_challenge.notification.domain.entity.Notificatio
 import com.github.nenidan.ne_ne_challenge.notification.domain.entity.NotificationType;
 import com.github.nenidan.ne_ne_challenge.notification.domain.exception.NotificationErrorCode;
 import com.github.nenidan.ne_ne_challenge.notification.domain.exception.NotificationException;
-import com.github.nenidan.ne_ne_challenge.notification.domain.interfaces.NotificationRepository;
+import com.github.nenidan.ne_ne_challenge.notification.domain.repository.NotificationRepository;
 
 import lombok.RequiredArgsConstructor;
 
