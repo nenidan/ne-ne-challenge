@@ -1,7 +1,7 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.review.domain;
 
-import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopErrorCode;
-import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopException;
+import com.github.nenidan.ne_ne_challenge.domain.shop.review.domain.exception.ReviewErrorCode;
+import com.github.nenidan.ne_ne_challenge.domain.shop.review.domain.exception.ReviewException;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ReviewId;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.UserId;
@@ -38,7 +38,7 @@ public class Review {
 
     public void updateRating(int rating) {
         if (rating < 0 || rating > 5) {
-            throw new ShopException(ShopErrorCode.REVIEW_VALUE_INVALID);
+            throw new ReviewException(ReviewErrorCode.REVIEW_VALUE_INVALID);
         }
         this.rating = rating;
     }

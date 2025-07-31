@@ -1,7 +1,7 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain;
 
-import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopErrorCode;
-import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopException;
+import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.exception.StockErrorCode;
+import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.exception.StockException;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.StockId;
 
@@ -31,7 +31,7 @@ public class Stock {
 
     public void checkDeletableOnlyIfStockEmpty() {
         if (quantity > 0) {
-            throw new ShopException(ShopErrorCode.STOCK_NOT_EMPTY);
+            throw new StockException(StockErrorCode.STOCK_NOT_EMPTY);
         }
     }
 }

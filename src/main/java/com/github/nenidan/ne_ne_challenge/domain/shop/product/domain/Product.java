@@ -1,7 +1,7 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.product.domain;
 
-import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopErrorCode;
-import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopException;
+import com.github.nenidan.ne_ne_challenge.domain.shop.product.domain.exception.ProductErrorCode;
+import com.github.nenidan.ne_ne_challenge.domain.shop.product.domain.exception.ProductException;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 
 import lombok.Getter;
@@ -35,7 +35,7 @@ public class Product {
 
     public void delete() {
         if (deleted) {
-            throw new ShopException(ShopErrorCode.ORDER_ALREADY_CANCELED);
+            throw new ProductException(ProductErrorCode.PRODUCT_ALREADY_DELETED);
         }
         this.deleted = true;
     }

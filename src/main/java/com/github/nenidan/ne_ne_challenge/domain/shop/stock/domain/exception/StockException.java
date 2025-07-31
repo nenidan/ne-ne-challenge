@@ -1,10 +1,10 @@
-package com.github.nenidan.ne_ne_challenge.domain.shop.exception;
+package com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.exception;
 
 import com.github.nenidan.ne_ne_challenge.global.exception.BusinessException;
 import com.github.nenidan.ne_ne_challenge.global.exception.ErrorCode;
 
-public class ShopException extends BusinessException {
-    public ShopException(ErrorCode errorCode) {
+public class StockException extends BusinessException {
+    public StockException(ErrorCode errorCode) {
         super(errorCode);
     }
 }

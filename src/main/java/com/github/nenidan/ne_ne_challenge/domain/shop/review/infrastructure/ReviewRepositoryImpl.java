@@ -4,10 +4,10 @@ import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Repository;
 
-import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopErrorCode;
-import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopException;
 import com.github.nenidan.ne_ne_challenge.domain.shop.review.domain.Review;
 import com.github.nenidan.ne_ne_challenge.domain.shop.review.domain.ReviewRepository;
+import com.github.nenidan.ne_ne_challenge.domain.shop.review.domain.exception.ReviewErrorCode;
+import com.github.nenidan.ne_ne_challenge.domain.shop.review.domain.exception.ReviewException;
 import com.github.nenidan.ne_ne_challenge.domain.shop.review.infrastructure.entity.ReviewEntity;
 import com.github.nenidan.ne_ne_challenge.domain.shop.review.infrastructure.mapper.ReviewMapper;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
@@ -36,14 +36,14 @@ public class ReviewRepositoryImpl implements ReviewRepository {
     @Override
     public Review findById(UserId userId, ProductId productId) {
         ReviewEntity reviewEntity = reviewJpaRepository.findByUserIdAndProductId(userId.getValue(), productId.getValue())
-            .orElseThrow(() -> new ShopException(ShopErrorCode.REVIEW_NOT_FOUND));
+            .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
         return ReviewMapper.toDomain(reviewEntity);
     }
 
     @Override
     public Review update(Review review) {
         ReviewEntity reviewEntity = reviewJpaRepository.findByUserIdAndProductId(review.getUserId().getValue(), review.getProductId().getValue())
-            .orElseThrow(() -> new ShopException(ShopErrorCode.REVIEW_NOT_FOUND));
+            .orElseThrow(() -> new ReviewException(ReviewErrorCode.REVIEW_NOT_FOUND));
         reviewEntity.update(review.getRating());
         return ReviewMapper.toDomain(reviewEntity);
     }

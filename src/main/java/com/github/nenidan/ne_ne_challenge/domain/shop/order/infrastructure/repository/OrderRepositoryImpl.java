@@ -1,13 +1,13 @@
-package com.github.nenidan.ne_ne_challenge.domain.shop.order.infrastructure;
+package com.github.nenidan.ne_ne_challenge.domain.shop.order.infrastructure.repository;
 
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
-import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopErrorCode;
-import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopException;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.Order;
-import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.OrderRepository;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.exception.OrderErrorCode;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.exception.OrderException;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.repository.OrderRepository;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.infrastructure.mapper.OrderMapper;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.OrderId;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.UserId;
@@ -32,14 +32,14 @@ public class OrderRepositoryImpl implements OrderRepository {
     @Override
     public void cancelOrder(OrderId orderId) {
         OrderEntity orderEntity = orderJpaRepository.findById(orderId.getValue())
-            .orElseThrow(() -> new ShopException(ShopErrorCode.ORDER_NOT_FOUND));
+            .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_NOT_FOUND));
         orderEntity.delete();
     }
 
     @Override
     public Order findOrder(OrderId orderId) {
         OrderEntity orderEntity = orderJpaRepository.findById(orderId.getValue())
-            .orElseThrow(() -> new ShopException(ShopErrorCode.ORDER_NOT_FOUND));
+            .orElseThrow(() -> new OrderException(OrderErrorCode.ORDER_NOT_FOUND));
         return OrderMapper.toDomain(orderEntity);
     }
 

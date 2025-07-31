@@ -1,7 +1,7 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.stock.infrastructure.entity;
 
-import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopErrorCode;
-import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopException;
+import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.exception.StockErrorCode;
+import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.exception.StockException;
 import com.github.nenidan.ne_ne_challenge.global.entity.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -45,10 +45,10 @@ public class StockEntity extends BaseEntity {
 
     public void decreaseStock(int quantity) {
         if(quantity <= 0) {
-            throw new ShopException(ShopErrorCode.INVALID_DECREASE_QUANTITY);
+            throw new StockException(StockErrorCode.INVALID_DECREASE_QUANTITY);
         }
         if(this.quantity < quantity) {
-            throw new ShopException(ShopErrorCode.OUT_OF_STOCK);
+            throw new StockException(StockErrorCode.OUT_OF_STOCK);
         }
         this.quantity -= quantity;
     }

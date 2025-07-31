@@ -1,7 +1,8 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.order.domain;
 
-import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopErrorCode;
-import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopException;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.exception.OrderErrorCode;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.exception.OrderException;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.type.OrderStatus;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.OrderDetail;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.OrderId;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.UserId;
@@ -35,7 +36,7 @@ public class Order {
 
     public void cancel() {
         if (isCanceled()) {
-            throw new ShopException(ShopErrorCode.ORDER_ALREADY_CANCELED);
+            throw new OrderException(OrderErrorCode.ORDER_ALREADY_CANCELED);
         }
         orderStatus = OrderStatus.CANCELED;
         canceled = true;
