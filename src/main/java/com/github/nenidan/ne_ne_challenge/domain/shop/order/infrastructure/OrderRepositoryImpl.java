@@ -1,0 +1,52 @@
+package com.github.nenidan.ne_ne_challenge.domain.shop.order.infrastructure;
+
+import java.util.List;
+
+import org.springframework.stereotype.Repository;
+
+import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopErrorCode;
+import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopException;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.Order;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.OrderRepository;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.OrderId;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.UserId;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.infrastructure.entity.OrderEntity;
+
+@Repository
+public class OrderRepositoryImpl implements OrderRepository {
+
+    private final OrderJpaRepository orderJpaRepository;
+
+    public OrderRepositoryImpl(OrderJpaRepository orderJpaRepository) {
+        this.orderJpaRepository = orderJpaRepository;
+    }
+
+    @Override
+    public Order createOrder(Order order) {
+        OrderEntity entity = OrderMapper.toEntity(order);
+        OrderEntity saveOrder = orderJpaRepository.save(entity);
+        return OrderMapper.toDomain(saveOrder);
+    }
+
+    @Override
+    public void cancelOrder(OrderId orderId) {
+        OrderEntity orderEntity = orderJpaRepository.findById(orderId.getValue())
+            .orElseThrow(() -> new ShopException(ShopErrorCode.ORDER_NOT_FOUND));
+        orderEntity.delete();
+    }
+
+    @Override
+    public Order findOrder(OrderId orderId) {
+        OrderEntity orderEntity = orderJpaRepository.findById(orderId.getValue())
+            .orElseThrow(() -> new ShopException(ShopErrorCode.ORDER_NOT_FOUND));
+        return OrderMapper.toDomain(orderEntity);
+    }
+
+    @Override
+    public List<Order> findAllOrders(UserId userId, Long cursor, String keyword, int size) {
+        return orderJpaRepository.findByKeyword(userId.getValue(), cursor, keyword, size)
+            .stream()
+            .map(OrderMapper::toProjection)
+            .toList();
+    }
+}

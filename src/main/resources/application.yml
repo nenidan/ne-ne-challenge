@@ -28,7 +28,10 @@ jwt:
 
 firebase:
   config:
-    path: /app/firebase/firebase-key.json
+    path: classpath:firebase/firebase-key.json
+
+external:
+  base-url: 127.0.0.1:8080
 
 ---
 spring:
