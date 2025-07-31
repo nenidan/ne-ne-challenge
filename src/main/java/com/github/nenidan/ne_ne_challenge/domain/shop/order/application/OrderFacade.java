@@ -29,7 +29,9 @@ public class OrderFacade {
     }
 
     public OrderResult createOrder (CreateOrderCommand createOrderRequest) {
+        // 유저 검증 및 유저 정보 호출
         UserResponse user = userRestClient.getUser(createOrderRequest.getUserId().getValue());
+        // 상품 검증 및 상품 정보 호출
         ProductResponse product = productRestClient.getProduct(createOrderRequest.getProductId().getValue());
 
         OrderDetail orderDetail = new OrderDetail(
@@ -51,6 +53,10 @@ public class OrderFacade {
     }
 
     public CursorResponse<OrderResult, Long> findAllOrders (FindCursorOrderCommand findCursorOrderCommand) {
+
+        // 유저 검증
+        userRestClient.getUser(findCursorOrderCommand.getUserId().getValue());
+
         return orderService.findAllOrder(
             findCursorOrderCommand.getUserId(),
             findCursorOrderCommand.getCursor(),
