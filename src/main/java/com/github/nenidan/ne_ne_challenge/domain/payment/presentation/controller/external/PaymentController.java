@@ -1,8 +1,6 @@
-package com.github.nenidan.ne_ne_challenge.domain.payment.presentation.controller.external;
+package com.github.nenidan.ne_ne_challenge.domain.payment.controller;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,16 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.nenidan.ne_ne_challenge.domain.payment.application.PaymentService;
-import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentConfirmResult;
-import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.request.PaymentConfirmRequest;
-import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.request.PaymentPrepareRequest;
-import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.response.PaymentConfirmResponse;
-import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.response.PaymentResponse;
-import com.github.nenidan.ne_ne_challenge.domain.payment.application.PaymentFacade;
-import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentResult;
-import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.response.PaymentPrepareResponse;
-import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.mapper.PaymentPresentationMapper;
+import com.github.nenidan.ne_ne_challenge.domain.payment.dto.request.ChargePointRequest;
+import com.github.nenidan.ne_ne_challenge.domain.payment.dto.response.PaymentResponse;
+import com.github.nenidan.ne_ne_challenge.domain.payment.service.PaymentService;
+import com.github.nenidan.ne_ne_challenge.domain.payment.type.PaymentMethod;
+import com.github.nenidan.ne_ne_challenge.domain.payment.type.PaymentStatus;
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 import com.github.nenidan.ne_ne_challenge.global.security.auth.Auth;

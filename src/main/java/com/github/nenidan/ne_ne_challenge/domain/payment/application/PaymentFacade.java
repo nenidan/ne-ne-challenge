@@ -5,14 +5,9 @@ import java.time.LocalDate;
 import org.springframework.stereotype.Service;
 
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.client.PointClient;
-import com.github.nenidan.ne_ne_challenge.domain.payment.application.client.TossClient;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.client.UserClient;
-import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PaymentConfirmCommand;
-import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PaymentPrepareCommand;
+import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.ChargePointCommand;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PointClientCommand;
-import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.TossClientResult;
-import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentConfirmResult;
-import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentPrepareResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.mapper.PaymentApplicationMapper;
 import com.github.nenidan.ne_ne_challenge.domain.payment.domain.model.Payment;
@@ -36,7 +31,7 @@ public class PaymentFacade {
     public CursorResponse<PaymentResult, Long> searchMyPayments(Long userId, Long cursor, int size, String method,
         String status, LocalDate startDate, LocalDate endDate) {
 
-        userClient.getUser(userId);
+        userClient.getUserById(userId);
 
         return paymentService.searchMyPayments(userId, cursor, size, method, status, startDate, endDate);
     }
@@ -87,4 +82,13 @@ public class PaymentFacade {
 
         return PaymentApplicationMapper.toPaymentConfirmResult(payment);
     }
+
+    public CursorResponse<PaymentResult, Long> searchMyPayments(Long userId, Long cursor, int size, String method,
+        String status, LocalDate startDate, LocalDate endDate) {
+
+        userClient.getUser(userId);
+
+        return paymentService.searchMyPayments(userId, cursor, size, method, status, startDate, endDate);
+    }
+
 }

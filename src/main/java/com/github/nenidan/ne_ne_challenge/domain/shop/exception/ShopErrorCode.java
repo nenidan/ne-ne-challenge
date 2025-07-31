@@ -1,26 +1,22 @@
-package com.github.nenidan.ne_ne_challenge.domain.payment.exception;
+package com.github.nenidan.ne_ne_challenge.domain.shop.exception;
+
+import org.springframework.http.HttpStatus;
 
 import com.github.nenidan.ne_ne_challenge.global.exception.ErrorCode;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 
 @RequiredArgsConstructor
 @Getter
-public enum PaymentErrorCode implements ErrorCode {
+public enum ShopErrorCode implements ErrorCode {
+    PRODUCT_NOT_FOUND("상품을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    PRODUCT_ALREADY_DELETED("이미 삭제된 상품입니다.", HttpStatus.CONFLICT),
+    ORDER_NOT_FOUND("주문 내역을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    ORDER_ALREADY_CANCELED("이미 취소된 주문입니다.", HttpStatus.CONFLICT),
+    ORDER_DETAIL_NOT_FOUND("주문 상세 내역을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 
-    // 5xx
-    USER_NOT_FOUND("유저를 찾을 수 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
-    POINT_CHARGE_FAILED("포인트 충전에 실패하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
-    CONFIRM_FAILED("토스 결제를 실패하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
-    PAYMENT_PROCESSING_FAILED("결제 처리 중 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
-
-    // 4xx
-    INVALID_PAYMENT_METHOD("유효하지 않은 결제 수단입니다.", HttpStatus.BAD_REQUEST),
-    INVALID_PAYMENT_STATUS("유효하지 않은 결제 상태입니다.", HttpStatus.BAD_REQUEST),
-    ALREADY_PROCESSED_PAYMENT("이미 처리된 결제입니다.", HttpStatus.CONFLICT),
-    AMOUNT_MISMATCH("결제 금액이 일치하지 않습니다.", HttpStatus.BAD_REQUEST),
-    PAYMENT_NOT_FOUND("결제 내역을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+    USER_NOT_FOUND("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
 
     private final String message;
     private final HttpStatus status;
