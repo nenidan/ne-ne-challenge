@@ -1,8 +1,7 @@
 package com.github.nenidan.ne_ne_challenge.global.client.point;
 
-import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PointClientCommand;
-import com.github.nenidan.ne_ne_challenge.domain.payment.exception.PaymentErrorCode;
-import com.github.nenidan.ne_ne_challenge.domain.payment.exception.PaymentException;
+import com.github.nenidan.ne_ne_challenge.global.client.point.dto.PointAmountRequest;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 import jakarta.annotation.PostConstruct;
-import org.springframework.web.client.RestClientResponseException;
 
 @Component
 public class PointClientImpl implements PointClient {
@@ -32,25 +30,48 @@ public class PointClientImpl implements PointClient {
     @Override
     public void createPointWallet(Long userId) {
         restClient.post()
-            .uri(uriBuilder -> uriBuilder.path("/internal/points/wallet")
-                .queryParam("userId", userId)
-                .build()
-            )
+            .uri("/internal/points/{userId}/wallet", userId)
             .retrieve()
             .toBodilessEntity();
     }
 
     @Override
-    public void chargePoint(PointClientCommand pointClientCommand) {
-        try {
-            restClient.post()
-                    .uri("/points/charge")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(pointClientCommand)
-                    .retrieve()
-                    .toBodilessEntity();
-        } catch (RestClientResponseException e) {
-            throw new PaymentException(PaymentErrorCode.POINT_CHARGE_FAILED);
-        }
+    public void chargePoint(Long userId, int amount, String reason) {
+
+        PointAmountRequest pointAmountRequest = new PointAmountRequest(amount, reason);
+
+        restClient.post()
+            .uri("/internal/points/{userId}/charge", userId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(pointAmountRequest)
+            .retrieve()
+            .toBodilessEntity();
     }
+
+    @Override
+    public void increasePoint(Long userId, int amount, String reason) {
+
+        PointAmountRequest pointAmountRequest = new PointAmountRequest(amount, reason);
+
+        restClient.post()
+            .uri("/internal/points/{userId}/increase", userId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(pointAmountRequest)
+            .retrieve()
+            .toBodilessEntity();
+    }
+
+    @Override
+    public void decreasePoint(Long userId, int amount, String reason) {
+
+        PointAmountRequest pointAmountRequest = new PointAmountRequest(amount, reason);
+
+        restClient.post()
+            .uri("/internal/points/{userId}/decrease", userId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(pointAmountRequest)
+            .retrieve()
+            .toBodilessEntity();
+    }
+
 }

@@ -35,6 +35,9 @@ public class PointWallet extends BaseEntity {
     }
 
     public void increase(int amount) {
+        if (amount <= 0) {
+            throw new PointException(PointErrorCode.INVALID_INCREASE_AMOUNT);
+        }
         this.balance += amount;
     }
 
@@ -42,7 +45,6 @@ public class PointWallet extends BaseEntity {
         if (this.balance < amount) {
             throw new PointException(PointErrorCode.INSUFFICIENT_BALANCE);
         }
-
         this.balance -= amount;
     }
 }

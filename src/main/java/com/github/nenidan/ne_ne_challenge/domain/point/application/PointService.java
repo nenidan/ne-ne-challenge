@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.request.PointAmountCommand;
 import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.request.PointChargeCommand;
 import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.response.PointBalanceResult;
 import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.response.PointHistoryResult;
@@ -74,20 +75,84 @@ public class PointService {
     }
 
     @Transactional
-    public void charge(PointChargeCommand command) {
+    public void charge(Long userId, PointChargeCommand command) {
 
         PointReason pointReason = PointReason.of(command.getReason());
+        if (!pointReason.isIncrease()) {
+            throw new PointException(PointErrorCode.INVALID_POINT_REASON);
+        }
 
-        PointWallet pointWallet = getPointWallet(command.getUserId());
+        PointWallet pointWallet = getPointWallet(userId);
         pointWallet.increase(command.getAmount());
         pointWalletRepository.save(pointWallet);
 
-        PointTransaction pointTransaction = PointTransaction.createChargeTransaction(pointWallet, command.getAmount(), pointReason, command.getDescription());
+        PointTransaction pointTransaction = PointTransaction.createPointTransaction(pointWallet, command.getAmount(), pointReason, pointReason.getDescription());
         pointTransactionRepository.save(pointTransaction);
     }
 
     public PointWallet getPointWallet(Long userId) {
         return pointWalletRepository.findWalletByUserId(userId)
             .orElseThrow(() -> new PointException(PointErrorCode.POINT_WALLET_NOT_FOUND));
+    }
+
+    @Transactional
+    public void increase(Long userId, PointAmountCommand pointAmountCommand) {
+        // 포인트 지갑 조회
+        PointWallet pointWallet = pointWalletRepository.findWalletByUserId(userId)
+            .orElseThrow(() -> new PointException(PointErrorCode.POINT_WALLET_NOT_FOUND));
+
+        // reason 검증
+        PointReason pointReason = PointReason.of(pointAmountCommand.getReason());
+
+        // 증가 사유 체크
+        if (!pointReason.isIncrease()) {
+            throw new PointException(PointErrorCode.INVALID_POINT_REASON);
+        }
+
+        // 포인트 증가
+        pointWallet.increase(pointAmountCommand.getAmount());
+
+        // 포인트 지갑 저장
+        pointWalletRepository.save(pointWallet);
+
+        // 포인트 트랜잭션 생성
+        PointTransaction pointTransaction = PointTransaction.createPointTransaction(
+            pointWallet,
+            pointAmountCommand.getAmount(), pointReason,
+            pointReason.getDescription()
+        );
+
+        pointTransactionRepository.save(pointTransaction);
+    }
+
+    @Transactional
+    public void decrease(Long userId, PointAmountCommand pointAmountCommand) {
+        // 포인트 지갑 조회
+        PointWallet pointWallet = pointWalletRepository.findWalletByUserId(userId)
+            .orElseThrow(() -> new PointException(PointErrorCode.POINT_WALLET_NOT_FOUND));
+
+        // reason 검증
+        PointReason pointReason = PointReason.of(pointAmountCommand.getReason());
+
+        // 감소 사유 체크
+        if (!pointReason.isDecrease()) {
+            throw new PointException(PointErrorCode.INVALID_POINT_REASON);
+        }
+
+        // 포인트 증가
+        pointWallet.decrease(pointAmountCommand.getAmount());
+
+        // 포인트 지갑 저장
+        pointWalletRepository.save(pointWallet);
+
+        // 포인트 트랜잭션 생성
+        PointTransaction pointTransaction = PointTransaction.createPointTransaction(
+            pointWallet,
+            -pointAmountCommand.getAmount(),
+            pointReason,
+            pointReason.getDescription()
+        );
+
+        pointTransactionRepository.save(pointTransaction);
     }
 }
