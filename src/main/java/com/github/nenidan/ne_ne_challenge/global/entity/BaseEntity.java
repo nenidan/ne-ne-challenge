@@ -1,6 +1,5 @@
 package com.github.nenidan.ne_ne_challenge.global.entity;
 
-
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;

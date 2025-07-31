@@ -12,7 +12,7 @@ public class Account {
     private final UserId id;
     private final String email;
     private String password;
-    private final Role role;
+    private Role role;
     private final SocialAccount socialAccount;
     private final AuditInfo auditInfo;
 
@@ -27,7 +27,26 @@ public class Account {
         );
     }
 
+    public static Account of(String email, SocialAccount socialAccount) {
+        return new Account(
+                null,
+                email,
+                null,
+                Role.USER,
+                socialAccount,
+                null
+        );
+    }
+
     public void updatePassword(String password) {
         this.password = password;
+    }
+
+    public void delete() {
+        auditInfo.delete();
+    }
+
+    public void updateRole(Role newRole) {
+        this.role = newRole;
     }
 }
