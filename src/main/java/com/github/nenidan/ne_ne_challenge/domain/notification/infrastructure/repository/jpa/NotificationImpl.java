@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import com.github.nenidan.ne_ne_challenge.domain.notification.domain.entity.Notification;
 import com.github.nenidan.ne_ne_challenge.domain.notification.domain.repository.NotificationRepository;
+import com.github.nenidan.ne_ne_challenge.domain.notification.domain.repository.QNotificationRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -14,16 +15,15 @@ import lombok.RequiredArgsConstructor;
 @Repository
 public class NotificationImpl implements NotificationRepository {
 	private final JpaNotificationRepository jpaNotificationRepository;
+	private final QNotificationRepository qNotificationRepository;
 
-	@Override
-	public List<Notification> findAllByUserIdAndIsReadWithType(Long userId, boolean isRead, String type, Long cursorId,
+	public List<Notification> searchByUserIdAndIsReadWithType(Long receiverId, boolean isRead, String type, Long cursorId,
 		int size) {
-		return jpaNotificationRepository.findAllByUserIdAndIsReadWithType(userId, isRead, type, cursorId, size);
+		return qNotificationRepository.searchByUserIdAndIsReadWithType(receiverId, isRead, type, cursorId, size);
 	}
 
-	@Override
-	public List<Notification> findAllByUserIdWithType(Long userId, String type, Long cursorId, int size) {
-		return jpaNotificationRepository.findAllByUserIdWithType(userId, type, cursorId, size);
+	public List<Notification> searchByUserIdAndType(Long receiverId, String type, Long cursorId, int size) {
+		return qNotificationRepository.searchByUserIdAndType(receiverId, type, cursorId, size);
 	}
 
 	@Override

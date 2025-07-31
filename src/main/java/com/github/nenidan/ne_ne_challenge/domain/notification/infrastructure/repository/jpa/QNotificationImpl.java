@@ -6,20 +6,20 @@ import org.springframework.stereotype.Repository;
 
 import com.github.nenidan.ne_ne_challenge.domain.notification.domain.entity.Notification;
 import com.github.nenidan.ne_ne_challenge.domain.notification.domain.entity.NotificationType;
+import com.github.nenidan.ne_ne_challenge.domain.notification.domain.entity.QNotification;
 import com.github.nenidan.ne_ne_challenge.domain.notification.domain.repository.QNotificationRepository;
-import com.github.nenidan.ne_ne_challenge.notification.domain.entity.QNotification;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 @Repository
+@RequiredArgsConstructor
 public class QNotificationImpl implements QNotificationRepository {
 	private final JPAQueryFactory jpaQueryFactory;
 
 	@Override
-	public List<Notification> findAllByUserIdAndIsReadWithType(
+	public List<Notification> searchByUserIdAndIsReadWithType(
 		Long userId,
 		boolean isRead,
 		String type,
@@ -49,7 +49,7 @@ public class QNotificationImpl implements QNotificationRepository {
 	}
 
 	@Override
-	public List<Notification> findAllByUserIdWithType(Long userId, String type, Long cursorId, int size) {
+	public List<Notification> searchByUserIdAndType(Long userId, String type, Long cursorId, int size) {
 		QNotification n = QNotification.notification;
 
 		BooleanBuilder builder = new BooleanBuilder();

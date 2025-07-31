@@ -5,15 +5,15 @@ import java.util.List;
 import com.github.nenidan.ne_ne_challenge.domain.notification.domain.entity.Notification;
 
 public interface QNotificationRepository {
-	List<Notification> findAllByUserIdAndIsReadWithType(
-		Long userId,
+	List<Notification> searchByUserIdAndIsReadWithType(
+		Long receiverId,
 		boolean isRead,
 		String type,
 		Long cursorId,
 		int size);
 
-	List<Notification> findAllByUserIdWithType(
-		Long userId,
+	List<Notification> searchByUserIdAndType(
+		Long receiverId,
 		String type,
 		Long cursorId,
 		int size);

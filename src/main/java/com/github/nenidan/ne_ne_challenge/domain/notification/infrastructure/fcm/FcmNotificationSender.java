@@ -20,7 +20,7 @@ public class FcmNotificationSender implements NotificationSender {
 
 	@Override
 	public void send(Long userId, Platform platform, String title, String content) {
-		FcmToken token = getFcmToken(userId, platform); // USER ID 가 null 일 경우는 예외처리 어떻게 한담?
+		FcmToken token = getFcmToken(userId, platform);
 
 		Notification notification = Notification.builder()
 			.setTitle(title)
@@ -41,7 +41,7 @@ public class FcmNotificationSender implements NotificationSender {
 	}
 
 	private FcmToken getFcmToken(Long userId, Platform platform) {
-		return fcmTokenRepository.findByUserIdAndPlatform(userId,platform)
-			.orElseThrow(() -> new FcmException(FcmErrorCode.NOT_FOUND));
+		return fcmTokenRepository.findByUserIdAndPlatform(userId, platform)
+			.orElseThrow(() -> new FcmException(FcmErrorCode.TOKEN_NOT_FOUND));
 	}
 }

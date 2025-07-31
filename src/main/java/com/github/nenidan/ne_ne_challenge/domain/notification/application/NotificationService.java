@@ -74,15 +74,15 @@ public class NotificationService {
 
 		switch (isRead) { // boolean 타입은 true/ false 만 있어서 메일 읽음/안읽음 처리만 됨 그래서 String 으로 받아서 전체 조회도 가능하게 설정
 			case "false" -> {
-				notifications = notificationRepository.findAllByUserIdAndIsReadWithType(
+				notifications = notificationRepository.searchByUserIdAndIsReadWithType(
 					userId, false, type.name(), cursorId, size + 1);
 			}
 			case "true" -> {
-				notifications = notificationRepository.findAllByUserIdAndIsReadWithType(
+				notifications = notificationRepository.searchByUserIdAndIsReadWithType(
 					userId, true, type.name(), cursorId, size + 1);
 			}
 			default -> {
-				notifications = notificationRepository.findAllByUserIdWithType(
+				notifications = notificationRepository.searchByUserIdAndType(
 					userId, type.name(), cursorId, size + 1);
 			}
 		}
