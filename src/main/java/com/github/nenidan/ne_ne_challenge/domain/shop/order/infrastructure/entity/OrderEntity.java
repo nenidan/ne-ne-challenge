@@ -1,6 +1,6 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.order.infrastructure.entity;
 
-import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.OrderStatus;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.type.OrderStatus;
 import com.github.nenidan.ne_ne_challenge.global.entity.BaseEntity;
 
 import jakarta.persistence.CascadeType;

@@ -1,8 +1,5 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.order.presentation.dto;
 
-
-import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.OrderDetail;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

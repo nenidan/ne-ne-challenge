@@ -1,6 +1,6 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.order.presentation.dto;
 
-import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.OrderStatus;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.type.OrderStatus;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

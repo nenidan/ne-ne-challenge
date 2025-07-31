@@ -1,4 +1,4 @@
-package com.github.nenidan.ne_ne_challenge.domain.shop.order.infrastructure;
+package com.github.nenidan.ne_ne_challenge.domain.shop.order.infrastructure.mapper;
 
 public interface OrderFlatProjection {
     Long getOrderId();

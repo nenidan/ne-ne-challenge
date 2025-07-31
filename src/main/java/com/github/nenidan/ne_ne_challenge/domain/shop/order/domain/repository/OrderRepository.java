@@ -1,7 +1,8 @@
-package com.github.nenidan.ne_ne_challenge.domain.shop.order.domain;
+package com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.repository;
 
 import java.util.List;
 
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.Order;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.OrderId;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.UserId;
 

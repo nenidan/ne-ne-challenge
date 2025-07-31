@@ -1,4 +1,4 @@
-package com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion;
+package com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.mapper;
 
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;

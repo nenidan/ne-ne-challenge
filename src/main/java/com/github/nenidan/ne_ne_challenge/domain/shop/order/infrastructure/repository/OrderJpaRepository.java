@@ -1,4 +1,4 @@
-package com.github.nenidan.ne_ne_challenge.domain.shop.order.infrastructure;
+package com.github.nenidan.ne_ne_challenge.domain.shop.order.infrastructure.repository;
 
 import java.util.List;
 
@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.infrastructure.entity.OrderEntity;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.infrastructure.mapper.OrderFlatProjection;
 
 public interface OrderJpaRepository extends JpaRepository<OrderEntity, Long> {
 
