@@ -2,12 +2,12 @@ package com.github.nenidan.ne_ne_challenge.domain.point.application;
 
 import java.time.LocalDate;
 
+import com.github.nenidan.ne_ne_challenge.global.client.user.UserClient;
+import com.github.nenidan.ne_ne_challenge.global.client.user.dto.UserResponse;
 import org.springframework.stereotype.Service;
 
-import com.github.nenidan.ne_ne_challenge.domain.point.application.client.UserClient;
 import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.response.PointBalanceResult;
 import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.response.PointHistoryResult;
-import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.response.UserIdResult;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class PointFacade {
 
     public PointBalanceResult getMyBalance(Long userId) {
 
-        UserIdResult user = userClient.getUser(userId);
+        UserResponse user = userClient.getUserById(userId);
 
         return pointService.getBalance(user.getId());
     }
@@ -31,7 +31,7 @@ public class PointFacade {
     public CursorResponse<PointHistoryResult, Long> searchMyPointHistory(Long userId, Long cursor, int size,
         String reason, LocalDate startDate, LocalDate endDate) {
 
-        UserIdResult user = userClient.getUser(userId);
+        UserResponse user = userClient.getUserById(userId);
 
         return pointService.searchMyPointHistory(user.getId(), cursor, size, reason, startDate, endDate);
     }

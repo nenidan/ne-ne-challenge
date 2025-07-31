@@ -2,10 +2,10 @@ package com.github.nenidan.ne_ne_challenge.domain.payment.application;
 
 import java.time.LocalDate;
 
+import com.github.nenidan.ne_ne_challenge.global.client.point.PointClient;
+import com.github.nenidan.ne_ne_challenge.global.client.user.UserClient;
 import org.springframework.stereotype.Service;
 
-import com.github.nenidan.ne_ne_challenge.domain.payment.application.client.PointClient;
-import com.github.nenidan.ne_ne_challenge.domain.payment.application.client.UserClient;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.ChargePointCommand;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PointClientCommand;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentResult;
@@ -27,7 +27,7 @@ public class PaymentFacade {
 
     public PaymentResult chargePoint(Long userId, ChargePointCommand command) {
 
-        userClient.getUser(userId);
+        userClient.getUserById(userId);
 
         Payment payment = paymentService.createChargePayment(userId, command);
 
@@ -50,7 +50,7 @@ public class PaymentFacade {
     public CursorResponse<PaymentResult, Long> searchMyPayments(Long userId, Long cursor, int size, String method,
         String status, LocalDate startDate, LocalDate endDate) {
 
-        userClient.getUser(userId);
+        userClient.getUserById(userId);
 
         return paymentService.searchMyPayments(userId, cursor, size, method, status, startDate, endDate);
     }

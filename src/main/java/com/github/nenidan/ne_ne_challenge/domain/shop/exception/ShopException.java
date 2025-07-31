@@ -8,3 +8,4 @@ public class ShopException extends BusinessException {
         super(errorCode);
     }
 }
+
