@@ -4,15 +4,20 @@ import java.time.LocalDate;
 
 import org.springframework.stereotype.Service;
 
-import com.github.nenidan.ne_ne_challenge.domain.payment.application.client.PointClient;
-import com.github.nenidan.ne_ne_challenge.domain.payment.application.client.UserClient;
-import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.ChargePointCommand;
+import com.github.nenidan.ne_ne_challenge.domain.payment.application.client.TossClient;
+import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PaymentConfirmCommand;
+import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PaymentPrepareCommand;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PointClientCommand;
+import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentConfirmResult;
+import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentPrepareResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentResult;
+import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.TossClientResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.mapper.PaymentApplicationMapper;
 import com.github.nenidan.ne_ne_challenge.domain.payment.domain.model.Payment;
 import com.github.nenidan.ne_ne_challenge.domain.payment.exception.PaymentErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.payment.exception.PaymentException;
+import com.github.nenidan.ne_ne_challenge.global.client.point.PointClient;
+import com.github.nenidan.ne_ne_challenge.global.client.user.UserClient;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -28,17 +33,9 @@ public class PaymentFacade {
     private final PointClient pointClient;
     private final TossClient tossClient;
 
-    public CursorResponse<PaymentResult, Long> searchMyPayments(Long userId, Long cursor, int size, String method,
-        String status, LocalDate startDate, LocalDate endDate) {
-
-        userClient.getUserById(userId);
-
-        return paymentService.searchMyPayments(userId, cursor, size, method, status, startDate, endDate);
-    }
-
     public PaymentPrepareResult createPreparePayment(Long userId, PaymentPrepareCommand command) {
 
-        userClient.getUser(userId);
+        userClient.getUserById(userId);
 
         return paymentService.createPreparePayment(userId, command);
     }
@@ -46,7 +43,7 @@ public class PaymentFacade {
     public PaymentConfirmResult confirmAndChargePoint(Long userId, PaymentConfirmCommand command) {
 
         // 유저 검증
-        userClient.getUser(userId);
+        userClient.getUserById(userId);
 
         // 결제 정보 조회 및 금액 검증
         Payment payment = paymentService.validatePaymentForConfirm(
@@ -86,7 +83,7 @@ public class PaymentFacade {
     public CursorResponse<PaymentResult, Long> searchMyPayments(Long userId, Long cursor, int size, String method,
         String status, LocalDate startDate, LocalDate endDate) {
 
-        userClient.getUser(userId);
+        userClient.getUserById(userId);
 
         return paymentService.searchMyPayments(userId, cursor, size, method, status, startDate, endDate);
     }
