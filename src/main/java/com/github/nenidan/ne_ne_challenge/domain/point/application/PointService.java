@@ -13,6 +13,7 @@ import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.request.P
 import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.response.PointBalanceResult;
 import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.response.PointHistoryResult;
 import com.github.nenidan.ne_ne_challenge.domain.point.application.mapper.PointApplicationMapper;
+import com.github.nenidan.ne_ne_challenge.domain.point.domain.repository.PointRepository;
 import com.github.nenidan.ne_ne_challenge.domain.point.domain.repository.PointTransactionRepository;
 import com.github.nenidan.ne_ne_challenge.domain.point.domain.repository.PointWalletRepository;
 import com.github.nenidan.ne_ne_challenge.domain.point.domain.type.PointReason;
@@ -31,8 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PointService {
 
-    private final PointWalletRepository pointWalletRepository;
-    private final PointTransactionRepository pointTransactionRepository;
+    private final PointRepository pointRepository;
 
     public PointBalanceResult getBalance(Long userId) {
 
@@ -49,7 +49,7 @@ public class PointService {
 
         PointWallet pointWallet = getPointWallet(userId);
 
-        List<PointHistoryResult> pointHistoryResultList = pointTransactionRepository.searchMyPointHistory(pointWallet.getId(), cursor, pointReason, start, end, size + 1)
+        List<PointHistoryResult> pointHistoryResultList = pointRepository.searchMyPointHistory(pointWallet.getId(), cursor, pointReason, start, end, size + 1)
             .stream()
             .map(PointApplicationMapper::toPointHistoryResult)
             .toList();
@@ -65,13 +65,13 @@ public class PointService {
 
     @Transactional
     public void createPointWallet(Long userId) {
-        boolean exists = pointWalletRepository.existsByUserId(userId);
+        boolean exists = pointRepository.existsByUserId(userId);
         if (exists) {
             throw new PointException(PointErrorCode.WALLET_ALREADY_EXISTS);
         }
 
         PointWallet pointWallet = PointWallet.createPointWallet(userId);
-        pointWalletRepository.save(pointWallet);
+        pointRepository.save(pointWallet);
     }
 
     @Transactional
@@ -84,21 +84,21 @@ public class PointService {
 
         PointWallet pointWallet = getPointWallet(userId);
         pointWallet.increase(command.getAmount());
-        pointWalletRepository.save(pointWallet);
+        pointRepository.save(pointWallet);
 
         PointTransaction pointTransaction = PointTransaction.createPointTransaction(pointWallet, command.getAmount(), pointReason, pointReason.getDescription());
-        pointTransactionRepository.save(pointTransaction);
+        pointRepository.save(pointTransaction);
     }
 
     public PointWallet getPointWallet(Long userId) {
-        return pointWalletRepository.findWalletByUserId(userId)
+        return pointRepository.findWalletByUserId(userId)
             .orElseThrow(() -> new PointException(PointErrorCode.POINT_WALLET_NOT_FOUND));
     }
 
     @Transactional
     public void increase(Long userId, PointAmountCommand pointAmountCommand) {
         // 포인트 지갑 조회
-        PointWallet pointWallet = pointWalletRepository.findWalletByUserId(userId)
+        PointWallet pointWallet = pointRepository.findWalletByUserId(userId)
             .orElseThrow(() -> new PointException(PointErrorCode.POINT_WALLET_NOT_FOUND));
 
         // reason 검증
@@ -113,7 +113,7 @@ public class PointService {
         pointWallet.increase(pointAmountCommand.getAmount());
 
         // 포인트 지갑 저장
-        pointWalletRepository.save(pointWallet);
+        pointRepository.save(pointWallet);
 
         // 포인트 트랜잭션 생성
         PointTransaction pointTransaction = PointTransaction.createPointTransaction(
@@ -122,13 +122,13 @@ public class PointService {
             pointReason.getDescription()
         );
 
-        pointTransactionRepository.save(pointTransaction);
+        pointRepository.save(pointTransaction);
     }
 
     @Transactional
     public void decrease(Long userId, PointAmountCommand pointAmountCommand) {
         // 포인트 지갑 조회
-        PointWallet pointWallet = pointWalletRepository.findWalletByUserId(userId)
+        PointWallet pointWallet = pointRepository.findWalletByUserId(userId)
             .orElseThrow(() -> new PointException(PointErrorCode.POINT_WALLET_NOT_FOUND));
 
         // reason 검증
@@ -143,7 +143,7 @@ public class PointService {
         pointWallet.decrease(pointAmountCommand.getAmount());
 
         // 포인트 지갑 저장
-        pointWalletRepository.save(pointWallet);
+        pointRepository.save(pointWallet);
 
         // 포인트 트랜잭션 생성
         PointTransaction pointTransaction = PointTransaction.createPointTransaction(
@@ -153,6 +153,6 @@ public class PointService {
             pointReason.getDescription()
         );
 
-        pointTransactionRepository.save(pointTransaction);
+        pointRepository.save(pointTransaction);
     }
 }
