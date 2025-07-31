@@ -20,3 +20,6 @@ server:
 jwt:
   secret:
     key: ${SECRET_KEY}
+
+external:
+  base-url: ${INTERNAL_BASE_URL}

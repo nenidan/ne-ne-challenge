@@ -1,6 +1,5 @@
 package com.github.nenidan.ne_ne_challenge.global.config;
 
-import static com.github.nenidan.ne_ne_challenge.domain.user.type.UserRole.*;
 
 import com.github.nenidan.ne_ne_challenge.global.security.handler.CustomAccessDeniedHandler;
 import com.github.nenidan.ne_ne_challenge.global.security.handler.CustomAuthenticationEntryPoint;
@@ -19,6 +18,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
+
+import static com.github.nenidan.ne_ne_challenge.global.security.auth.Role.ADMIN;
+import static com.github.nenidan.ne_ne_challenge.global.security.auth.Role.USER;
 
 @Configuration
 @EnableWebSecurity
@@ -56,6 +58,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/products/*/reviews").hasRole(USER.name())
                         .requestMatchers(HttpMethod.PATCH, "/api/products/*/reviews").hasRole(USER.name())
 
+
+                        .requestMatchers("/internal/**").permitAll()
+
                         // product
                         .requestMatchers(HttpMethod.POST, "/api/products").hasRole(ADMIN.name())
                         .requestMatchers(HttpMethod.GET , "/api/products/*").permitAll()
@@ -66,6 +71,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/orders").hasRole(USER.name())
                         .requestMatchers(HttpMethod.PATCH, "/api/orders/**").hasRole(USER.name())
                         .requestMatchers(HttpMethod.GET, "/api/orders/**").hasRole(USER.name())
+
 
                         // stock
                         .requestMatchers(HttpMethod.PATCH, "/api/stocks/**").hasRole(USER.name())

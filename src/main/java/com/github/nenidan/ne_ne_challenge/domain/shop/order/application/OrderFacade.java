@@ -1,9 +1,11 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.order.application;
 
+import com.github.nenidan.ne_ne_challenge.global.client.user.UserClient;
+import com.github.nenidan.ne_ne_challenge.global.client.user.dto.UserResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import com.github.nenidan.ne_ne_challenge.domain.shop.global.ProductRestClient;
-import com.github.nenidan.ne_ne_challenge.domain.shop.global.UserRestClient;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.CreateOrderCommand;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.FindCursorOrderCommand;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.OrderResult;
@@ -12,25 +14,19 @@ import com.github.nenidan.ne_ne_challenge.domain.shop.product.presentation.dto.P
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.OrderId;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.UserId;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
-import com.github.nenidan.ne_ne_challenge.domain.user.dto.response.UserResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 
 @Component
+@RequiredArgsConstructor
 public class OrderFacade {
 
     private final OrderService orderService;
     private final ProductRestClient productRestClient;
-    private final UserRestClient userRestClient;
-
-    public OrderFacade(OrderService orderService, ProductRestClient productRestClient, UserRestClient userRestClient) {
-        this.orderService = orderService;
-        this.productRestClient = productRestClient;
-        this.userRestClient = userRestClient;
-    }
+    private final UserClient userClient;
 
     public OrderResult createOrder (CreateOrderCommand createOrderRequest) {
         // 유저 검증 및 유저 정보 호출
-        UserResponse user = userRestClient.getUser(createOrderRequest.getUserId().getValue());
+        UserResponse user = userClient.getUserById(createOrderRequest.getUserId().getValue());
         // 상품 검증 및 상품 정보 호출
         ProductResponse product = productRestClient.getProduct(createOrderRequest.getProductId().getValue());
 
@@ -55,7 +51,7 @@ public class OrderFacade {
     public CursorResponse<OrderResult, Long> findAllOrders (FindCursorOrderCommand findCursorOrderCommand) {
 
         // 유저 검증
-        userRestClient.getUser(findCursorOrderCommand.getUserId().getValue());
+        userClient.getUserById(findCursorOrderCommand.getUserId().getValue());
 
         return orderService.findAllOrder(
             findCursorOrderCommand.getUserId(),
