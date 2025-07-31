@@ -1,12 +1,12 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.application;
 
-import com.github.nenidan.ne_ne_challenge.domain.user.application.client.point.PointClient;
 import com.github.nenidan.ne_ne_challenge.domain.user.application.dto.*;
 import com.github.nenidan.ne_ne_challenge.domain.user.application.mapper.UserMapper;
 import com.github.nenidan.ne_ne_challenge.domain.user.application.service.JwtTokenProvider;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.model.User;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.service.UserService;
 
+import com.github.nenidan.ne_ne_challenge.global.client.point.PointClient;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,7 +30,7 @@ public class UserFacade {
         User savedUser = userService.join(user);
 
         // Todo: 포인트 지갑 추가 - 병합 후 주석 해제
-//        pointClient.addPointWallet(savedUser.getId().getValue());
+        pointClient.createPointWallet(savedUser.getId().getValue());
 
         return new UserWithTokenResult(
                 UserMapper.toDto(savedUser),

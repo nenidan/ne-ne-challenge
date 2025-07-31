@@ -2,11 +2,12 @@ package com.github.nenidan.ne_ne_challenge.domain.shop.order.application;
 
 import java.util.List;
 
+import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopErrorCode;
+import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopException;
+import com.github.nenidan.ne_ne_challenge.domain.user.domain.exception.UserErrorCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopErrorCode;
-import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopException;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.OrderResponse;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.OrderedProduct;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.Order;
@@ -14,8 +15,6 @@ import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.OrderDetai
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.OrderRepository;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.OrderId;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.UserId;
-import com.github.nenidan.ne_ne_challenge.domain.user.exception.UserErrorCode;
-import com.github.nenidan.ne_ne_challenge.domain.user.exception.UserException;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 
 @Service
@@ -58,7 +57,7 @@ public class OrderService {
     @Transactional(readOnly = true)
     public CursorResponse<OrderResponse, Long> findAllOrder(UserId userId, Long cursor, int size, String keyword) {
         if(userId == null) {
-            throw new UserException(UserErrorCode.USER_NOT_FOUND);
+            throw new ShopException(ShopErrorCode.USER_NOT_FOUND);
         }
 
         List<OrderResponse> orderList = orderRepository.findAllOrders(userId, cursor, keyword, size+1)
