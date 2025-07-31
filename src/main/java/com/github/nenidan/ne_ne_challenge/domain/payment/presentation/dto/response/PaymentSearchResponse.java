@@ -1,15 +1,16 @@
-package com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response;
+package com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.response;
 
 import java.time.LocalDateTime;
 
-import com.github.nenidan.ne_ne_challenge.domain.payment.domain.type.PaymentStatus;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@AllArgsConstructor
 @Getter
-public class PaymentResult {
+@AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class PaymentSearchResponse {
 
     private Long paymentId;
 

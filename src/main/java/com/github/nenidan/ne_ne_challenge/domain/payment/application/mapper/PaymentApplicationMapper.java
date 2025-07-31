@@ -9,11 +9,14 @@ public class PaymentApplicationMapper {
 
     public static PaymentResult toPaymentResult(Payment payment) {
         return new PaymentResult(
+            payment.getId(),
             payment.getOrderId(),
             payment.getAmount(),
-            payment.getPaymentMethod(),
+            payment.getOrderName(),
             payment.getStatus().name(),
-            payment.getApprovedAt()
+            payment.getPaymentMethod(),
+            payment.getApprovedAt(),
+            payment.getFailedAt()
         );
     }
 

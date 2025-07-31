@@ -3,14 +3,16 @@ package com.github.nenidan.ne_ne_challenge.domain.payment.presentation.mapper;
 
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PaymentConfirmCommand;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PaymentPrepareCommand;
+import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PaymentSearchCommand;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentConfirmResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentPrepareResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.request.PaymentConfirmRequest;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.request.PaymentPrepareRequest;
+import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.request.PaymentSearchRequest;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.response.PaymentConfirmResponse;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.response.PaymentPrepareResponse;
-import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.response.PaymentResponse;
+import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.response.PaymentSearchResponse;
 
 public class PaymentPresentationMapper {
 
@@ -29,14 +31,27 @@ public class PaymentPresentationMapper {
         );
     }
 
+    public static PaymentSearchCommand toPaymentSearchCommand(PaymentSearchRequest request) {
+        return new PaymentSearchCommand(
+            request.getCursor(),
+            request.getSize(),
+            request.getStatus(),
+            request.getStartDate(),
+            request.getEndDate()
+        );
+    }
+
     // ============================ application -> presentation============================
-    public static PaymentResponse toPaymentResponse(PaymentResult paymentResult) {
-        return new PaymentResponse(
-            // paymentResult.getOrderId(),
+    public static PaymentSearchResponse toPaymentResponse(PaymentResult paymentResult) {
+        return new PaymentSearchResponse(
+            paymentResult.getPaymentId(),
+            paymentResult.getOrderId(),
             paymentResult.getAmount(),
-            paymentResult.getMethod(),
-            paymentResult.getStatus(),
-            paymentResult.getProcessedAt()
+            paymentResult.getOrderName(),
+            paymentResult.getPaymentStatus(),
+            paymentResult.getPaymentMethod(),
+            paymentResult.getApprovedAt(),
+            paymentResult.getFailedAt()
         );
     }
 
