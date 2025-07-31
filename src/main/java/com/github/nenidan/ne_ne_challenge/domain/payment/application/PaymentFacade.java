@@ -1,7 +1,5 @@
 package com.github.nenidan.ne_ne_challenge.domain.payment.application;
 
-import java.time.LocalDate;
-
 import org.springframework.stereotype.Service;
 
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.client.TossClient;
@@ -10,7 +8,7 @@ import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PaymentSearchCommand;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentConfirmResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentPrepareResult;
-import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentResult;
+import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentSearchResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.TossClientResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.mapper.PaymentApplicationMapper;
 import com.github.nenidan.ne_ne_challenge.domain.payment.domain.model.Payment;
@@ -80,7 +78,7 @@ public class PaymentFacade {
         return PaymentApplicationMapper.toPaymentConfirmResult(payment);
     }
 
-    public CursorResponse<PaymentResult, Long> searchMyPayments(Long userId, PaymentSearchCommand command) {
+    public CursorResponse<PaymentSearchResult, Long> searchMyPayments(Long userId, PaymentSearchCommand command) {
 
         userClient.getUserById(userId);
 

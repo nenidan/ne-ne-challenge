@@ -6,7 +6,7 @@ import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PaymentSearchCommand;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentConfirmResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentPrepareResult;
-import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentResult;
+import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentSearchResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.request.PaymentConfirmRequest;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.request.PaymentPrepareRequest;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.request.PaymentSearchRequest;
@@ -42,16 +42,16 @@ public class PaymentPresentationMapper {
     }
 
     // ============================ application -> presentation============================
-    public static PaymentSearchResponse toPaymentResponse(PaymentResult paymentResult) {
+    public static PaymentSearchResponse toPaymentResponse(PaymentSearchResult paymentSearchResult) {
         return new PaymentSearchResponse(
-            paymentResult.getPaymentId(),
-            paymentResult.getOrderId(),
-            paymentResult.getAmount(),
-            paymentResult.getOrderName(),
-            paymentResult.getPaymentStatus(),
-            paymentResult.getPaymentMethod(),
-            paymentResult.getApprovedAt(),
-            paymentResult.getFailedAt()
+            paymentSearchResult.getPaymentId(),
+            paymentSearchResult.getOrderId(),
+            paymentSearchResult.getAmount(),
+            paymentSearchResult.getOrderName(),
+            paymentSearchResult.getPaymentStatus(),
+            paymentSearchResult.getPaymentMethod(),
+            paymentSearchResult.getApprovedAt(),
+            paymentSearchResult.getFailedAt()
         );
     }
 

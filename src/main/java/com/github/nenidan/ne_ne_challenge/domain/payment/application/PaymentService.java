@@ -13,7 +13,7 @@ import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PaymentSearchCommand;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.TossClientResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentPrepareResult;
-import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentResult;
+import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentSearchResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.mapper.PaymentApplicationMapper;
 import com.github.nenidan.ne_ne_challenge.domain.payment.domain.model.Payment;
 import com.github.nenidan.ne_ne_challenge.domain.payment.domain.repository.PaymentRepository;
@@ -31,13 +31,13 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
 
-    public CursorResponse<PaymentResult, Long> searchMyPayments(Long userId, PaymentSearchCommand command) {
+    public CursorResponse<PaymentSearchResult, Long> searchMyPayments(Long userId, PaymentSearchCommand command) {
 
         LocalDateTime startDate = convertToStartDateTime(command.getStartDate());
         LocalDateTime endDate = convertToEndDateTime(command.getEndDate());
         String paymentStatus = convertToStatusString(command.getStatus());
 
-        List<PaymentResult> paymentList = paymentRepository.searchPayments(
+        List<PaymentSearchResult> paymentSearchResultList = paymentRepository.searchPayments(
             userId,
             command.getCursor(),
             paymentStatus,
@@ -49,11 +49,11 @@ public class PaymentService {
             .map(PaymentApplicationMapper::toPaymentResult)
             .toList();
 
-        boolean hasNext = paymentList.size() > command.getSize();
+        boolean hasNext = paymentSearchResultList.size() > command.getSize();
 
-        List<PaymentResult> content = hasNext ? paymentList.subList(0, command.getSize()) : paymentList;
+        List<PaymentSearchResult> content = hasNext ? paymentSearchResultList.subList(0, command.getSize()) : paymentSearchResultList;
 
-        Long nextCursor = hasNext ? paymentList.get(paymentList.size() - 1).getPaymentId() : null;
+        Long nextCursor = hasNext ? paymentSearchResultList.get(paymentSearchResultList.size() - 1).getPaymentId() : null;
 
         return new CursorResponse<>(content, nextCursor, hasNext);
     }

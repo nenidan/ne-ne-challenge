@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.PaymentFacade;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentConfirmResult;
-import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentResult;
+import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentSearchResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.request.PaymentConfirmRequest;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.request.PaymentPrepareRequest;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.request.PaymentSearchRequest;
@@ -98,7 +98,7 @@ public class PaymentController {
         @AuthenticationPrincipal Auth auth,
         @Valid PaymentSearchRequest request) {
 
-        CursorResponse<PaymentResult, Long> result = paymentFacade.searchMyPayments(
+        CursorResponse<PaymentSearchResult, Long> result = paymentFacade.searchMyPayments(
             auth.getId(), PaymentPresentationMapper.toPaymentSearchCommand(request));
 
         List<PaymentSearchResponse> paymentSearchResponseList = result.getContent().stream()

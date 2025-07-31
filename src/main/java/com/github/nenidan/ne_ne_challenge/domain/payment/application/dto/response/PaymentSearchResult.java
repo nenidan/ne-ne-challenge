@@ -2,14 +2,12 @@ package com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.respon
 
 import java.time.LocalDateTime;
 
-import com.github.nenidan.ne_ne_challenge.domain.payment.domain.type.PaymentStatus;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class PaymentResult {
+public class PaymentSearchResult {
 
     private Long paymentId;
 
