@@ -11,11 +11,11 @@ import lombok.Getter;
 @AllArgsConstructor
 public class Profile {
     private final UserId id;
-    private final AuditInfo auditInfo;
     private String nickname;
     private LocalDate birth;
     private String bio;
     private Long imageId;
+    private final AuditInfo auditInfo;
 
     public static Profile of(String nickname, LocalDate birth, String bio) {
         return new Profile(

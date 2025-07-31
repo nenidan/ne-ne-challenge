@@ -12,10 +12,10 @@ import lombok.Getter;
 public class Account {
     private final UserId id;
     private final String email;
-    private final SocialAccount socialAccount;
-    private final AuditInfo auditInfo;
     private String password;
     private Role role;
+    private final SocialAccount socialAccount;
+    private final AuditInfo auditInfo;
 
     public static Account of(String email, String password) {
         return new Account(
