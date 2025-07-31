@@ -30,6 +30,9 @@ firebase:
   config:
     path: /app/firebase/firebase-key.json
 
+external:
+  base-url: ${INTERNAL_BASE_URL}
+
 ---
 spring:
   config:
