@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.client.TossClient;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PaymentConfirmCommand;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PaymentPrepareCommand;
-import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PointClientCommand;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentConfirmResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentPrepareResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentResult;
@@ -64,11 +63,11 @@ public class PaymentFacade {
             paymentService.updatePaymentFromConfirm(payment, tossClientResult);
 
             // 포인트 충전
-            PointClientCommand PointClientCommand = PaymentApplicationMapper.toPointClientCommand(
+            pointClient.chargePoint(
                 userId,
-                command.getAmount()
+                command.getAmount(),
+                "CHARGE"
             );
-            pointClient.chargePoint(PointClientCommand);
 
         } catch (Exception e) {
 

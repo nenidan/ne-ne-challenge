@@ -1,6 +1,5 @@
 package com.github.nenidan.ne_ne_challenge.domain.payment.application.mapper;
 
-import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PointClientCommand;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentConfirmResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentPrepareResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentResult;
@@ -15,15 +14,6 @@ public class PaymentApplicationMapper {
             payment.getPaymentMethod(),
             payment.getStatus().name(),
             payment.getApprovedAt()
-        );
-    }
-
-    public static PointClientCommand toPointClientCommand(Long userId, int amount) {
-        return new PointClientCommand(
-            userId,
-            amount,
-            "CHARGE",
-            "포인트 결제"
         );
     }
 
