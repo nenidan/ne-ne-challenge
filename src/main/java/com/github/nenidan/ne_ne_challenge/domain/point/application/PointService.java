@@ -108,9 +108,6 @@ public class PointService {
 
     @Transactional
     public void increase(Long userId, PointAmountCommand pointAmountCommand) {
-        // 포인트 지갑 조회
-        PointWallet pointWallet = pointRepository.findWalletByUserId(userId)
-            .orElseThrow(() -> new PointException(PointErrorCode.POINT_WALLET_NOT_FOUND));
 
         // reason 검증
         PointReason pointReason = PointReason.of(pointAmountCommand.getReason());
@@ -119,6 +116,10 @@ public class PointService {
         if (!pointReason.isIncrease()) {
             throw new PointException(PointErrorCode.INVALID_POINT_REASON);
         }
+
+        // 포인트 지갑 조회
+        PointWallet pointWallet = pointRepository.findWalletByUserId(userId)
+            .orElseThrow(() -> new PointException(PointErrorCode.POINT_WALLET_NOT_FOUND));
 
         // 포인트 증가
         pointWallet.increase(pointAmountCommand.getAmount());
@@ -150,10 +151,39 @@ public class PointService {
             throw new PointException(PointErrorCode.INVALID_POINT_REASON);
         }
 
-        // 포인트 증가
-        pointWallet.decrease(pointAmountCommand.getAmount());
+        // 사용할 포인트 양
+        int amount = pointAmountCommand.getAmount();
 
-        // 포인트 지갑 저장
+        // 만약 포인트 지갑에 남아있는 포인트보다 amount가 크다면 예외를 터트린다.
+        if (pointWallet.getBalance() < amount) {
+            throw new PointException(PointErrorCode.INSUFFICIENT_POINT_BALANCE);
+        }
+
+        // 남아있는 돈이 0보다 크거나 취소되지 않은 Point의 리스트를 불러옴
+        List<Point> pointList = pointRepository.findUsablePointsByWalletId(pointWallet.getId());
+
+        // 그 리스트에서 하나씩 돌면서
+        for (Point point : pointList) {
+            // 그 포인트에서 사용가능한 포인트가 얼마인지
+            int availableBalance = point.getRemainingAmount();
+
+            // 만약에 사용가능한 포인트가 amount 보다 크거나 같다면 바로 for문 탈출
+            if (availableBalance >= amount) {
+                point.decrease(amount);
+                point.markUsed();
+                pointRepository.save(point);
+                break;
+            } else {
+                // 그렇지 않다면
+                point.decrease(availableBalance); // 남아있는 만큼만 차감
+                point.markUsed();
+                pointRepository.save(point);
+                amount -= availableBalance; // 차감 후 남은 금액을 다음 포인트에서 이어서 차감
+            }
+        }
+
+        // 포인트 감소 및 저장
+        pointWallet.decrease(pointAmountCommand.getAmount());
         pointRepository.save(pointWallet);
 
         // 포인트 트랜잭션 생성
