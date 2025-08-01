@@ -36,4 +36,8 @@ public class ChallengeApplicationService {
 
         return mapper.toResponse(challenge);
     }
+
+    public ChallengeResponse getChallenge(Long challengeId) {
+        return mapper.toResponse(challengeFacade.getChallenge(challengeId));
+    }
 }

@@ -10,10 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,6 +26,14 @@ public class ChallengeController {
         return ApiResponse.success(HttpStatus.CREATED,
             "챌린지를 생성했습니다.",
             challengeApplicationService.createChallenge(request, authUser.getId())
+        );
+    }
+
+    @GetMapping("/challenges/{id}")
+    public ResponseEntity<ApiResponse<ChallengeResponse>> getChallenge(@PathVariable Long id) {
+        return ApiResponse.success(HttpStatus.OK,
+            "챌린지를 조회했습니다.",
+            challengeApplicationService.getChallenge(id)
         );
     }
 }

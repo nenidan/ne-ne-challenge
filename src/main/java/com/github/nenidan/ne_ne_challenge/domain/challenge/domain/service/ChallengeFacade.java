@@ -28,4 +28,8 @@ public class ChallengeFacade {
     public Participant createParticipant(Challenge challenge, Long loginUserId, boolean isHost) {
         return participantService.createParticipant(challenge, loginUserId, isHost);
     }
+
+    public Challenge getChallenge(Long challengeId) {
+        return challengeService.getChallenge(challengeId);
+    }
 }
