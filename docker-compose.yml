@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   app:
-    image: ${secrets.DOCKERHUB_USERNAME}/my-spring-app:latest
+    image: ${DOCKERHUB_USERNAME}/my-spring-app:latest
     container_name: my-app
     ports:
       - "8080:8080"
@@ -15,21 +15,22 @@ services:
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
       SECRET_KEY: ${SECRET_KEY}
-      SPRING_REDIS_HOST: ${SPRING_REDIS_HOST} # redis
-      SPRING_REDIS_PORT: ${SPRING_REDIS_PORT} # 6397
+      SPRING_REDIS_HOST: ${SPRING_REDIS_HOST}
+      SPRING_REDIS_PORT: ${SPRING_REDIS_PORT}
     volumes:
       - /home/ubuntu/firebase-key.json:/app/firebase/firebase-key.json
+    restart: always
 
   redis:
     image: redis
     container_name: redis
     ports:
       - "6379:6379"
+    restart: always
 
   mysql:
     image: mysql:8
     container_name: mysql
-    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: mydb
@@ -37,6 +38,7 @@ services:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
+    restart: always
 
 volumes:
   mysql-data:
