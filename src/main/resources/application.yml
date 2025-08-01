@@ -18,11 +18,6 @@ spring:
         format_sql: true
         show_sql: true
 
-  data:
-    redis:
-      host: localhost
-      port: 6379
-
 server:
   error:
     include-message: always
@@ -49,6 +44,11 @@ spring:
     config:
       path: classpath:firebase/firebase-key.json
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
 ---
 spring:
   config:
@@ -68,3 +68,8 @@ spring:
   firebase:
     config:
       path: file:/app/firebase/firebase-key.json
+
+  data:
+    redis:
+      host: ${SPRING_REDIS_HOST}
+      port: ${SPRING_REDIS_PORT}
