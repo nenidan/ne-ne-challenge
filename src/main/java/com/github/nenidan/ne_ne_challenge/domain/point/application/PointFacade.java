@@ -4,6 +4,8 @@ import java.time.LocalDate;
 
 import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.request.PointAmountCommand;
 import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.request.PointChargeCommand;
+import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.request.PointRefundCommand;
+import com.github.nenidan.ne_ne_challenge.domain.point.domain.type.PointReason;
 import com.github.nenidan.ne_ne_challenge.global.client.user.UserClient;
 import com.github.nenidan.ne_ne_challenge.global.client.user.dto.UserResponse;
 import org.springframework.stereotype.Service;
@@ -62,5 +64,9 @@ public class PointFacade {
 
     public void cancelPoint(String orderId) {
         pointService.cancelPoint(orderId);
+    }
+
+    public void refundPoints(PointRefundCommand pointRefundCommand) {
+        pointService.refundPoints(pointRefundCommand);
     }
 }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.github.nenidan.ne_ne_challenge.domain.point.application.PointFacade;
 import com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.request.PointAmountRequest;
 import com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.request.PointChargeRequest;
+import com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.request.PointRefundRequest;
 import com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.response.PointBalanceResponse;
 import com.github.nenidan.ne_ne_challenge.domain.point.presentation.mapper.PointPresentationMapper;
 
@@ -71,6 +72,14 @@ public class PointInternalController {
     public ResponseEntity<Void> cancelPoint(@PathVariable String orderId) {
 
         pointFacade.cancelPoint(orderId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/points/refund")
+    public ResponseEntity<Void> refundPoints(@RequestBody PointRefundRequest request) {
+
+        pointFacade.refundPoints(PointPresentationMapper.toPointRefundCommand(request));
+
         return ResponseEntity.ok().build();
     }
 }

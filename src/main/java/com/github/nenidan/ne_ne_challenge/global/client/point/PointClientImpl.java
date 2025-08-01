@@ -1,7 +1,10 @@
 package com.github.nenidan.ne_ne_challenge.global.client.point;
 
+import java.util.List;
+
 import com.github.nenidan.ne_ne_challenge.global.client.point.dto.PointAmountRequest;
 import com.github.nenidan.ne_ne_challenge.global.client.point.dto.PointChargeRequest;
+import com.github.nenidan.ne_ne_challenge.global.client.point.dto.PointRefundRequest;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -89,6 +92,19 @@ public class PointClientImpl implements PointClient {
 
         restClient.delete()
             .uri("/internal/points/{orderId}", orderId)
+            .retrieve()
+            .toBodilessEntity();
+    }
+
+    @Override
+    public void refundPoints(List<Long> userList, int amount) {
+
+        PointRefundRequest pointRefundRequest = new PointRefundRequest(userList, amount);
+
+        restClient.post()
+            .uri("/internal/points/refund")
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(pointRefundRequest)
             .retrieve()
             .toBodilessEntity();
     }

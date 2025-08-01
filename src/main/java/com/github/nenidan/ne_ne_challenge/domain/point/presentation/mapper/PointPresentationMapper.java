@@ -2,10 +2,12 @@ package com.github.nenidan.ne_ne_challenge.domain.point.presentation.mapper;
 
 import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.request.PointAmountCommand;
 import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.request.PointChargeCommand;
+import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.request.PointRefundCommand;
 import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.response.PointBalanceResult;
 import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.response.PointHistoryResult;
 import com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.request.PointAmountRequest;
 import com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.request.PointChargeRequest;
+import com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.request.PointRefundRequest;
 import com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.response.PointBalanceResponse;
 import com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.response.PointHistoryResponse;
 
@@ -38,6 +40,13 @@ public class PointPresentationMapper {
         return new PointAmountCommand(
             request.getAmount(),
             request.getReason()
+        );
+    }
+
+    public static PointRefundCommand toPointRefundCommand(PointRefundRequest request) {
+        return new PointRefundCommand(
+            request.getUserList(),
+            request.getAmount()
         );
     }
 }

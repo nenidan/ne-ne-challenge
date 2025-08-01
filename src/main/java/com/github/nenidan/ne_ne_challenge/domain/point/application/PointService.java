@@ -10,6 +10,7 @@ import org.springframework.util.StringUtils;
 
 import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.request.PointAmountCommand;
 import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.request.PointChargeCommand;
+import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.request.PointRefundCommand;
 import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.response.PointBalanceResult;
 import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.response.PointHistoryResult;
 import com.github.nenidan.ne_ne_challenge.domain.point.application.mapper.PointApplicationMapper;
@@ -217,5 +218,23 @@ public class PointService {
             PointReason.CHARGE_CANCEL.getDescription()
         );
         pointRepository.save(pointTransaction);
+    }
+
+    public void refundPoints(PointRefundCommand pointRefundCommand) {
+        PointReason reason = PointReason.CHALLENGE_REFUND;
+
+        for (Long userId : pointRefundCommand.getUserList()) {
+            PointWallet pointWallet = getPointWallet(userId);
+            pointWallet.increase(pointRefundCommand.getAmount());
+            pointRepository.save(pointWallet);
+
+            PointTransaction pointTransaction = PointTransaction.createUsageTransaction(
+                pointWallet,
+                pointRefundCommand.getAmount(),
+                reason,
+                reason.getDescription()
+            );
+            pointRepository.save(pointTransaction);
+        }
     }
 }

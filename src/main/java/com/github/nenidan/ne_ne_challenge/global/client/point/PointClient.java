@@ -1,5 +1,6 @@
 package com.github.nenidan.ne_ne_challenge.global.client.point;
 
+import java.util.List;
 
 public interface PointClient {
 
@@ -48,5 +49,16 @@ public interface PointClient {
      */
     void decreasePoint(Long userId, int amount, String reason);
 
+    /**
+     * 포인트 결제를 취소합니다.
+     * @param orderId 결제를 진행했던 orderId
+     */
     void cancelPoint(String orderId);
+
+    /**
+     * 챌린지가 시작 전 방이 해체되었을 시, 유저들에게 포인트를 나눠줍니다.
+     * @param userList 포인트를 지급할 유저의 ID 리스트
+     * @param amount 참가비 다시 돌려주기(모두 동일한 참가비니까)
+     */
+    void refundPoints(List<Long> userList, int amount);
 }
