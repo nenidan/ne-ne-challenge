@@ -13,9 +13,8 @@ import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.request.P
 import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.response.PointBalanceResult;
 import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.response.PointHistoryResult;
 import com.github.nenidan.ne_ne_challenge.domain.point.application.mapper.PointApplicationMapper;
+import com.github.nenidan.ne_ne_challenge.domain.point.domain.Point;
 import com.github.nenidan.ne_ne_challenge.domain.point.domain.repository.PointRepository;
-import com.github.nenidan.ne_ne_challenge.domain.point.domain.repository.PointTransactionRepository;
-import com.github.nenidan.ne_ne_challenge.domain.point.domain.repository.PointWalletRepository;
 import com.github.nenidan.ne_ne_challenge.domain.point.domain.type.PointReason;
 import com.github.nenidan.ne_ne_challenge.domain.point.domain.PointTransaction;
 import com.github.nenidan.ne_ne_challenge.domain.point.domain.PointWallet;
@@ -86,7 +85,19 @@ public class PointService {
         pointWallet.increase(command.getAmount());
         pointRepository.save(pointWallet);
 
-        PointTransaction pointTransaction = PointTransaction.createPointTransaction(pointWallet, command.getAmount(), pointReason, pointReason.getDescription());
+        Point chargePoint = Point.createChargePoint(
+            pointWallet,
+            command.getAmount(),
+            command.getOrderId()
+        );
+        pointRepository.save(chargePoint);
+
+        PointTransaction pointTransaction = PointTransaction.createChargeTransaction(
+            pointWallet,
+            command.getAmount(),
+            pointReason,
+            pointReason.getDescription()
+        );
         pointRepository.save(pointTransaction);
     }
 
@@ -116,7 +127,7 @@ public class PointService {
         pointRepository.save(pointWallet);
 
         // 포인트 트랜잭션 생성
-        PointTransaction pointTransaction = PointTransaction.createPointTransaction(
+        PointTransaction pointTransaction = PointTransaction.createUsageTransaction(
             pointWallet,
             pointAmountCommand.getAmount(), pointReason,
             pointReason.getDescription()
@@ -146,12 +157,28 @@ public class PointService {
         pointRepository.save(pointWallet);
 
         // 포인트 트랜잭션 생성
-        PointTransaction pointTransaction = PointTransaction.createPointTransaction(
+        PointTransaction pointTransaction = PointTransaction.createUsageTransaction(
             pointWallet,
             -pointAmountCommand.getAmount(),
             pointReason,
             pointReason.getDescription()
         );
+
+        pointRepository.save(pointTransaction);
+    }
+
+    public PointTransaction getPointTransaction(String orderId) {
+        return pointRepository.findBySourceOrderId(orderId)
+            .orElseThrow(() -> new PointException(PointErrorCode.POINT_TRANSACTION_NOT_FOUND));
+    }
+
+    @Transactional
+    public void cancelPoint(String orderId) {
+        PointTransaction pointTransaction = getPointTransaction(orderId);
+
+        PointWallet pointWallet = pointTransaction.getPointWallet();
+        pointWallet.decrease(pointTransaction.getAmount());
+        pointRepository.save(pointWallet);
 
         pointRepository.save(pointTransaction);
     }
