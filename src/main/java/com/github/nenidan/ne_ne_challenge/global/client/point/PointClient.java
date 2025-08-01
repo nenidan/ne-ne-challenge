@@ -21,6 +21,8 @@ public interface PointClient {
      */
     void chargePoint(Long userId, int amount, String reason);
 
+    PointBalanceResponse getMyBalance(Long userId);
+
     /**
      * 시스템에서 사용자에게 포인트를 지급합니다.
      * 챌린지 보상 등으로 포인트를 적립할 때 사용됩니다.

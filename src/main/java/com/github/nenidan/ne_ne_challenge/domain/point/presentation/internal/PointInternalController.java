@@ -3,20 +3,18 @@ package com.github.nenidan.ne_ne_challenge.domain.point.presentation.internal;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.nenidan.ne_ne_challenge.domain.point.application.PointFacade;
 import com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.request.PointAmountRequest;
 import com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.request.PointChargeRequest;
-
-import com.github.nenidan.ne_ne_challenge.domain.point.application.PointService;
+import com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.response.PointBalanceResponse;
 import com.github.nenidan.ne_ne_challenge.domain.point.presentation.mapper.PointPresentationMapper;
-import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -41,6 +39,15 @@ public class PointInternalController {
         pointFacade.charge(userId, PointPresentationMapper.toPointChargeCommand(request));
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/points/{userId}")
+    public ResponseEntity<PointBalanceResponse> getMyBalance(@PathVariable Long userId) {
+
+        PointBalanceResponse pointBalanceResponse = PointPresentationMapper.toPointBalanceResponse(
+            pointFacade.getMyBalance(userId));
+
+        return ResponseEntity.ok().body(pointBalanceResponse);
     }
 
     @PostMapping("/points/{userId}/increase")
