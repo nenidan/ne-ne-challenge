@@ -6,7 +6,18 @@ import org.springframework.http.HttpStatus;
 public enum ChallengeErrorCode implements ErrorCode {
     CHALLENGE_NOT_FOUND("챌린지를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     USER_NOT_FOUND("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
-    POINT_INSUFFICIENT("포인트가 부족합니다.", HttpStatus.CONFLICT);
+    POINT_INSUFFICIENT("포인트가 부족합니다.", HttpStatus.CONFLICT),
+    NOT_HOST("권한이 없습니다", HttpStatus.FORBIDDEN),
+    NOT_MODIFIABLE("수정할 수 없는 상태입니다.", HttpStatus.CONFLICT),
+    INVALID_DATE("잘못된 시작일/종료일입니다.", HttpStatus.CONFLICT),
+    INVALID_STATUS_TRANSITION("올바르지 않은 상태 변경입니다.", HttpStatus.CONFLICT),
+    NOT_PARTICIPATING("참여 중인 챌린지가 아닙니다.", HttpStatus.FORBIDDEN),
+    ALREADY_VERIFIED("이미 오늘의 기록을 남겼습니다.", HttpStatus.BAD_REQUEST),
+    ALREADY_PARTICIPATED("같은 챌린지에 참여 이력이 있습니다.", HttpStatus.BAD_REQUEST),
+    NOT_ENOUGH_PARTICIPANTS("참가 인원이 부족합니다.", HttpStatus.CONFLICT),
+    NOT_WAITING("챌린지가 대기 중이 아닙니다.", HttpStatus.BAD_REQUEST),
+    NOT_STARTED("아직 시작하지 않은 챌린지입니다.", HttpStatus.BAD_REQUEST),
+    NOT_ONGOING("진행 중인 챌린지가 아닙니다.", HttpStatus.CONFLICT);
 
     private final String message;
     private final HttpStatus httpStatus; // Todo: 도메인에서 Http 의존성 제거 필요

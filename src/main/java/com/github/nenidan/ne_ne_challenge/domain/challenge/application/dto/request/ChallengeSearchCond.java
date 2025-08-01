@@ -1,4 +1,4 @@
-package com.github.nenidan.ne_ne_challenge.domain.challenge.domain.dto;
+package com.github.nenidan.ne_ne_challenge.domain.challenge.application.dto.request;
 
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeCategory;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus;
@@ -6,26 +6,26 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
+// Todo 빈 검증 제약 조건
 @Getter
 @Setter
-public class ChallengeInfo {
+public class ChallengeSearchCond {
+
+    private Long userId;
 
     private String name;
 
     private ChallengeStatus status;
 
-    private String description;
-
-    private int minParticipants;
-
-    private int maxParticipants;
-
-    private LocalDate startAt;
-
     private LocalDate dueAt;
 
     private ChallengeCategory category;
 
-    private int participationFee;
+    private Integer maxParticipationFee;
+
+    private LocalDateTime cursor = LocalDateTime.of(9999, 12, 31, 23, 59, 59);
+
+    private int size = 10;
 }

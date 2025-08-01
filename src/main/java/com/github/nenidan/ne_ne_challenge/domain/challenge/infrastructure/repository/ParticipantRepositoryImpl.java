@@ -5,6 +5,7 @@ import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.repository.Par
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -21,5 +22,20 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
     @Override
     public Optional<Participant> findById(Long id) {
         return jpaParticipantRepository.findById(id);
+    }
+
+    @Override
+    public Optional<Participant> findByChallengeIdAndUserId(Long challengeId, Long userId) {
+        return jpaParticipantRepository.findByChallenge_IdAndUserId(challengeId, userId);
+    }
+
+    @Override
+    public List<Participant> findbyChallengeId(Long challengeId) {
+        return jpaParticipantRepository.findByChallenge_Id(challengeId);
+    }
+
+    @Override
+    public int getParticipantCount(Long challengeId) {
+        return jpaParticipantRepository.countByChallenge_Id(challengeId);
     }
 }

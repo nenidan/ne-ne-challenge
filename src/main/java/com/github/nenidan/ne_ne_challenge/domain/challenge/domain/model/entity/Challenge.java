@@ -1,6 +1,8 @@
 package com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity;
 
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.dto.ChallengeInfo;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.exception.ChallengeErrorCode;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.exception.ChallengeException;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeCategory;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus;
 import com.github.nenidan.ne_ne_challenge.global.entity.BaseEntity;
@@ -10,6 +12,11 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDate;
+import java.time.chrono.ChronoLocalDate;
+
+import static com.github.nenidan.ne_ne_challenge.domain.challenge.domain.exception.ChallengeErrorCode.INVALID_STATUS_TRANSITION;
+import static com.github.nenidan.ne_ne_challenge.domain.challenge.domain.exception.ChallengeErrorCode.NOT_ENOUGH_PARTICIPANTS;
+import static com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus.*;
 
 @Entity
 @Getter
@@ -66,7 +73,6 @@ public class Challenge extends BaseEntity {
         this.dueAt = dueAt;
     }
 
-    // 챌린지 생성 시 포인트 추가
     public static Challenge from(ChallengeInfo info) {
         return new Challenge(info.getName(),
             info.getDescription(),
@@ -76,8 +82,102 @@ public class Challenge extends BaseEntity {
             info.getMaxParticipants(),
             info.getParticipationFee(),
             info.getParticipationFee(),
+            // 챌린지 생성 시 포인트 추가
             info.getStartAt(),
             info.getDueAt()
         );
+    }
+
+    public void updateInfo(ChallengeInfo info) {
+        updateGeneralInfo(info.getName(), info.getDescription(), info.getCategory());
+        updateDate(info.getStartAt(), info.getDueAt());
+    }
+
+    private void updateGeneralInfo(String name, String description, ChallengeCategory category) {
+        if (name != null && !name.isEmpty()) this.name = name;
+        if (description != null && !description.isEmpty()) this.description = description;
+        if (category != null) this.category = category;
+    }
+
+    private void updateDate(LocalDate startAt, LocalDate dueAt) {
+        if (startAt == null) startAt = this.startAt;
+        if (dueAt == null) dueAt = this.dueAt;
+
+        verifyStartAndEndDate(startAt, dueAt);
+
+        this.startAt = startAt;
+        this.dueAt = dueAt;
+    }
+
+    private void verifyStartAndEndDate(LocalDate startAt, LocalDate dueAt) {
+        LocalDate today = LocalDate.now();
+
+        if (startAt.isBefore(today)) {
+            throw new ChallengeException(ChallengeErrorCode.INVALID_DATE);
+        }
+
+        if (startAt.isEqual(dueAt) || startAt.isAfter(dueAt)) {
+            throw new ChallengeException(ChallengeErrorCode.INVALID_DATE);
+        }
+    }
+
+    public void updateStatusWithoutParticipantCount(ChallengeStatus newStatus) {
+        if (status == READY && newStatus == ONGOING) {
+            verifyStartAtIsBeforeToday();
+            this.status = ONGOING;
+            return;
+        }
+
+        if (status == ONGOING && newStatus == FINISHED) {
+            verifyDueAtIsBeforeToday();
+            this.status = FINISHED;
+            return;
+        }
+
+        throw new ChallengeException(INVALID_STATUS_TRANSITION);
+    }
+
+    public void increaseTotalFee() {
+        totalFee += participationFee;
+    }
+
+    private void verifyStartAtIsBeforeToday() {
+        ChronoLocalDate today = ChronoLocalDate.from(LocalDate.now());
+        if (startAt.isAfter(today)) {
+            throw new ChallengeException(INVALID_STATUS_TRANSITION);
+        }
+    }
+
+    private void verifyDueAtIsBeforeToday() {
+        ChronoLocalDate today = ChronoLocalDate.from(LocalDate.now());
+        if(dueAt.isAfter(today) || dueAt.isEqual(today)) {
+            throw new ChallengeException(INVALID_STATUS_TRANSITION);
+        }
+    }
+
+    public void ready(int participantCount) {
+        if(status != WAITING) {
+            throw new ChallengeException(INVALID_STATUS_TRANSITION);
+        }
+
+        if(participantCount < minParticipants) {
+            throw new ChallengeException(NOT_ENOUGH_PARTICIPANTS);
+        }
+
+        this.status = READY;
+    }
+
+    public void start(int participantCount) {
+        verifyStartAtIsBeforeToday();
+
+        if(status != WAITING && status != READY) {
+            throw new ChallengeException(INVALID_STATUS_TRANSITION);
+        }
+
+        if(participantCount < minParticipants) {
+            throw new ChallengeException(NOT_ENOUGH_PARTICIPANTS);
+        }
+
+        this.status = ONGOING;
     }
 }

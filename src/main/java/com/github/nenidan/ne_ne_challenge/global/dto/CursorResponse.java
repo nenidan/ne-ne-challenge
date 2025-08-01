@@ -23,16 +23,16 @@ public class CursorResponse<T, S> {
      * 기존 of에서 nextCursor와 hasNext를 알아서 넣어준다.
      * 
      * @param resultList: 커서 기준으로 정렬된 리스트, size보다 1 크게 조회한 값이어야 함
-     * @param getCursorField: 데이터 T에서 커서 필드 S를 꺼낼 방법
+     * @param getCursorFieldFunction: 데이터 T에서 커서 필드 S를 꺼낼 방법
      * @param size: 페이징 크기  
      * @return 커서 방식 페이징 결과
      * @param <T> 내용의 데이터 타입
      * @param <S> 커서의 정렬 기준이 되는 필드
      */
-    public static <T, S> CursorResponse<T, S> of(List<T> resultList, Function<T, S> getCursorField, int size) {
+    public static <T, S> CursorResponse<T, S> of(List<T> resultList, Function<T, S> getCursorFieldFunction, int size) {
         boolean hasNext = resultList.size() > size;
         List<T> content = hasNext ? resultList.subList(0, size) : resultList;
-        S nextCursor = hasNext ? getCursorField.apply(content.get(size - 1)) : null;
+        S nextCursor = hasNext ? getCursorFieldFunction.apply(resultList.get(size)) : null;
 
         return new CursorResponse<>(content, nextCursor, hasNext);
     }
