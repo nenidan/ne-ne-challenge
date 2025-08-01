@@ -29,7 +29,8 @@ public class PointPresentationMapper {
     public static PointChargeCommand toPointChargeCommand(PointChargeRequest request) {
         return new PointChargeCommand(
             request.getAmount(),
-            request.getReason()
+            request.getReason(),
+            request.getOrderId()
         );
     }
 

@@ -14,10 +14,12 @@ public enum PointReason {
     // 포인트 적립
     CHARGE("포인트 결제"),
     CHALLENGE_REWARD("챌린지 보상"),
+    PRODUCT_REFUND("상품 취소"),
 
     // 포인트 차감
-    SHOP_PURCHASE("상점 구매"),
-    CHALLENGE_ENTRY("챌린지 참가비");
+    CHARGE_CANCEL("포인트 결제 취소"),
+    CHALLENGE_ENTRY("챌린지 참가비"),
+    PRODUCT_PURCHASE("상품 구매");
 
     private final String description;
 
@@ -28,7 +30,7 @@ public enum PointReason {
 
     // 포인트 감소 사유인지 체크
     public boolean isDecrease() {
-        return this == SHOP_PURCHASE || this == CHALLENGE_ENTRY;
+        return this == PRODUCT_PURCHASE || this == CHALLENGE_ENTRY;
     }
 
     public static PointReason of(String reason) {

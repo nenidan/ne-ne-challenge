@@ -1,5 +1,6 @@
 package com.github.nenidan.ne_ne_challenge.domain.payment.application.mapper;
 
+import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentCancelResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentConfirmResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentPrepareResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentSearchResult;
@@ -36,6 +37,16 @@ public class PaymentApplicationMapper {
             payment.getPaymentKey(),
             payment.getOrderName(),
             payment.getApprovedAt()
+        );
+    }
+
+    public static PaymentCancelResult toPaymentCancelResult(Payment payment) {
+        return new PaymentCancelResult(
+            payment.getOrderId(),
+            payment.getStatus().name(),
+            payment.getAmount(),
+            payment.getCancelReason(),
+            payment.getCanceledAt()
         );
     }
 }

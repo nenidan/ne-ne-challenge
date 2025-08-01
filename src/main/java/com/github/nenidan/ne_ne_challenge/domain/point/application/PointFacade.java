@@ -59,4 +59,8 @@ public class PointFacade {
 
         pointService.decrease(userId, pointAmountCommand);
     }
+
+    public void cancelPoint(String orderId) {
+        pointService.cancelPoint(orderId);
+    }
 }

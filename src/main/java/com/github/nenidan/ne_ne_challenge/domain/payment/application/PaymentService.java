@@ -9,9 +9,12 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PaymentCancelCommand;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PaymentPrepareCommand;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PaymentSearchCommand;
-import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.TossClientResult;
+import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentCancelResult;
+import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.TossCancelResult;
+import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.TossConfirmResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentPrepareResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentSearchResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.mapper.PaymentApplicationMapper;
@@ -65,7 +68,7 @@ public class PaymentService {
     }
 
     @Transactional
-    public void updatePaymentFromConfirm(Payment payment, TossClientResult result) {
+    public void updatePaymentFromConfirm(Payment payment, TossConfirmResult result) {
 
         payment.updateConfirm(result);
         paymentRepository.save(payment);
@@ -88,6 +91,20 @@ public class PaymentService {
 
         // 보안 검증 : 클라이언트에서 전달받은 금액과 DB에 저장된 금액이 일치하는지 확인
         payment.validateAmountForConfirm(amount);
+
+        return payment;
+    }
+
+    public Payment validatePaymentForCancel(Long userId, String orderId) {
+        // payment 조회
+        Payment payment = getPaymentByOrderId(orderId);
+
+        if (!payment.getUserId().equals(userId)) {
+            throw new PaymentException(PaymentErrorCode.PAYMENT_ACCESS_DENIED);
+        }
+
+        // 취소가 가능한 결제 내역인지 확인, 만약 취소가 안된다면 예외가 터진다.
+        payment.validateCancelable();
 
         return payment;
     }
@@ -119,6 +136,17 @@ public class PaymentService {
         PaymentStatus paymentStatus = PaymentStatus.of(status);
 
         return paymentStatus.name();
+    }
+
+    @Transactional
+    public PaymentCancelResult updatePaymentCancel(Payment payment, TossCancelResult tossCancelResult,
+        PaymentCancelCommand command) {
+
+        payment.cancel(command.getCancelReason(), tossCancelResult.getCanceledAt(), tossCancelResult.getStatus());
+
+        paymentRepository.save(payment);
+
+        return PaymentApplicationMapper.toPaymentCancelResult(payment);
     }
 }
 

@@ -1,6 +1,7 @@
 package com.github.nenidan.ne_ne_challenge.global.client.point;
 
 import com.github.nenidan.ne_ne_challenge.global.client.point.dto.PointAmountRequest;
+import com.github.nenidan.ne_ne_challenge.global.client.point.dto.PointChargeRequest;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -36,14 +37,14 @@ public class PointClientImpl implements PointClient {
     }
 
     @Override
-    public void chargePoint(Long userId, int amount, String reason) {
+    public void chargePoint(Long userId, int amount, String reason, String orderId) {
 
-        PointAmountRequest pointAmountRequest = new PointAmountRequest(amount, reason);
+        PointChargeRequest pointChargeRequest = new PointChargeRequest(amount, reason, orderId);
 
         restClient.post()
             .uri("/internal/points/{userId}/charge", userId)
             .contentType(MediaType.APPLICATION_JSON)
-            .body(pointAmountRequest)
+            .body(pointChargeRequest)
             .retrieve()
             .toBodilessEntity();
     }
@@ -83,4 +84,12 @@ public class PointClientImpl implements PointClient {
             .toBodilessEntity();
     }
 
+    @Override
+    public void cancelPoint(String orderId) {
+
+        restClient.delete()
+            .uri("/internal/points/{orderId}", orderId)
+            .retrieve()
+            .toBodilessEntity();
+    }
 }

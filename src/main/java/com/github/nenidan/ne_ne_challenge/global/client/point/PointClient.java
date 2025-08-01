@@ -19,8 +19,13 @@ public interface PointClient {
      * @param amount 충전할 포인트 금액 (양수)
      * @param reason 충전 사유 (예: "CHARGE")
      */
-    void chargePoint(Long userId, int amount, String reason);
+    void chargePoint(Long userId, int amount, String reason, String orderId);
 
+    /**
+     * 사용자가 자신의 ID를 입력하여 포인트 지갑에 포인트가 얼마 있는지 확인하는 내부용 메서드입니다.
+     * @param userId 포인트를 조회할 사용자 ID
+     * @return 현재 가지고있는 포인트
+     */
     PointBalanceResponse getMyBalance(Long userId);
 
     /**
@@ -42,4 +47,6 @@ public interface PointClient {
      * @param reason 차감 사유 (예: "SHOP_PURCHASE", "CHALLENGE_ENTRY")
      */
     void decreasePoint(Long userId, int amount, String reason);
+
+    void cancelPoint(String orderId);
 }

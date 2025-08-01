@@ -130,7 +130,8 @@ public class PointService {
         // 포인트 트랜잭션 생성
         PointTransaction pointTransaction = PointTransaction.createUsageTransaction(
             pointWallet,
-            pointAmountCommand.getAmount(), pointReason,
+            pointAmountCommand.getAmount(),
+            pointReason,
             pointReason.getDescription()
         );
 
@@ -197,19 +198,24 @@ public class PointService {
         pointRepository.save(pointTransaction);
     }
 
-    public PointTransaction getPointTransaction(String orderId) {
-        return pointRepository.findBySourceOrderId(orderId)
-            .orElseThrow(() -> new PointException(PointErrorCode.POINT_TRANSACTION_NOT_FOUND));
-    }
-
     @Transactional
     public void cancelPoint(String orderId) {
-        PointTransaction pointTransaction = getPointTransaction(orderId);
 
-        PointWallet pointWallet = pointTransaction.getPointWallet();
-        pointWallet.decrease(pointTransaction.getAmount());
-        pointRepository.save(pointWallet);
+        // 포인트 조회
+        Point point = pointRepository.findBySourceOrderId(orderId)
+            .orElseThrow(() -> new PointException(PointErrorCode.POINT_NOT_FOUND));
 
+        point.cancel();
+
+        PointWallet pointWallet = point.getPointWallet();
+        pointWallet.decrease(point.getAmount());
+
+        PointTransaction pointTransaction = PointTransaction.createUsageTransaction(
+            pointWallet,
+            -point.getAmount(),
+            PointReason.CHARGE_CANCEL,
+            PointReason.CHARGE_CANCEL.getDescription()
+        );
         pointRepository.save(pointTransaction);
     }
 }

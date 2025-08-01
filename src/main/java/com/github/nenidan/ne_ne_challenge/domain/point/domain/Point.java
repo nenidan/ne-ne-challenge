@@ -65,18 +65,21 @@ public class Point extends BaseEntity {
 
     // 취소
     public void cancel() {
-        if (this.remainingAmount != this.amount) {
+        if (this.isUsed) {
             throw new PointException(PointErrorCode.CANNOT_CANCEL_USED_POINTS);
+        }
+
+        if (this.remainingAmount < this.amount) {
+            throw new PointException(PointErrorCode.CANNOT_CANCEL_USED_POINTS);
+        }
+
+        if (this.canceledAt != null) {
+            throw new PointException(PointErrorCode.ALREADY_CANCELED_TRANSACTION);
         }
         this.canceledAt = LocalDateTime.now();
     }
 
-    // 취소 가능 여부
-    public boolean isCancelable() {
-        return this.canceledAt == null && this.remainingAmount == this.amount;
-    }
-
-    public boolean isCanceled() {
-        return this.canceledAt != null;
+    public void markUsed() {
+        this.isUsed = true;
     }
 }
