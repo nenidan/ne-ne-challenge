@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 public class FirebaseConfig {
 	private final ResourceLoader resourceLoader;
 
-	@Value("${spring.firebase.config.path}")
+	@Value("${firebase.config.path}")
 	private String firebaseConfigPath;
 
 	@PostConstruct
