@@ -55,6 +55,8 @@ jobs:
             echo "SPRING_REDIS_HOST=redis" >> .env
             echo "SPRING_REDIS_PORT=6379" >> .env
 
-            docker-compose pull
-            docker-compose down
-            docker-compose up -d --remove-orphans
+            /usr/local/bin/docker-compose pull
+            /usr/local/bin/docker-compose down
+            /usr/local/bin/docker-compose up -d --remove-orphans
+      
+          
