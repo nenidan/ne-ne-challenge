@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.function.Function;
 
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class CursorResponse<T, S> {
     private List<T> content;
     private S nextCursor;
