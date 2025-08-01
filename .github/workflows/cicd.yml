@@ -69,18 +69,21 @@ jobs:
 
       # 8단계: EC2 서버에 배포
       - name: Deploy to EC2
-        # SSH를 통해 EC2에 접속해서 명령어를 실행하는 액션을 사용함.
         uses: appleboy/ssh-action@master
         with:
-          # 접속할 EC2 서버의 IP 주소. Secrets에서 값을 가져옴.
           host: ${{ secrets.EC2_HOST }}
-          # EC2 서버의 사용자 이름 (지금은 ubuntu). Secrets에서 값을 가져옴.
           username: ${{ secrets.EC2_USERNAME }}
-          # EC2 접속에 필요한 .pem 키. Secrets에서 값을 가져옴.
           key: ${{ secrets.EC2_SSH_KEY }}
-          # EC2 서버에 접속해서 아래 스크립트를 순서대로 실행시킬 거임.
           script: |
-            docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
-            cd /home/ubuntu/my-app    # 여기에 docker-compose.yml이 있다고 가정
-            docker-compose pull       # 최신 이미지 가져오기
-            docker-compose up -d      # 백그라운드 실행
+            cd /home/ubuntu/my-app
+            echo "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" > .env
+            echo "DB_URL=${{ secrets.DB_URL }}" >> .env
+            echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+            echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
+            echo "SPRING_REDIS_HOST=redis" >> .env
+            echo "SPRING_REDIS_PORT=6379" >> .env
+
+            docker-compose pull
+            docker-compose down
+            docker-compose up -d --remove-orphans
