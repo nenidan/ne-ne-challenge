@@ -2,21 +2,17 @@ package com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.respo
 
 import java.time.LocalDateTime;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@Getter
 @AllArgsConstructor
-public class PaymentResponse {
+@Getter
+public class PaymentConfirmResponse {
 
-    // private Long paymentId;
-
+    private String orderId;
     private int amount;
-
     private String method;
-
     private String status;
-
-    private LocalDateTime processedAt;
+    private String orderName;
+    private LocalDateTime approvedAt;
 }

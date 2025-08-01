@@ -5,10 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class PointClientCommand {
+public class PaymentPrepareCommand {
 
-    private Long userId;
     private int amount;
-    private String reason;
-    private String description;
 }
