@@ -81,14 +81,6 @@ jobs:
           # EC2 서버에 접속해서 아래 스크립트를 순서대로 실행시킬 거임.
           script: |
             docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/my-spring-app:latest
-            docker stop my-app || true
-            docker rm my-app || true
-            docker run -d -p 8080:8080 --name my-app \
-              -v /home/ubuntu/firebase-key.json:/app/firebase/firebase-key.json \
-              -e SPRING_PROFILES_ACTIVE=prod \
-              -e DB_URL=${{ secrets.DB_URL }} \
-              -e DB_USERNAME=${{ secrets.DB_USERNAME }} \
-              -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-              -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
-              ${{ secrets.DOCKERHUB_USERNAME }}/my-spring-app:latest
+            cd /home/ubuntu/my-app    # 여기에 docker-compose.yml이 있다고 가정
+            docker-compose pull       # 최신 이미지 가져오기
+            docker-compose up -d      # 백그라운드 실행
