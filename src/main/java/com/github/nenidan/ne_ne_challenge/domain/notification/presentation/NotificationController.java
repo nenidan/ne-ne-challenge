@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.nenidan.ne_ne_challenge.domain.notification.application.NotificationService;
 import com.github.nenidan.ne_ne_challenge.domain.notification.application.dto.request.ReadNotificationRequest;
 import com.github.nenidan.ne_ne_challenge.domain.notification.application.dto.request.SendNotificationRequest;
 import com.github.nenidan.ne_ne_challenge.domain.notification.application.dto.response.NotificationResponse;
+import com.github.nenidan.ne_ne_challenge.domain.notification.application.service.NotificationService;
 import com.github.nenidan.ne_ne_challenge.domain.notification.domain.entity.NotificationType;
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;

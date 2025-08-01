@@ -1,4 +1,4 @@
-package com.github.nenidan.ne_ne_challenge.domain.notification.application;
+package com.github.nenidan.ne_ne_challenge.domain.notification.application.service;
 
 import java.util.List;
 
@@ -11,9 +11,13 @@ import com.github.nenidan.ne_ne_challenge.domain.notification.application.dto.re
 import com.github.nenidan.ne_ne_challenge.domain.notification.application.sender.NotificationSender;
 import com.github.nenidan.ne_ne_challenge.domain.notification.domain.entity.Notification;
 import com.github.nenidan.ne_ne_challenge.domain.notification.domain.entity.NotificationType;
+import com.github.nenidan.ne_ne_challenge.domain.notification.domain.entity.log.NotificationLog;
+import com.github.nenidan.ne_ne_challenge.domain.notification.domain.entity.log.NotificationStatus;
 import com.github.nenidan.ne_ne_challenge.domain.notification.domain.exception.NotificationErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.notification.domain.exception.NotificationException;
+import com.github.nenidan.ne_ne_challenge.domain.notification.domain.repository.NotificationLogRepository;
 import com.github.nenidan.ne_ne_challenge.domain.notification.domain.repository.NotificationRepository;
+import com.github.nenidan.ne_ne_challenge.domain.notification.infrastructure.redis.RedisNotificationRepository;
 import com.github.nenidan.ne_ne_challenge.global.client.user.UserClient;
 import com.github.nenidan.ne_ne_challenge.global.client.user.dto.UserResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
@@ -25,6 +29,8 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true)
 public class NotificationService {
 	private final NotificationRepository notificationRepository;
+	private final NotificationLogRepository notificationLogRepository;
+	private final RedisNotificationRepository redisNotificationRepository;
 
 	private final NotificationSender notificationSender;
 	private final UserClient client;
@@ -46,8 +52,27 @@ public class NotificationService {
 			sender == null ? null : sender.getId()
 		);
 
-		notificationSender.send(receiver.getId(), notificationRequest.getPlatform(), notification.getTitle(), notification.getContent());
-		notificationRepository.save(notification);
+		boolean b = notificationSender.send(
+			receiver.getId(),
+			notificationRequest.getPlatform(),
+			notification.getTitle(),
+			notification.getContent()
+		);
+
+		NotificationLog notificationLog = new NotificationLog(
+			receiver.getId(),
+			notification.getTitle(),
+			notification.getContent(),
+			notificationRequest.getPlatform(),
+			b ? NotificationStatus.SUCCESS : NotificationStatus.WAITING);
+
+		notificationLogRepository.save(notificationLog); // 사용자에게 보내려 했던 알림 자체 ( 원본 기록 ) 무조건 기록
+		notificationRepository.save(notification); // 전송 성공/실패 여부, 재시도 횟수 관리 무조건 기록
+
+		if (!b) {
+			redisNotificationRepository.push(notificationLog, 5);
+		}
+
 		return null;
 	}
 

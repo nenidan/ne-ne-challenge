@@ -3,8 +3,8 @@ package com.github.nenidan.ne_ne_challenge.global.listener;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import com.github.nenidan.ne_ne_challenge.domain.notification.application.NotificationService;
 import com.github.nenidan.ne_ne_challenge.domain.notification.application.dto.request.SendNotificationRequest;
+import com.github.nenidan.ne_ne_challenge.domain.notification.application.service.NotificationService;
 import com.github.nenidan.ne_ne_challenge.domain.notification.domain.entity.NotificationType;
 import com.github.nenidan.ne_ne_challenge.domain.notification.infrastructure.fcm.Platform;
 import com.github.nenidan.ne_ne_challenge.global.client.user.UserClient;

@@ -18,6 +18,11 @@ spring:
         format_sql: true
         show_sql: true
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
 server:
   error:
     include-message: always
@@ -31,7 +36,7 @@ firebase:
     path: classpath:firebase/firebase-key.json
 
 external:
-  base-url: 127.0.0.1:8080
+  base-url: http://127.0.0.1:8080
 
 ---
 spring:
