@@ -19,7 +19,7 @@ public class FcmNotificationSender implements NotificationSender {
 	private final FcmTokenRepository fcmTokenRepository;
 
 	@Override
-	public void send(Long userId, Platform platform, String title, String content) {
+	public boolean send(Long userId, Platform platform, String title, String content) {
 		FcmToken token = getFcmToken(userId, platform);
 
 		Notification notification = Notification.builder()
@@ -34,9 +34,10 @@ public class FcmNotificationSender implements NotificationSender {
 		try {
 			String response = FirebaseMessaging.getInstance().send(message);
 			log.info("FCM 전송 성공 - userId={}, token={}, response={}", userId, token, response);
+			return true;
 		} catch (FirebaseMessagingException e) {
 			log.error("FCM 전송 실패 - userId={}, token={}", userId, token, e);
-			throw new FcmException(FcmErrorCode.INTERNAL_SERVER_ERROR);
+			return false;
 		}
 	}
 

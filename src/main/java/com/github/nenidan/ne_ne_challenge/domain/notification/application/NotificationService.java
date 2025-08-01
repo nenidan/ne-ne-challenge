@@ -11,8 +11,11 @@ import com.github.nenidan.ne_ne_challenge.domain.notification.application.dto.re
 import com.github.nenidan.ne_ne_challenge.domain.notification.application.sender.NotificationSender;
 import com.github.nenidan.ne_ne_challenge.domain.notification.domain.entity.Notification;
 import com.github.nenidan.ne_ne_challenge.domain.notification.domain.entity.NotificationType;
+import com.github.nenidan.ne_ne_challenge.domain.notification.domain.entity.log.NotificationLog;
+import com.github.nenidan.ne_ne_challenge.domain.notification.domain.entity.log.NotificationStatus;
 import com.github.nenidan.ne_ne_challenge.domain.notification.domain.exception.NotificationErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.notification.domain.exception.NotificationException;
+import com.github.nenidan.ne_ne_challenge.domain.notification.domain.repository.NotificationLogRepository;
 import com.github.nenidan.ne_ne_challenge.domain.notification.domain.repository.NotificationRepository;
 import com.github.nenidan.ne_ne_challenge.global.client.user.UserClient;
 import com.github.nenidan.ne_ne_challenge.global.client.user.dto.UserResponse;
@@ -25,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true)
 public class NotificationService {
 	private final NotificationRepository notificationRepository;
+	private final NotificationLogRepository notificationLogRepository;
 
 	private final NotificationSender notificationSender;
 	private final UserClient client;
@@ -46,8 +50,21 @@ public class NotificationService {
 			sender == null ? null : sender.getId()
 		);
 
-		notificationSender.send(receiver.getId(), notificationRequest.getPlatform(), notification.getTitle(), notification.getContent());
-		notificationRepository.save(notification);
+		boolean b = notificationSender.send(
+			receiver.getId(),
+			notificationRequest.getPlatform(),
+			notification.getTitle(),
+			notification.getContent()
+		);
+
+		NotificationLog notificationLog = new NotificationLog(
+			receiver.getId(),
+			notification.getTitle(),
+			notification.getContent(),
+			notificationRequest.getPlatform(),
+			b ? NotificationStatus.SUCCESS : NotificationStatus.WAITING);
+		notificationLogRepository.save(notificationLog);
+		notificationRepository.save(notification); // 실패한 알림도 저장을 해야한다. <- 디버깅, 이력, 등등 용이하게 사용됨.
 		return null;
 	}
 
