@@ -49,6 +49,15 @@ public class PointClientImpl implements PointClient {
     }
 
     @Override
+    public PointBalanceResponse getMyBalance(Long userId) {
+
+        return restClient.get()
+            .uri("/internal/points/{userId}", userId)
+            .retrieve()
+            .body(PointBalanceResponse.class);
+    }
+
+    @Override
     public void increasePoint(Long userId, int amount, String reason) {
 
         PointAmountRequest pointAmountRequest = new PointAmountRequest(amount, reason);
