@@ -31,10 +31,6 @@ jwt:
   secret:
     key: ${SECRET_KEY}
 
-firebase:
-  config:
-    path: classpath:firebase/firebase-key.json
-
 external:
   base-url: http://127.0.0.1:8080
 
@@ -48,6 +44,10 @@ spring:
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+
+  firebase:
+    config:
+      path: classpath:firebase/firebase-key.json
 
 ---
 spring:
@@ -64,3 +64,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
+
+  firebase:
+    config:
+      path: /app/firebase/firebase-key.json
