@@ -67,4 +67,4 @@ spring:
 
   firebase:
     config:
-      path: /app/firebase/firebase-key.json
+      path: file:/app/firebase/firebase-key.json
