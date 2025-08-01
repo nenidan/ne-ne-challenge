@@ -1,12 +1,12 @@
-package com.github.nenidan.ne_ne_challenge.domain.shop.stock.application;
+package com.github.nenidan.ne_ne_challenge.domain.shop.stock.application.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.github.nenidan.ne_ne_challenge.domain.shop.stock.application.dto.AddStockCommand;
 import com.github.nenidan.ne_ne_challenge.domain.shop.stock.application.dto.AddStockResult;
-import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.Stock;
-import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.StockRepository;
+import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.model.Stock;
+import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.repository.StockRepository;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 
 import lombok.RequiredArgsConstructor;
@@ -36,8 +36,10 @@ public class StockService {
      * @author kimyongjun0129
      */
     @Transactional
-    public AddStockResult increaseStock(AddStockCommand addStockCommand) {
-        Stock stock = stockRepository.increase(addStockCommand.getProductId(), addStockCommand.getQuantity());
+    public AddStockResult inBoundStock(AddStockCommand addStockCommand) {
+        Stock stock = stockRepository.findById(addStockCommand.getProductId());
+        stock.inbound(addStockCommand.getQuantity());
+        stockRepository.save(stock);
         return AddStockResult.from(stock);
     }
 
@@ -49,7 +51,9 @@ public class StockService {
      */
     @Transactional
     public void decreaseStock(AddStockCommand addStockCommand) {
-        stockRepository.decrease(addStockCommand.getProductId(), addStockCommand.getQuantity());
+        Stock stock = stockRepository.findById(addStockCommand.getProductId());
+        stock.decreaseQuantity(addStockCommand.getQuantity());
+        stockRepository.save(stock);
     }
 
     /**
@@ -62,7 +66,7 @@ public class StockService {
     @Transactional(readOnly = true)
     public AddStockResult getStock(Long productId) {
         Stock stock = stockRepository.findById(new ProductId(productId));
-        return  AddStockResult.from(stock);
+        return AddStockResult.from(stock);
     }
 
     /**
@@ -77,6 +81,23 @@ public class StockService {
     public void deleteStock(Long productId) {
         Stock stock = stockRepository.findById(new ProductId(productId));
         stock.checkDeletableOnlyIfStockEmpty();
-        stockRepository.delete(new ProductId(productId));
+        stock.delete();
+        stockRepository.save(stock);
+    }
+
+    /**
+     * 주문 취소 시, 재고를 복구합니다.
+     * <p>
+     * 복구하기 전, 복구 수량이 0이하인지 확인합니다.
+     *
+     * @param productId 복구할 재고 상품 ID
+     * @param quantity 복구 수량
+     * @author kimyongjun0129
+     */
+    @Transactional
+    public void restoreStock(Long productId, Integer quantity) {
+        Stock stock = stockRepository.findById(new ProductId(productId));
+        stock.restoreQuantity(quantity);
+        stockRepository.save(stock);
     }
 }
