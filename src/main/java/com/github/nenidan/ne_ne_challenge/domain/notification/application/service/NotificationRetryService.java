@@ -1,4 +1,4 @@
-package com.github.nenidan.ne_ne_challenge.domain.notification.application;
+package com.github.nenidan.ne_ne_challenge.domain.notification.application.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
