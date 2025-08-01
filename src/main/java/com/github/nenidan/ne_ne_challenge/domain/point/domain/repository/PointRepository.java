@@ -8,7 +8,7 @@ import com.github.nenidan.ne_ne_challenge.domain.point.domain.PointTransaction;
 import com.github.nenidan.ne_ne_challenge.domain.point.domain.PointWallet;
 import com.github.nenidan.ne_ne_challenge.domain.point.domain.type.PointReason;
 
-public interface PointTransactionRepository {
+public interface PointRepository {
 
     PointTransaction save(PointTransaction pointTransaction);
 
@@ -26,5 +26,4 @@ public interface PointTransactionRepository {
     PointWallet save(PointWallet pointWallet);
 
     Optional<PointWallet> findWalletByUserId(Long userId);
-
 }
