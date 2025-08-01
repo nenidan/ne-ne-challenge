@@ -1,6 +1,6 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.review.infrastructure.mapper;
 
-import com.github.nenidan.ne_ne_challenge.domain.shop.review.domain.Review;
+import com.github.nenidan.ne_ne_challenge.domain.shop.review.domain.model.Review;
 import com.github.nenidan.ne_ne_challenge.domain.shop.review.infrastructure.entity.ReviewEntity;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ReviewId;
@@ -19,6 +19,7 @@ public class ReviewMapper {
 
     public static ReviewEntity toEntity (Review review){
         return new ReviewEntity(
+            review.getReviewId().getValue(),
             review.getProductId().getValue(),
             review.getUserId().getValue(),
             review.getRating()

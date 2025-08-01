@@ -10,5 +10,5 @@ import lombok.RequiredArgsConstructor;
 public class StockUpdateEvent {
 
     private final ProductId productId;
-    private final int quantity;
+    private final Integer quantity;
 }

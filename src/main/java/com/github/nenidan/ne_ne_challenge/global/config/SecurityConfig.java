@@ -56,7 +56,7 @@ public class SecurityConfig {
 
                         // review
                         .requestMatchers(HttpMethod.POST, "/api/products/*/reviews").hasRole(USER.name())
-                        .requestMatchers(HttpMethod.PATCH, "/api/products/*/reviews").hasRole(USER.name())
+                        .requestMatchers(HttpMethod.PATCH, "/api/products/*/reviews").permitAll()
 
 
                         .requestMatchers("/internal/**").permitAll()
@@ -64,6 +64,7 @@ public class SecurityConfig {
                         // product
                         .requestMatchers(HttpMethod.POST, "/api/products").hasRole(ADMIN.name())
                         .requestMatchers(HttpMethod.GET , "/api/products/*").permitAll()
+                        .requestMatchers(HttpMethod.GET , "/api/products").permitAll()
                         .requestMatchers(HttpMethod.PATCH, "/api/products/*").hasRole(ADMIN.name())
                         .requestMatchers(HttpMethod.DELETE, "/api/products/*").hasRole(ADMIN.name())
 
@@ -74,7 +75,7 @@ public class SecurityConfig {
 
 
                         // stock
-                        .requestMatchers(HttpMethod.PATCH, "/api/stocks/**").hasRole(USER.name())
+                        .requestMatchers(HttpMethod.PATCH, "/api/stocks/**").hasRole(ADMIN.name())
                         .requestMatchers(HttpMethod.GET, "/api/stocks/**").permitAll()
 
                         .requestMatchers("/api/**").authenticated()

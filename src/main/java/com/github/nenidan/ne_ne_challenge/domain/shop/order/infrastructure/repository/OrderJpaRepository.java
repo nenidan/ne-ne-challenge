@@ -1,6 +1,7 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.order.infrastructure.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,6 +16,8 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, Long> {
         " o.id AS order_id, "+
         " o.user_id," +
         " o.status," +
+        " o.deleted_at, " +
+        " od.id AS order_detail_id, " +
         " od.product_id, " +
         " od.product_name, " +
         " od.product_description, " +
@@ -34,4 +37,6 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, Long> {
         @Param("keyword") String keyword,
         @Param("limit") int limit
     );
+
+    Optional<OrderEntity> findByUserIdAndId(Long userId, Long id);
 }

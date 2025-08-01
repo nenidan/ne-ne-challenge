@@ -31,16 +31,13 @@ public class ReviewEntity extends BaseEntity {
     @Max(value = 5, message = "점수는 5 이하여야 합니다.")
     private int rating;
 
-    public ReviewEntity(Long productId, Long userId, int rating) {
+    public ReviewEntity(Long id,Long productId, Long userId, int rating) {
+        this.id = id;
         this.productId = productId;
         this.userId = userId;
         this.rating = rating;
     }
 
     public ReviewEntity() {
-    }
-
-    public void update(int rating) {
-        this.rating = rating;
     }
 }

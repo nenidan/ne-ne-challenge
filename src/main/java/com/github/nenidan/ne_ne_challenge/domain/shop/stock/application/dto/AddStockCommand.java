@@ -11,4 +11,8 @@ public class AddStockCommand {
 
     private final ProductId productId;
     private final int quantity;
+
+    public static AddStockCommand from(Long productId, int quantity) {
+        return new AddStockCommand(new ProductId(productId), quantity);
+    }
 }

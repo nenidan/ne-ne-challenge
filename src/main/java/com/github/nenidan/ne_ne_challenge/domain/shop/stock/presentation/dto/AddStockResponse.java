@@ -1,6 +1,6 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.stock.presentation.dto;
 
-import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.Stock;
+import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.model.Stock;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

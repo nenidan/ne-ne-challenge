@@ -1,6 +1,6 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.review.applicaion.dto;
 
-import com.github.nenidan.ne_ne_challenge.domain.shop.review.domain.Review;
+import com.github.nenidan.ne_ne_challenge.domain.shop.review.domain.model.Review;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ReviewId;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.UserId;

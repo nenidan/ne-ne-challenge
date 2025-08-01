@@ -19,6 +19,6 @@ public class ReviewEventHandler {
 
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void deleteAllReview(ReviewDeleteEvent reviewDeleteEvent) {
-        reviewFacade.deleteAllReviewBy(reviewDeleteEvent.getProductId().getValue());
+        reviewFacade.deleteAllReviewBy(reviewDeleteEvent.getProductId());
     }
 }

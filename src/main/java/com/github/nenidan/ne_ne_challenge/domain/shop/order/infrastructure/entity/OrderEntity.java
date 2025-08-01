@@ -1,5 +1,7 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.order.infrastructure.entity;
 
+import java.time.LocalDateTime;
+
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.type.OrderStatus;
 import com.github.nenidan.ne_ne_challenge.global.entity.BaseEntity;
 
@@ -30,7 +32,7 @@ public class OrderEntity extends BaseEntity {
 
     private Long userId;
 
-    @OneToOne(mappedBy = "orderEntity", cascade = CascadeType.PERSIST)
+    @OneToOne(mappedBy = "orderEntity", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "order_detail_id")
     private OrderDetailEntity orderDetailEntity;
 
@@ -38,21 +40,16 @@ public class OrderEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private OrderStatus status = OrderStatus.CONFIRM;
 
-    public OrderEntity(Long userId, OrderDetailEntity orderDetailEntity) {
+    public OrderEntity(Long id, Long userId, OrderDetailEntity orderDetailEntity, OrderStatus status, LocalDateTime deletedAt) {
+        this.id = id;
         this.userId = userId;
         setOrderDetailEntity(orderDetailEntity);
+        this.status = status;
+        this.deletedAt = deletedAt;
     }
 
     public void setOrderDetailEntity(OrderDetailEntity orderDetailEntity) {
         this.orderDetailEntity = orderDetailEntity;
         orderDetailEntity.setOrderEntity(this);
-    }
-
-    @Override
-    public void delete() {
-        setStatus(OrderStatus.CANCELED);
-
-        super.delete();
-        orderDetailEntity.delete();
     }
 }
