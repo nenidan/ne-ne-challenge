@@ -17,6 +17,7 @@ import com.github.nenidan.ne_ne_challenge.domain.notification.domain.exception.N
 import com.github.nenidan.ne_ne_challenge.domain.notification.domain.exception.NotificationException;
 import com.github.nenidan.ne_ne_challenge.domain.notification.domain.repository.NotificationLogRepository;
 import com.github.nenidan.ne_ne_challenge.domain.notification.domain.repository.NotificationRepository;
+import com.github.nenidan.ne_ne_challenge.domain.notification.infrastructure.redis.RedisNotificationRepository;
 import com.github.nenidan.ne_ne_challenge.global.client.user.UserClient;
 import com.github.nenidan.ne_ne_challenge.global.client.user.dto.UserResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
@@ -29,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 public class NotificationService {
 	private final NotificationRepository notificationRepository;
 	private final NotificationLogRepository notificationLogRepository;
+	private final RedisNotificationRepository redisNotificationRepository;
 
 	private final NotificationSender notificationSender;
 	private final UserClient client;
@@ -63,8 +65,14 @@ public class NotificationService {
 			notification.getContent(),
 			notificationRequest.getPlatform(),
 			b ? NotificationStatus.SUCCESS : NotificationStatus.WAITING);
-		notificationLogRepository.save(notificationLog);
-		notificationRepository.save(notification); // 실패한 알림도 저장을 해야한다. <- 디버깅, 이력, 등등 용이하게 사용됨.
+
+		notificationLogRepository.save(notificationLog); // 사용자에게 보내려 했던 알림 자체 ( 원본 기록 ) 무조건 기록
+		notificationRepository.save(notification); // 전송 성공/실패 여부, 재시도 횟수 관리 무조건 기록
+
+		if (!b) {
+			redisNotificationRepository.push(notificationLog, 5);
+		}
+
 		return null;
 	}
 
