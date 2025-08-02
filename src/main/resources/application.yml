@@ -20,3 +20,14 @@ server:
 jwt:
   secret:
     key: ${SECRET_KEY}
+
+toss:
+  payments:
+    secret-key: ${TOSS_SECRET_KEY}
+    client-key: ${TOSS_CLIENT_KEY}
+    success-url: ${TOSS_SUCCESS_URL}
+    fail-url: ${TOSS_FAIL_URL}
+    base-url: ${TOSS_BASE_URL}
+
+external:
+  base-url: ${INTERNAL_BASE_URL}
