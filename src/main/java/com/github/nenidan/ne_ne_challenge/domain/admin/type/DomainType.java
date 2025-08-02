@@ -1,5 +1,5 @@
 package com.github.nenidan.ne_ne_challenge.domain.admin.type;
 
-public enum LogType {
+public enum DomainType {
     CHALLENGE, PAYMENT, POINT, USER
 }

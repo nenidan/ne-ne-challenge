@@ -7,9 +7,9 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public enum LogErrorCode implements ErrorCode {
+public enum DashboardErrorCode implements ErrorCode {
 
-    INVALID_LOG_TYPE("유효하지 않는 로그타입입니다.", HttpStatus.BAD_REQUEST),
+    INVALID_LOG_TYPE("유효하지 않는 도메인 타입입니다.", HttpStatus.BAD_REQUEST),
     INTERNAL_SERVER_ERROR("서버 내부 오류입니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     ACCESS_DENIED("인가되지 않은 접근입니다.", HttpStatus.UNAUTHORIZED),
     FORBIDDEN_OPERATION("허용되지 않은 작업입니다.", HttpStatus.FORBIDDEN),

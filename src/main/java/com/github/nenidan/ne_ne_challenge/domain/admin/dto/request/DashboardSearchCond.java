@@ -1,12 +1,14 @@
 package com.github.nenidan.ne_ne_challenge.domain.admin.dto.request;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.boot.logging.LogLevel;
 
 import java.time.LocalDateTime;
 
 @Getter
-public class LogSearchCond {
+@NoArgsConstructor
+public class DashboardSearchCond {
 
     private Long Id;
     private String keyword;
