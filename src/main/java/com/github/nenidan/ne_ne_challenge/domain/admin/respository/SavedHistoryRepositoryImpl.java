@@ -1,6 +1,6 @@
 package com.github.nenidan.ne_ne_challenge.domain.admin.respository;
 
-import com.github.nenidan.ne_ne_challenge.domain.admin.dto.request.LogSearchCond;
+import com.github.nenidan.ne_ne_challenge.domain.admin.dto.request.DashboardSearchCond;
 import com.github.nenidan.ne_ne_challenge.domain.admin.dto.response.PaymentHistoryResponse;
 import com.github.nenidan.ne_ne_challenge.domain.payment.entity.QPayment;
 import com.querydsl.core.types.Projections;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public class SavedHistoryRepositoryImpl {
+public class SavedHistoryRepositoryImpl implements SavedHistoryRepositoryCustom{
 
     private final JPAQueryFactory queryFactory;
 
@@ -18,7 +18,8 @@ public class SavedHistoryRepositoryImpl {
         this.queryFactory = queryFactory;
     }
 
-    public List<PaymentHistoryResponse> findPaymentHistories(LogSearchCond cond) {
+    @Override
+    public List<PaymentHistoryResponse> findPaymentHistories(DashboardSearchCond cond) {
         QPayment payment = QPayment.payment;
 
         return queryFactory

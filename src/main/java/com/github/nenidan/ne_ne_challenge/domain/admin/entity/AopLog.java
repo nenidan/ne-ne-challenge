@@ -1,13 +1,11 @@
 package com.github.nenidan.ne_ne_challenge.domain.admin.entity;
 
-import com.github.nenidan.ne_ne_challenge.domain.admin.type.LogType;
+import com.github.nenidan.ne_ne_challenge.domain.admin.type.DomainType;
 import com.github.nenidan.ne_ne_challenge.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "aop_log")
@@ -21,7 +19,7 @@ public class AopLog  extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private LogType type;
+    private DomainType type;
 
     @Column(nullable = false)
     private String message;
@@ -38,7 +36,7 @@ public class AopLog  extends BaseEntity {
     private String result;
 
     // 생성자 (필드 모두 초기화)
-    public AopLog(LogType type, String method, String params, String result) {
+    public AopLog(DomainType type, String method, String params, String result) {
         this.type = type;
         this.method = method;
         this.params = params;

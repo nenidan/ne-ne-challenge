@@ -1,10 +1,10 @@
 package com.github.nenidan.ne_ne_challenge.domain.admin.service;
 
-import com.github.nenidan.ne_ne_challenge.domain.admin.dto.request.LogSearchCond;
+import com.github.nenidan.ne_ne_challenge.domain.admin.dto.request.DashboardSearchCond;
 import com.github.nenidan.ne_ne_challenge.domain.admin.dto.response.*;
 import com.github.nenidan.ne_ne_challenge.domain.admin.respository.AopLogRepository;
 import com.github.nenidan.ne_ne_challenge.domain.admin.respository.SavedHistoryRepositoryImpl;
-import com.github.nenidan.ne_ne_challenge.domain.admin.type.LogType;
+import com.github.nenidan.ne_ne_challenge.domain.admin.type.DomainType;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -53,16 +53,10 @@ public class LogQueryService {
         return CursorResponse.of(content, nextCursor, hasNext);
     }*/
 
-    public CursorResponse<LogsResponse, LocalDateTime> getPaymentLogs(LogSearchCond cond) {
+    public CursorResponse<LogsResponse, LocalDateTime> getPaymentLogs(DashboardSearchCond cond) {
         int size = cond.getSize();
 
-        List<AopLogResponse> aopLogs = aopLogRepository.findLogs(LogType.PAYMENT, cond).stream().map(log -> new AopLogResponse(
-                        log.getType(),
-                        log.getCreatedAt(),
-                        log.getMethod(),
-                        log.getParams(),
-                        log.getResult()
-                ))
+        List<AopLogResponse> aopLogs = aopLogRepository.findLogs(DomainType.PAYMENT, cond).stream().map(AopLogResponse::fromEntity)
                 .collect(Collectors.toList());
 
         List<PaymentHistoryResponse> histories = savedHistoryRepository.findPaymentHistories(cond);

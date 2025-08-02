@@ -1,9 +1,8 @@
 package com.github.nenidan.ne_ne_challenge.global.aop;
 
-import com.github.nenidan.ne_ne_challenge.domain.admin.dto.response.AopLogResponse;
 import com.github.nenidan.ne_ne_challenge.domain.admin.entity.AopLog;
 import com.github.nenidan.ne_ne_challenge.domain.admin.respository.AopLogRepository;
-import com.github.nenidan.ne_ne_challenge.domain.admin.type.LogType;
+import com.github.nenidan.ne_ne_challenge.domain.admin.type.DomainType;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 
 @Slf4j
@@ -66,7 +64,7 @@ public class AdminLogAspect {
                     requestURI, fullMethodName, clientIp, params, success, elapsedTime);
 
             // DB 저장용 DTO 생성
-            AopLog logEntity = new AopLog(LogType.PAYMENT, fullMethodName, params, result != null ? result.toString() : null);
+            AopLog logEntity = new AopLog(DomainType.PAYMENT, fullMethodName, params, result != null ? result.toString() : null);
 
             aopLogRepository.save(logEntity);
         }
