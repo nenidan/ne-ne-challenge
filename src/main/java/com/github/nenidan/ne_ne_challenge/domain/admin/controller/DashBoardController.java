@@ -1,15 +1,19 @@
 package com.github.nenidan.ne_ne_challenge.domain.admin.controller;
 
 
-import com.github.nenidan.ne_ne_challenge.domain.admin.dto.request.LogSearchCond;
+import com.github.nenidan.ne_ne_challenge.domain.admin.dto.request.DashboardSearchCond;
 import com.github.nenidan.ne_ne_challenge.domain.admin.dto.response.LogsResponse;
-import com.github.nenidan.ne_ne_challenge.domain.admin.exception.LogErrorCode;
-import com.github.nenidan.ne_ne_challenge.domain.admin.exception.LogQueryException;
+import com.github.nenidan.ne_ne_challenge.domain.admin.dto.response.StatisticsResponse;
+import com.github.nenidan.ne_ne_challenge.domain.admin.dto.response.stastics.ChallengeStatisticsResponse;
+import com.github.nenidan.ne_ne_challenge.domain.admin.exception.DashboardErrorCode;
+import com.github.nenidan.ne_ne_challenge.domain.admin.exception.DashboardException;
 import com.github.nenidan.ne_ne_challenge.domain.admin.service.LogQueryService;
-import com.github.nenidan.ne_ne_challenge.domain.admin.type.LogType;
+import com.github.nenidan.ne_ne_challenge.domain.admin.service.StatisticsService;
+import com.github.nenidan.ne_ne_challenge.domain.admin.type.DomainType;
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,16 +26,17 @@ import java.time.LocalDateTime;
 public class DashBoardController {
 
     private final LogQueryService logQueryService;
+    private final StatisticsService statisticsService;
 
     //통합 로깅 관리
     @GetMapping("/admin/logs/{logType}")
-    public ResponseEntity<ApiResponse<CursorResponse<LogsResponse, LocalDateTime>>> getLogs(@PathVariable String logType, @ModelAttribute LogSearchCond cond) {
-        LogType type;
+    public ResponseEntity<ApiResponse<CursorResponse<LogsResponse, LocalDateTime>>> getLogs(@PathVariable String logType, @ModelAttribute DashboardSearchCond cond) {
+        DomainType type;
 
         try {
-            type = LogType.valueOf(logType.toUpperCase());
+            type = DomainType.valueOf(logType.toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new LogQueryException(LogErrorCode.INVALID_LOG_TYPE);
+            throw new DashboardException(DashboardErrorCode.INVALID_LOG_TYPE);
         }
 
         return switch (type) {
@@ -51,6 +56,37 @@ public class DashBoardController {
             //default -> throw new LogQueryException(LogErrorCode.INVALID_LOG_TYPE);
             case POINT -> null;
             case USER -> null;
+        };
+    }
+
+    //통계 관리
+    @GetMapping("/admin/statistics/{statisticsType}")
+    public ResponseEntity<ApiResponse<ChallengeStatisticsResponse>> getStatistics(@PathVariable String statisticsType, @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime monthPeriod) {
+        //? extends StatisticsResponse 직렬화 이슈 해결 후 바꾸기
+
+        DomainType type;
+        try {
+            type = DomainType.valueOf(statisticsType.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new DashboardException(DashboardErrorCode.INVALID_LOG_TYPE);
+        }
+
+        return switch (type) {
+
+            case CHALLENGE ->
+                    ApiResponse.success(HttpStatus.OK,
+                    "챌린지 통계 조회.",
+                            statisticsService.getChallengeStatistics(monthPeriod));
+//            case PAYMENT -> ApiResponse.success(HttpStatus.OK,
+//                    "포인트 충전(결제) 조회.",
+//                    logQueryService.getPaymentStatistics(monthPeriod));
+//            case POINT -> ApiResponse.success(HttpStatus.OK,
+//                    "포인트 사용 로그 조회.",
+//                    logQueryService.getPointStatistics(monthPeriod));
+//            case USER -> ApiResponse.success(HttpStatus.OK,
+//                    "유저 생성 로그 조회.",
+//                    logQueryService.getUserStatistics(monthPeriod));
+            default -> throw new DashboardException(DashboardErrorCode.INVALID_LOG_TYPE);
         };
     }
 }
