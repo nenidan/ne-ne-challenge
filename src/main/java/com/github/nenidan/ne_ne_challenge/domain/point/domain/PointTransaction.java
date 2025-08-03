@@ -1,5 +1,9 @@
 package com.github.nenidan.ne_ne_challenge.domain.point.domain;
 
+import java.time.LocalDateTime;
+
+import org.springframework.util.StringUtils;
+
 import com.github.nenidan.ne_ne_challenge.domain.point.domain.type.PointReason;
 import com.github.nenidan.ne_ne_challenge.global.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -38,7 +42,11 @@ public class PointTransaction extends BaseEntity {
         this.description = description;
     }
 
-    public static PointTransaction createPointTransaction(PointWallet pointWallet, int amount, PointReason reason, String description) {
+    public static PointTransaction createChargeTransaction(PointWallet pointWallet, int amount, PointReason reason, String description) {
         return new PointTransaction(pointWallet, amount, reason, description);
+    }
+
+    public static PointTransaction createUsageTransaction(PointWallet pointWallet, int amount, PointReason reason, String description) {
+        return new PointTransaction(pointWallet, -amount, reason, description);
     }
 }

@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class TossClientResult {
+public class TossConfirmResult {
     private String paymentKey;
     private String orderId;
     private String status;
