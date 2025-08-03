@@ -26,6 +26,7 @@ import java.util.List;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final JwtTokenAccessService jwtTokenAccessService;
 
     @Override
     protected void doFilterInternal(
@@ -49,6 +50,11 @@ public class JwtFilter extends OncePerRequestFilter {
 
             if (claims == null) {
                 SecurityResponseWriter.writeJsonErrorResponse(response, SecurityServletErrorCode.INVALID_JWT);
+                return;
+            }
+
+            if (jwtTokenAccessService.isBlacklisted(jwt)) {
+                chain.doFilter(request, response);
                 return;
             }
 

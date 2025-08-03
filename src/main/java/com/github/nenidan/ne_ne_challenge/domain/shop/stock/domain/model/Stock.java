@@ -33,6 +33,10 @@ public class Stock {
         return quantity;
     }
 
+    public LocalDateTime getDeletedAt() {
+        return deletedAt;
+    }
+
     public void inbound(int quantity) {
         if(quantity <= 0){
             throw new StockException(StockErrorCode.INVALID_INBOUND_QUANTITY);

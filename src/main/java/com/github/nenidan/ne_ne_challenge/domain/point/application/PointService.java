@@ -213,13 +213,14 @@ public class PointService {
 
         PointTransaction pointTransaction = PointTransaction.createUsageTransaction(
             pointWallet,
-            -point.getAmount(),
+            point.getAmount(),
             PointReason.CHARGE_CANCEL,
             PointReason.CHARGE_CANCEL.getDescription()
         );
         pointRepository.save(pointTransaction);
     }
 
+    @Transactional
     public void refundPoints(PointRefundCommand pointRefundCommand) {
         PointReason reason = PointReason.CHALLENGE_REFUND;
 

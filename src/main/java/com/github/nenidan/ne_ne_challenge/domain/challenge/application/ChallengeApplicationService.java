@@ -63,7 +63,7 @@ public class ChallengeApplicationService {
 
         List<Long> userIdList = challengeFacade.getParticipantList(challengeId).stream().map(Participant::getId).toList();
         int amount = challengeFacade.getChallengeParticipationFee(challengeId);
-        // 포인트 client 호출: 포인트 환급 refund(List<Long> userIdList, int amount)
+        pointClient.refundPoints(userIdList, amount);
 
         challengeFacade.deleteChallenge(challengeId);
 
@@ -96,9 +96,10 @@ public class ChallengeApplicationService {
     }
 
     private void distributeTotalFee(List<Participant> winners, int totalFee) {
-        List<Long> idList = winners.stream().map(Participant::getId).toList();
+        List<Long> idList = winners.stream().map(Participant::getUserId).toList();
+        if(idList.isEmpty()) return;
         int reward = totalFee / idList.size();
-        // 포인트 client 호출: 포인트 환급 refund(List<Long> userIdList, int amount)
+        pointClient.refundPoints(idList, reward);
     }
 
     public ChallengeHistoryResponse createHistory(CreateHistoryRequest request, Long userId, Long challengeId) {

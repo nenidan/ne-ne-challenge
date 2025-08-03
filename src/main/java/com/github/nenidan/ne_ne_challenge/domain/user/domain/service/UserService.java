@@ -59,7 +59,7 @@ public class UserService {
     }
 
     public CursorResponse<User, String> searchProfiles(String cursor, int size, String keyword) {
-        List<User> userList = userRepository.findByKeyword(cursor, keyword, size);
+        List<User> userList = userRepository.findByKeyword(cursor, keyword, size + 1);
 
         boolean hasNext = userList.size() > size;
 
@@ -130,7 +130,7 @@ public class UserService {
         User findUser = userRepository.findById(id)
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 
-        findUser.updatePassword(newPassword);
+        findUser.updatePassword(passwordEncoder.encode(newPassword));
 
         userRepository.update(findUser);
     }
