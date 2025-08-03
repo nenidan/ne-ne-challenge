@@ -3,7 +3,7 @@ package com.github.nenidan.ne_ne_challenge.domain.admin.infrastructure.resposito
 import com.github.nenidan.ne_ne_challenge.domain.admin.domain.repository.SavedHistoryRepositoryCustom;
 import com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.request.LogSearchCond;
 import com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.response.logs.PaymentHistoryResponse;
-import com.github.nenidan.ne_ne_challenge.domain.payment.entity.QPayment;
+import com.github.nenidan.ne_ne_challenge.domain.payment.domain.model.QPayment;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Repository;
