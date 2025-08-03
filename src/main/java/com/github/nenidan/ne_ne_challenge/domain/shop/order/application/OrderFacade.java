@@ -1,6 +1,10 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.order.application;
 
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.service.OrderCompensationService;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.service.OrderService;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.exception.OrderErrorCode;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.exception.OrderException;
+import com.github.nenidan.ne_ne_challenge.global.client.point.PointClient;
 import com.github.nenidan.ne_ne_challenge.global.client.product.dto.ProductResponse;
 import com.github.nenidan.ne_ne_challenge.global.client.user.UserClient;
 import com.github.nenidan.ne_ne_challenge.global.client.user.dto.UserResponse;
@@ -22,14 +26,22 @@ import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 public class OrderFacade {
 
     private final OrderService orderService;
+    private final OrderCompensationService orderCompensationService;
     private final ProductRestClient productRestClient;
     private final UserClient userClient;
+    private final PointClient pointClient;
 
     public OrderResult createOrder (CreateOrderCommand createOrderRequest) {
         // 유저 검증 및 유저 정보 호출
         UserResponse user = userClient.getUserById(createOrderRequest.getUserId().getValue());
         // 상품 검증 및 상품 정보 호출
         ProductResponse product = productRestClient.getProduct(createOrderRequest.getProductId());
+        // 포인트 결제 호출
+        pointClient.decreasePoint(
+            user.getId(),
+            createOrderRequest.getQuantity() * product.getPrice(),
+            "SHOP_PURCHASE"
+        );
 
         OrderDetail orderDetail = new OrderDetail(
             null,
@@ -43,7 +55,18 @@ public class OrderFacade {
     }
 
     public void cancelOrder (Long userId, Long orderId) {
-        orderService.cancelOrder(new UserId(userId), new OrderId(orderId));
+        OrderResult orderResult = orderService.cancelOrder(new UserId(userId), new OrderId(orderId));
+        try {
+            pointClient.increasePoint(
+                userId,
+                orderResult.getOrderDetail().getQuantity() * orderResult.getOrderDetail().getPriceAtOrder(),
+                "PRODUCT_ORDER_CANCEL"
+            );
+        } catch (Exception e) {
+            // 실패하면 보상 트랜잭션 실행
+            orderCompensationService.compensateOrderCancel(new UserId(userId), new OrderId(orderId));
+            throw new OrderException(OrderErrorCode.ORDER_FAILED_CANCEL);
+        }
     }
 
     public OrderResult findOrder (Long userId, Long orderId) {

@@ -17,13 +17,16 @@ public enum PointReason {
 
     // 포인트 차감
     SHOP_PURCHASE("상점 구매"),
-    CHALLENGE_ENTRY("챌린지 참가비");
+    CHALLENGE_ENTRY("챌린지 참가비"),
+
+    // 포인트 복구
+    PRODUCT_ORDER_CANCEL("상품 구매 취소");
 
     private final String description;
 
     // 포인트 증가 사유인지 체크
     public boolean isIncrease() {
-        return this == CHARGE || this == CHALLENGE_REWARD;
+        return this == CHARGE || this == CHALLENGE_REWARD || this == PRODUCT_ORDER_CANCEL;
     }
 
     // 포인트 감소 사유인지 체크

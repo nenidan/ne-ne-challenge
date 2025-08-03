@@ -70,6 +70,11 @@ public class Stock {
         this.quantity += quantity;
     }
 
+    // 재고 복구 취소 (보상 트랜잭션)
+    public void convertRestoreQuantity(Integer quantity) {
+        this.quantity -= quantity;
+    }
+
     public void checkDeletableOnlyIfStockEmpty() {
         if (quantity > 0) {
             throw new StockException(StockErrorCode.STOCK_NOT_EMPTY);

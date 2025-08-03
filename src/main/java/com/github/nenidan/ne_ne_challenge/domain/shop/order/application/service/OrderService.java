@@ -65,7 +65,7 @@ public class OrderService {
      * @author kimyongjun0129
      */
     @Transactional
-    public void cancelOrder(UserId userId, OrderId orderId) {
+    public OrderResult cancelOrder(UserId userId, OrderId orderId) {
         Order order = orderRepository.findByUserIdAndOrderId(userId, orderId);
         order.isCanceled();
         order.cancel();
@@ -78,6 +78,8 @@ public class OrderService {
                 order.getOrderDetail().getQuantity()
             )
         );
+
+        return OrderResult.fromEntity(order);
     }
 
     /**

@@ -4,8 +4,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import com.github.nenidan.ne_ne_challenge.domain.shop.stock.application.service.StockCompensationService;
 import com.github.nenidan.ne_ne_challenge.domain.shop.stock.application.service.StockService;
 import com.github.nenidan.ne_ne_challenge.domain.shop.stock.application.dto.AddStockCommand;
+import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.event.StockConvertRestoreEvent;
 import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.event.StockDeleteEvent;
 import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.event.StockRestoreEvent;
 import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.event.StockUpdateEvent;
@@ -21,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public class StockEventHandler {
 
     private final StockService stockService;
+    private final StockCompensationService  stockCompensationService;
 
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void stockCreateHandler(StockRegisteredEvent stockRegisteredEvent) {
@@ -43,6 +46,14 @@ public class StockEventHandler {
         stockService.restoreStock(
             stockRestoreEvent.getProductId().getValue(),
             stockRestoreEvent.getQuantity()
+        );
+    }
+
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
+    public void StockRestoreHandler(StockConvertRestoreEvent stockConvertRestoreEvent) {
+        stockCompensationService.compensateRestoreStock(
+            stockConvertRestoreEvent.getProductId().getValue(),
+            stockConvertRestoreEvent.getQuantity()
         );
     }
 }

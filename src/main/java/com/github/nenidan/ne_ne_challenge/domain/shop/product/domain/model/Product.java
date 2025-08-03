@@ -7,9 +7,7 @@ import com.github.nenidan.ne_ne_challenge.domain.shop.product.domain.exception.P
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 
 import lombok.Getter;
-import lombok.Setter;
 
-@Setter
 @Getter
 public class Product {
     private ProductId productId;
