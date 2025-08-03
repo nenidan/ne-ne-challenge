@@ -1,14 +1,14 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.order.infrastructure.mapper;
 
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.model.Order;
-import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.OrderDetail;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.type.OrderStatus;
-import com.github.nenidan.ne_ne_challenge.domain.shop.vo.OrderDetailId;
-import com.github.nenidan.ne_ne_challenge.domain.shop.vo.OrderId;
-import com.github.nenidan.ne_ne_challenge.domain.shop.vo.UserId;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.OrderDetail;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.infrastructure.entity.OrderDetailEntity;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.infrastructure.entity.OrderEntity;
+import com.github.nenidan.ne_ne_challenge.domain.shop.vo.OrderDetailId;
+import com.github.nenidan.ne_ne_challenge.domain.shop.vo.OrderId;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
+import com.github.nenidan.ne_ne_challenge.domain.shop.vo.UserId;
 
 public class OrderMapper {
 

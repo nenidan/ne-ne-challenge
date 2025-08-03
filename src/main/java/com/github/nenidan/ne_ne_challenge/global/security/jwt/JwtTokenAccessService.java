@@ -1,10 +1,11 @@
 package com.github.nenidan.ne_ne_challenge.global.security.jwt;
 
-import lombok.RequiredArgsConstructor;
+import java.util.concurrent.TimeUnit;
+
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.concurrent.TimeUnit;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor

@@ -1,5 +1,11 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.domain.service;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import com.github.nenidan.ne_ne_challenge.domain.user.application.client.oauth.dto.OAuthUserInfo;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.exception.UserErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.exception.UserException;
@@ -10,12 +16,8 @@ import com.github.nenidan.ne_ne_challenge.domain.user.domain.model.vo.SocialAcco
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.repository.UserRepository;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.type.Role;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor

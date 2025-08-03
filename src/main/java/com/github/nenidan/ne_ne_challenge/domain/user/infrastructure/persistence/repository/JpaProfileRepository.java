@@ -1,12 +1,13 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.repository;
 
-import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.ProfileEntity;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
-import java.util.Optional;
+import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.ProfileEntity;
 
 public interface JpaProfileRepository extends JpaRepository<ProfileEntity, Long> {
 

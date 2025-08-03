@@ -1,13 +1,14 @@
 package com.github.nenidan.ne_ne_challenge.domain.challenge.infrastructure.repository;
 
-import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity.History;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.repository.HistoryReposiroty;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import org.springframework.stereotype.Repository;
+
+import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity.History;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.repository.HistoryReposiroty;
+
+import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor

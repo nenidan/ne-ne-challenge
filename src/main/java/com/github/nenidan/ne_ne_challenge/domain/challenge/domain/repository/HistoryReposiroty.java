@@ -1,9 +1,9 @@
 package com.github.nenidan.ne_ne_challenge.domain.challenge.domain.repository;
 
-import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity.History;
-
 import java.time.LocalDateTime;
 import java.util.List;
+
+import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity.History;
 
 public interface HistoryReposiroty {
 

@@ -1,11 +1,16 @@
 package com.github.nenidan.ne_ne_challenge.domain.challenge.application.dto.response;
 
-import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeCategory;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus;
-import lombok.*;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeCategory;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter

@@ -1,6 +1,7 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.domain.model;
 
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.type.Role;
+
 import lombok.Getter;
 
 @Getter

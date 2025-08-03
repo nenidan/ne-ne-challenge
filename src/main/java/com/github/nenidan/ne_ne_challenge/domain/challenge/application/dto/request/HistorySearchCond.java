@@ -1,11 +1,10 @@
 package com.github.nenidan.ne_ne_challenge.domain.challenge.application.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
+
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
 
 // Todo 빈 검증 제약 조건
 @Getter

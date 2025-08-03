@@ -1,11 +1,12 @@
 package com.github.nenidan.ne_ne_challenge.domain.challenge.domain.dto;
 
+import java.time.LocalDate;
+
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeCategory;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus;
+
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalDate;
 
 @Getter
 @Setter

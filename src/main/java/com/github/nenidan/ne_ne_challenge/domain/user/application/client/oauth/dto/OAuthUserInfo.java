@@ -1,10 +1,11 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.application.client.oauth.dto;
 
+import java.time.LocalDate;
+
 import com.github.nenidan.ne_ne_challenge.domain.user.application.client.oauth.type.Provider;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.time.LocalDate;
 
 @Getter
 @AllArgsConstructor

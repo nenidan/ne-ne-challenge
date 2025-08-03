@@ -3,10 +3,10 @@ package com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistenc
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.model.Profile;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.model.User;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.model.UserId;
+import com.github.nenidan.ne_ne_challenge.domain.user.domain.model.vo.AuditInfo;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.model.vo.SocialAccount;
 import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.AccountEntity;
 import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.ProfileEntity;
-import com.github.nenidan.ne_ne_challenge.domain.user.domain.model.vo.AuditInfo;
 import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.type.Role;
 
 public class UserMapper {

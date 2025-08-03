@@ -1,9 +1,9 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.application.dto;
 
+import java.time.LocalDate;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.time.LocalDate;
 
 @Getter
 @AllArgsConstructor

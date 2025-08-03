@@ -1,8 +1,8 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.product.infrastructure.mapper;
 
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.domain.model.Product;
-import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.infrastructure.entity.ProductEntity;
+import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 
 public class ProductMapper {
 

@@ -1,22 +1,28 @@
 package com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity;
 
+import static com.github.nenidan.ne_ne_challenge.domain.challenge.domain.exception.ChallengeErrorCode.*;
+import static com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus.*;
+
+import java.time.LocalDate;
+import java.time.chrono.ChronoLocalDate;
+
+import org.hibernate.annotations.SQLRestriction;
+
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.dto.ChallengeInfo;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.exception.ChallengeErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.exception.ChallengeException;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeCategory;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus;
 import com.github.nenidan.ne_ne_challenge.global.entity.BaseEntity;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLRestriction;
-
-import java.time.LocalDate;
-import java.time.chrono.ChronoLocalDate;
-
-import static com.github.nenidan.ne_ne_challenge.domain.challenge.domain.exception.ChallengeErrorCode.INVALID_STATUS_TRANSITION;
-import static com.github.nenidan.ne_ne_challenge.domain.challenge.domain.exception.ChallengeErrorCode.NOT_ENOUGH_PARTICIPANTS;
-import static com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus.*;
 
 @Entity
 @Getter

@@ -3,7 +3,6 @@ package com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.respons
 import com.github.nenidan.ne_ne_challenge.domain.point.domain.PointTransaction;
 import com.github.nenidan.ne_ne_challenge.domain.point.domain.type.PointReason;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

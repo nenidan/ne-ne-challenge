@@ -1,9 +1,9 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.domain.repository;
 
-import com.github.nenidan.ne_ne_challenge.domain.user.domain.model.User;
-
 import java.util.List;
 import java.util.Optional;
+
+import com.github.nenidan.ne_ne_challenge.domain.user.domain.model.User;
 
 public interface UserRepository {
     User save(User user);

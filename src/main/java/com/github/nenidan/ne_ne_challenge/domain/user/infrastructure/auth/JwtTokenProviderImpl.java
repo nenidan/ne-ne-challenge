@@ -1,5 +1,8 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.auth;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.stereotype.Component;
+
 import com.github.nenidan.ne_ne_challenge.domain.user.application.service.JwtTokenProvider;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.model.User;
 import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.auth.exception.JwtTokenProviderErrorCode;
@@ -8,9 +11,8 @@ import com.github.nenidan.ne_ne_challenge.global.security.auth.Auth;
 import com.github.nenidan.ne_ne_challenge.global.security.auth.Role;
 import com.github.nenidan.ne_ne_challenge.global.security.jwt.JwtTokenAccessService;
 import com.github.nenidan.ne_ne_challenge.global.security.jwt.JwtUtil;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor

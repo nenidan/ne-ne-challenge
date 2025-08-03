@@ -1,16 +1,20 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.presentation.controller.internal;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.github.nenidan.ne_ne_challenge.domain.user.application.UserFacade;
 import com.github.nenidan.ne_ne_challenge.domain.user.presentation.dto.request.UpdateRoleRequest;
 import com.github.nenidan.ne_ne_challenge.domain.user.presentation.dto.response.UserResponse;
 import com.github.nenidan.ne_ne_challenge.domain.user.presentation.mapper.UserMapper;
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
-import com.github.nenidan.ne_ne_challenge.global.security.auth.Auth;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor

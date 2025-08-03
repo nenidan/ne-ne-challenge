@@ -2,16 +2,15 @@ package com.github.nenidan.ne_ne_challenge.domain.point.application;
 
 import java.time.LocalDate;
 
+import org.springframework.stereotype.Service;
+
 import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.request.PointAmountCommand;
 import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.request.PointChargeCommand;
 import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.request.PointRefundCommand;
-import com.github.nenidan.ne_ne_challenge.domain.point.domain.type.PointReason;
-import com.github.nenidan.ne_ne_challenge.global.client.user.UserClient;
-import com.github.nenidan.ne_ne_challenge.global.client.user.dto.UserResponse;
-import org.springframework.stereotype.Service;
-
 import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.response.PointBalanceResult;
 import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.response.PointHistoryResult;
+import com.github.nenidan.ne_ne_challenge.global.client.user.UserClient;
+import com.github.nenidan.ne_ne_challenge.global.client.user.dto.UserResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 
 import lombok.RequiredArgsConstructor;

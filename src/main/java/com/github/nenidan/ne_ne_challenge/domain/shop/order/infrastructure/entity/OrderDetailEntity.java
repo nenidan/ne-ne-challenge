@@ -3,6 +3,7 @@ package com.github.nenidan.ne_ne_challenge.domain.shop.order.infrastructure.enti
 import java.time.LocalDateTime;
 
 import com.github.nenidan.ne_ne_challenge.global.entity.BaseEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
