@@ -1,8 +1,8 @@
 package com.github.nenidan.ne_ne_challenge.global.aop;
 
-import com.github.nenidan.ne_ne_challenge.domain.admin.entity.AopLog;
-import com.github.nenidan.ne_ne_challenge.domain.admin.respository.AopLogRepository;
-import com.github.nenidan.ne_ne_challenge.domain.admin.type.DomainType;
+import com.github.nenidan.ne_ne_challenge.domain.admin.infrastructure.entity.AopLog;
+import com.github.nenidan.ne_ne_challenge.domain.admin.infrastructure.respository.LogTransactionRepository;
+import com.github.nenidan.ne_ne_challenge.domain.admin.domain.type.DomainType;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class AdminLogAspect {
 
-    private final AopLogRepository aopLogRepository;
+    private final LogTransactionRepository logTransactionRepository;
 
     //결제 테스트 1순위 진행, 추후 도메인별 어드바이스 생성 리팩토링 예정
     @Around("execution(* com..github.nenidan.ne_ne_challenge.domain.payment.controller..*(..))")
@@ -66,7 +66,7 @@ public class AdminLogAspect {
             // DB 저장용 DTO 생성
             AopLog logEntity = new AopLog(DomainType.PAYMENT, fullMethodName, params, result != null ? result.toString() : null);
 
-            aopLogRepository.save(logEntity);
+            logTransactionRepository.save(logEntity);
         }
     }
 }

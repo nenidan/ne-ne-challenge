@@ -1,0 +1,21 @@
+package com.github.nenidan.ne_ne_challenge.domain.admin.infrastructure.mapper;
+
+import com.github.nenidan.ne_ne_challenge.domain.admin.domain.model.AopLogModel;
+import com.github.nenidan.ne_ne_challenge.domain.admin.infrastructure.entity.AopLog;
+import org.mapstruct.Mapper;
+
+
+public class LogMapper {
+    public static AopLogModel toDomain(AopLog entity) {
+        return AopLogModel.of(
+                entity.getId(),
+                entity.getType(),
+                entity.getMessage(),
+                entity.getUserId(),
+                entity.getMethod(),
+                entity.getParams(),
+                entity.getResult(),
+                entity.getCreatedAt().toLocalDate() // LocalDateTime → LocalDate
+        );
+    }
+}
