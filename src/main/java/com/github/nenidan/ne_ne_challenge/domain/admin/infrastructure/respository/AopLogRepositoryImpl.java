@@ -3,10 +3,8 @@ package com.github.nenidan.ne_ne_challenge.domain.admin.infrastructure.resposito
 import com.github.nenidan.ne_ne_challenge.domain.admin.domain.model.AopLogModel;
 import com.github.nenidan.ne_ne_challenge.domain.admin.domain.repository.AopLogRepository;
 import com.github.nenidan.ne_ne_challenge.domain.admin.domain.type.DomainType;
-import com.github.nenidan.ne_ne_challenge.domain.admin.infrastructure.entity.AopLog;
 import com.github.nenidan.ne_ne_challenge.domain.admin.infrastructure.mapper.LogMapper;
-import com.github.nenidan.ne_ne_challenge.domain.admin.presentation.dto.request.LogSearchCond;
-import org.springframework.data.repository.query.Param;
+import com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.request.LogSearchCond;
 
 import java.util.List;
 

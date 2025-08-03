@@ -3,7 +3,7 @@ package com.github.nenidan.ne_ne_challenge.domain.admin.application.service;
 import com.github.nenidan.ne_ne_challenge.domain.admin.application.client.ChallengeClientPort;
 import com.github.nenidan.ne_ne_challenge.domain.admin.infrastructure.out.ChallengeDto;
 import com.github.nenidan.ne_ne_challenge.domain.admin.infrastructure.out.ChallengeUserDto;
-import com.github.nenidan.ne_ne_challenge.domain.admin.presentation.dto.response.stastics.ChallengeStatisticsResponse;
+import com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.response.stastics.ChallengeStatisticsResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,7 +1,6 @@
-package com.github.nenidan.ne_ne_challenge.domain.admin.presentation.dto.response.logs;
+package com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.response.logs;
 
 import com.github.nenidan.ne_ne_challenge.domain.admin.domain.model.AopLogModel;
-import com.github.nenidan.ne_ne_challenge.domain.admin.infrastructure.entity.AopLog;
 import lombok.Getter;
 
 import java.time.LocalDateTime;

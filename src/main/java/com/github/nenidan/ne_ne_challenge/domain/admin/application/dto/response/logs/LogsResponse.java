@@ -1,4 +1,4 @@
-package com.github.nenidan.ne_ne_challenge.domain.admin.presentation.dto.response.logs;
+package com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.response.logs;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

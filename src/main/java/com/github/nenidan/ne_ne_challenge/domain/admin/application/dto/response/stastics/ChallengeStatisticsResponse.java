@@ -1,4 +1,4 @@
-package com.github.nenidan.ne_ne_challenge.domain.admin.presentation.dto.response.stastics;
+package com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.response.stastics;
 
 import lombok.Getter;
 

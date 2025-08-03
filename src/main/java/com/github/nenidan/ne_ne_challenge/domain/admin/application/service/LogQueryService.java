@@ -1,11 +1,10 @@
 package com.github.nenidan.ne_ne_challenge.domain.admin.application.service;
 
 import com.github.nenidan.ne_ne_challenge.domain.admin.domain.repository.AopLogRepository;
-import com.github.nenidan.ne_ne_challenge.domain.admin.presentation.dto.request.LogSearchCond;
-import com.github.nenidan.ne_ne_challenge.domain.admin.presentation.dto.response.logs.AopLogResponse;
-import com.github.nenidan.ne_ne_challenge.domain.admin.presentation.dto.response.logs.LogsResponse;
-import com.github.nenidan.ne_ne_challenge.domain.admin.presentation.dto.response.logs.PaymentHistoryResponse;
-import com.github.nenidan.ne_ne_challenge.domain.admin.infrastructure.respository.LogTransactionRepository;
+import com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.request.LogSearchCond;
+import com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.response.logs.AopLogResponse;
+import com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.response.logs.LogsResponse;
+import com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.response.logs.PaymentHistoryResponse;
 import com.github.nenidan.ne_ne_challenge.domain.admin.infrastructure.respository.SavedHistoryRepositoryImpl;
 import com.github.nenidan.ne_ne_challenge.domain.admin.domain.type.DomainType;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;

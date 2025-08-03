@@ -1,10 +1,9 @@
-package com.github.nenidan.ne_ne_challenge.domain.admin.presentation.dto.response.stastics;
+package com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.response.stastics;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 

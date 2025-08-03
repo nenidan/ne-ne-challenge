@@ -1,9 +1,9 @@
 package com.github.nenidan.ne_ne_challenge.domain.admin.presentation.controller;
 
 
-import com.github.nenidan.ne_ne_challenge.domain.admin.presentation.dto.request.LogSearchCond;
-import com.github.nenidan.ne_ne_challenge.domain.admin.presentation.dto.response.logs.LogsResponse;
-import com.github.nenidan.ne_ne_challenge.domain.admin.presentation.dto.response.stastics.ChallengeStatisticsResponse;
+import com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.request.LogSearchCond;
+import com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.response.logs.LogsResponse;
+import com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.response.stastics.ChallengeStatisticsResponse;
 import com.github.nenidan.ne_ne_challenge.domain.admin.domain.exception.DashboardErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.admin.domain.exception.DashboardException;
 import com.github.nenidan.ne_ne_challenge.domain.admin.application.service.LogQueryService;

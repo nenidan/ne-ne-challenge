@@ -1,6 +1,6 @@
 package com.github.nenidan.ne_ne_challenge.domain.admin.infrastructure.respository;
 
-import com.github.nenidan.ne_ne_challenge.domain.admin.presentation.dto.request.LogSearchCond;
+import com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.request.LogSearchCond;
 import com.github.nenidan.ne_ne_challenge.domain.admin.infrastructure.entity.AopLog;
 import com.github.nenidan.ne_ne_challenge.domain.admin.domain.type.DomainType;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,5 +19,5 @@ public interface LogTransactionRepository extends JpaRepository<AopLog, Long> {
             "AND (:#{#cond.cursor} IS NULL OR a.createdAt < :#{#cond.cursor}) " +
             "ORDER BY a.createdAt DESC")
     List<AopLog> findLogs(@Param("type") DomainType type, @Param("cond") LogSearchCond cond);
-    
+
 }
