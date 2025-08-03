@@ -52,21 +52,31 @@ public class SecurityConfig {
                         .requestMatchers("/health", "/error").permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/api/accounts/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/profiles/**").permitAll()
+
+                        // review
+                        .requestMatchers(HttpMethod.POST, "/api/products/*/reviews").hasRole(USER.name())
+                        .requestMatchers(HttpMethod.PATCH, "/api/products/*/reviews").permitAll()
 
 
                         .requestMatchers("/internal/**").permitAll()
 
                         // product
                         .requestMatchers(HttpMethod.POST, "/api/products").hasRole(ADMIN.name())
-                        .requestMatchers(HttpMethod.GET , "/api/products/**").permitAll()
-                        .requestMatchers(HttpMethod.PATCH, "/api/products/**").hasRole(ADMIN.name())
-                        .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasRole(ADMIN.name())
+                        .requestMatchers(HttpMethod.GET , "/api/products/*").permitAll()
+                        .requestMatchers(HttpMethod.GET , "/api/products").permitAll()
+                        .requestMatchers(HttpMethod.PATCH, "/api/products/*").hasRole(ADMIN.name())
+                        .requestMatchers(HttpMethod.DELETE, "/api/products/*").hasRole(ADMIN.name())
 
                         // order
                         .requestMatchers(HttpMethod.POST, "/api/orders").hasRole(USER.name())
                         .requestMatchers(HttpMethod.PATCH, "/api/orders/**").hasRole(USER.name())
                         .requestMatchers(HttpMethod.GET, "/api/orders/**").hasRole(USER.name())
 
+
+                        // stock
+                        .requestMatchers(HttpMethod.PATCH, "/api/stocks/**").hasRole(ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/api/stocks/**").permitAll()
 
                         .requestMatchers("/api/**").authenticated()
 
