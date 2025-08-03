@@ -64,8 +64,35 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public User updateProfile(User user) {
+    public User update(User user) {
         ProfileEntity profileEntity = UserMapper.toEntity(user);
-        return UserMapper.toDomain(jpaProfileRepository.save(profileEntity));
+        ProfileEntity savedEntity = jpaProfileRepository.save(profileEntity);
+        jpaProfileRepository.flush();
+        return UserMapper.toDomain(savedEntity);
+    }
+
+    @Override
+    public Optional<User> findByKakaoId(String kakaoId) {
+        return jpaProfileRepository.findByAccount_KakaoId(kakaoId)
+                .map(UserMapper::toDomain);
+    }
+
+    @Override
+    public Optional<User> findByNaverId(String naverId) {
+        return jpaProfileRepository.findByAccount_NaverId(naverId)
+                .map(UserMapper::toDomain);
+    }
+
+    @Override
+    public Optional<User> findByGoogleId(String googleId) {
+        return jpaProfileRepository.findByAccount_GoogleId(googleId)
+                .map(UserMapper::toDomain);
+    }
+
+    @Override
+    public void delete(User user) {
+        ProfileEntity profileEntity = UserMapper.toEntity(user);
+
+        jpaProfileRepository.save(profileEntity);
     }
 }

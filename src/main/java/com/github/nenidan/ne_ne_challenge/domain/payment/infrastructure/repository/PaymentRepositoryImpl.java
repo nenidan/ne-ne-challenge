@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import com.github.nenidan.ne_ne_challenge.domain.payment.domain.model.Payment;
 import com.github.nenidan.ne_ne_challenge.domain.payment.domain.repository.PaymentRepository;
+import com.github.nenidan.ne_ne_challenge.domain.payment.domain.type.PaymentStatus;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,9 +26,9 @@ public class PaymentRepositoryImpl implements PaymentRepository {
     }
 
     @Override
-    public List<Payment> searchPayments(Long userId, Long cursor, String method, String status,
+    public List<Payment> searchPayments(Long userId, Long cursor, String status,
         LocalDateTime startDate, LocalDateTime endDate, int limit) {
-        return jpaPaymentRepository.searchPayments(userId, cursor, method, status, startDate, endDate, limit);
+        return jpaPaymentRepository.searchPayments(userId, cursor, status, startDate, endDate, limit);
     }
 
     @Override

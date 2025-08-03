@@ -17,7 +17,7 @@ public class AccountMapper {
                 entity.getEmail(),
                 entity.getPassword(),
                 Role.of(entity.getRole().name()),
-                new SocialAccount(
+                SocialAccount.of(
                         entity.getKakaoId(),
                         entity.getNaverId(),
                         entity.getGoogleId()

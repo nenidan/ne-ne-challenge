@@ -6,7 +6,7 @@ import com.github.nenidan.ne_ne_challenge.domain.payment.exception.PaymentErrorC
 import com.github.nenidan.ne_ne_challenge.domain.payment.exception.PaymentException;
 
 public enum PaymentStatus {
-    PENDING, DONE, FAIL;
+    PENDING, DONE, FAIL, CANCELED;
 
     public static PaymentStatus of(String status) {
         return Arrays.stream(PaymentStatus.values())

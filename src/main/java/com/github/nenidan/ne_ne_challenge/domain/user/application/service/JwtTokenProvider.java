@@ -6,4 +6,10 @@ import org.springframework.http.HttpHeaders;
 public interface JwtTokenProvider {
 
     HttpHeaders createAuthHeaders(User user);
+
+    void addToBlacklist(String bearerToken);
+
+    void addToWhitelist(String bearerToken);
+
+    void checkWhitelisted(String bearerToken);
 }

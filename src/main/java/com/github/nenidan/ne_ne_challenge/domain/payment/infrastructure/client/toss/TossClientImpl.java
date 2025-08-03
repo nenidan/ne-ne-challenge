@@ -2,16 +2,17 @@ package com.github.nenidan.ne_ne_challenge.domain.payment.infrastructure.client.
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.Map;
 
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.client.TossClient;
-import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.TossClientResult;
-import com.github.nenidan.ne_ne_challenge.domain.payment.exception.PaymentErrorCode;
-import com.github.nenidan.ne_ne_challenge.domain.payment.exception.PaymentException;
+import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.TossCancelResult;
+import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.TossConfirmResult;
+import com.github.nenidan.ne_ne_challenge.domain.payment.infrastructure.client.dto.request.TossCancelRequest;
+import com.github.nenidan.ne_ne_challenge.domain.payment.infrastructure.client.dto.request.TossConfirmRequest;
+import com.github.nenidan.ne_ne_challenge.domain.payment.infrastructure.client.dto.response.TossCancelResponse;
 import com.github.nenidan.ne_ne_challenge.domain.payment.infrastructure.client.dto.response.TossConfirmResponse;
 import com.github.nenidan.ne_ne_challenge.domain.payment.infrastructure.client.toss.config.TossPaymentsConfig;
 
@@ -27,47 +28,58 @@ public class TossClientImpl implements TossClient {
     private final TossPaymentsConfig tossPaymentsConfig;
 
     @Override
-    public TossClientResult confirmPayment(String paymentKey, String orderId, int amount) {
+    public TossConfirmResult confirmPayment(String paymentKey, String orderId, int amount) {
         // 요청 바디 생성
-        Map<String, Object> request = Map.of(
-            "paymentKey", paymentKey,
-            "orderId", orderId,
-            "amount", amount
+        TossConfirmRequest tossConfirmRequest = new TossConfirmRequest(
+            paymentKey,
+            orderId,
+            amount
         );
 
-        try {
-            String url = tossPaymentsConfig.getBaseUrl() + "/payments/confirm";
-            log.info("토스페이먼츠 confirm API 호출 - paymentKey: {}, orderId: {}", paymentKey, orderId);
+        log.info("토스페이먼츠 confirm API 호출 - paymentKey: {}, orderId: {}", paymentKey, orderId);
 
-            TossConfirmResponse response = restClient.post()
-                .uri(url)
-                .body(request)
-                .header("Authorization", createAuthorizationHeader())
-                .contentType(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .body(TossConfirmResponse.class);
+        TossConfirmResponse response = restClient.post()
+            .uri(tossPaymentsConfig.getBaseUrl() + "/payments/confirm")
+            .body(tossConfirmRequest)
+            .header("Authorization", createAuthorizationHeader())
+            .contentType(MediaType.APPLICATION_JSON)
+            .retrieve()
+            .body(TossConfirmResponse.class);
 
-            if (response == null) {
-                throw new PaymentException(PaymentErrorCode.CONFIRM_FAILED);
-            }
+        log.info("토스페이먼츠 confirm API 성공 - status: {}", response.getStatus());
 
-            log.info("토스페이먼츠 confirm API 성공 - status: {}", response.getStatus());
+        return new TossConfirmResult(
+            response.getPaymentKey(),
+            response.getOrderId(),
+            response.getStatus(),
+            response.getMethod(),
+            response.getOrderName(),
+            response.getRequestedAt(),
+            response.getApprovedAt(),
+            response.getTotalAmount()
+        );
+    }
 
-            return new TossClientResult(
-                response.getPaymentKey(),
-                response.getOrderId(),
-                response.getStatus(),
-                response.getMethod(),
-                response.getOrderName(),
-                response.getRequestedAt(),
-                response.getApprovedAt(),
-                response.getTotalAmount()
-            );
+    @Override
+    public TossCancelResult cancelPayment(String paymentKey, String cancelReason) {
+        TossCancelRequest tossCancelRequest = new TossCancelRequest(cancelReason);
 
-        } catch (Exception e) {
-            log.error("토스페이먼츠 confirm API 호출 실패", e);
-            throw new PaymentException(PaymentErrorCode.CONFIRM_FAILED);
-        }
+        log.info("토스페이먼츠 cancel API 호출 - paymentKey: {}, orderId: {}", paymentKey, cancelReason);
+
+        TossCancelResponse tossCancelResponse = restClient.post()
+            .uri(tossPaymentsConfig.getBaseUrl() + "/payments/{paymentKey}/cancel", paymentKey)
+            .body(tossCancelRequest)
+            .header("Authorization", createAuthorizationHeader())
+            .contentType(MediaType.APPLICATION_JSON)
+            .retrieve()
+            .body(TossCancelResponse.class);
+
+        return new TossCancelResult(
+            tossCancelResponse.getOrderId(),
+            tossCancelResponse.getStatus(),
+            tossCancelResponse.getTotalAmount(),
+            tossCancelResponse.getApprovedAt()
+        );
     }
 
     private String createAuthorizationHeader() {

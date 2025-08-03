@@ -1,33 +1,35 @@
 package com.github.nenidan.ne_ne_challenge.domain.payment.presentation.controller.external;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.PaymentFacade;
+import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentCancelResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentConfirmResult;
-import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentResult;
+import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentSearchResult;
+import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.request.PaymentCancelRequest;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.request.PaymentConfirmRequest;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.request.PaymentPrepareRequest;
+import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.request.PaymentSearchRequest;
+import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.response.PaymentCancelResponse;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.response.PaymentConfirmResponse;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.response.PaymentPrepareResponse;
-import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.response.PaymentResponse;
+import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.response.PaymentSearchResponse;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.mapper.PaymentPresentationMapper;
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 import com.github.nenidan.ne_ne_challenge.global.security.auth.Auth;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -95,26 +97,37 @@ public class PaymentController {
             PaymentPresentationMapper.toPaymentConfirmResponse(paymentConfirmResult));
     }
 
-    @GetMapping("/payments")
-    public ResponseEntity<ApiResponse<CursorResponse<PaymentResponse, Long>>> searchMyPayments(
+    @PostMapping("/payments/{orderId}/cancel")
+    public ResponseEntity<ApiResponse<PaymentCancelResponse>> cancelPayment(
         @AuthenticationPrincipal Auth auth,
-        @RequestParam(required = false) Long cursor,
-        @RequestParam(defaultValue = "10") @Min(1) int size,
-        @RequestParam(required = false) String method,
-        @RequestParam(required = false) String status,
-        @RequestParam(required = false) LocalDate startDate,
-        @RequestParam(required = false) LocalDate endDate) {
+        @PathVariable String orderId,
+        @Valid @RequestBody PaymentCancelRequest request) {
 
-        CursorResponse<PaymentResult, Long> result = paymentFacade.searchMyPayments(
-            auth.getId(), cursor, size, method, status, startDate, endDate);
+        PaymentCancelResult result = paymentFacade.cancelPayment(auth.getId(), orderId,
+            PaymentPresentationMapper.toPaymentCancelCommand(request));
 
-        List<PaymentResponse> paymentResponseList = result.getContent().stream()
+        return ApiResponse.success(
+            HttpStatus.OK,
+            "결제 취소가 완료되었습니다.",
+            PaymentPresentationMapper.toPaymentCancelResponse(result)
+        );
+    }
+
+    @GetMapping("/payments")
+    public ResponseEntity<ApiResponse<CursorResponse<PaymentSearchResponse, Long>>> searchMyPayments(
+        @AuthenticationPrincipal Auth auth,
+        @Valid PaymentSearchRequest request) {
+
+        CursorResponse<PaymentSearchResult, Long> result = paymentFacade.searchMyPayments(
+            auth.getId(), PaymentPresentationMapper.toPaymentSearchCommand(request));
+
+        List<PaymentSearchResponse> paymentSearchResponseList = result.getContent().stream()
             .map(PaymentPresentationMapper::toPaymentResponse)
             .toList();
 
         return ApiResponse.success(
             HttpStatus.OK,
             "결제 내역 조회가 완료되었습니다.",
-            new CursorResponse<>(paymentResponseList, result.getNextCursor(), result.isHasNext()));
+            new CursorResponse<>(paymentSearchResponseList, result.getNextCursor(), result.isHasNext()));
     }
 }
