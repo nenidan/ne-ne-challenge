@@ -23,7 +23,7 @@ public class OrderMapper {
                 order.getOrderDetail().getDescriptionAtOrder(),
                 order.getOrderDetail().getPriceAtOrder(),
                 order.getOrderDetail().getQuantity(),
-                order.getDeletedAt()
+                order.getOrderDetail().getDeletedAt()
             ),
             order.getOrderStatus(),
             order.getDeletedAt()

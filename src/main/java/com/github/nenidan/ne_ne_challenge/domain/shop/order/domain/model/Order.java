@@ -14,7 +14,7 @@ import lombok.Getter;
 @Getter
 public class Order {
 
-    private OrderId orderId;
+    private final OrderId orderId;
     private final UserId userid;
     private final OrderDetail orderDetail;
     private OrderStatus orderStatus;
@@ -37,6 +37,16 @@ public class Order {
     public void cancel() {
         orderStatus = OrderStatus.CANCELED;
         this.deletedAt = LocalDateTime.now();
+        orderDetail.delete();
+    }
+
+    public void revertCancel() {
+        if (!OrderStatus.CANCELED.equals(orderStatus)) {
+            throw new OrderException(OrderErrorCode.ORDER_NOT_CANCELED_FOR_RECOVERY);
+        }
+        orderStatus = OrderStatus.CONFIRM;
+        this.deletedAt = null;
+        orderDetail.revertCancel();
     }
 }
 
