@@ -55,6 +55,14 @@ jobs:
             echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
             echo "SPRING_REDIS_HOST=redis" >> .env
             echo "SPRING_REDIS_PORT=6379" >> .env
+            
+            echo "TOSS_SECRET_KEY=test_sk_GjLJoQ1aVZb7KAb62P2gVw6KYe2R" >> .env
+            echo "TOSS_CLIENT_KEY=test_ck_KNbdOvk5rkOOXMabGXRqrn07xlzm" >> .env
+            echo "TOSS_BASE_URL=https://api.tosspayments.com/v1" >> .env
+            echo "KAKAO_CLIENT_ID=585cf792801bafd0a0aede460b1f250c" >> .env
+            echo "KAKAO_REDIRECT_URI=localhost:8080/oauth/kakao" >> .env
+            echo "NAVER_CLIENT_ID=PkWF00P7EtlCjh_wO57B" >> .env
+            echo "NAVER_CLIENT_SECRET=6G76rrm2do" >> .env
 
             docker rm -f my-app || true
             docker rm -f redis || true
