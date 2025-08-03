@@ -27,7 +27,6 @@ public class ProfileEntity extends AuditInfo {
     @Column(nullable = false, unique = true)
     private String nickname;
 
-    @Column(nullable = false)
     private LocalDate birth;
 
     private String bio;

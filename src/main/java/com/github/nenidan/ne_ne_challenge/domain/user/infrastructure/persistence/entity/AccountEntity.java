@@ -24,28 +24,30 @@ public class AccountEntity extends AuditInfo {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
     private String password;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    private Long kakaoId;
+    @Column(unique = true)
+    private String kakaoId;
 
+    @Column(unique = true)
     private String naverId;
 
+    @Column(unique = true)
     private String googleId;
 
-    public static AccountEntity of(Long id, String email, String password) {
+    public static AccountEntity of(Long id, String email, String password, String kakaoId, String naverId, String googleId) {
         return new AccountEntity(
                 id,
                 email,
                 password,
                 Role.USER,
-                null,
-                null,
-                null
+                kakaoId,
+                naverId,
+                googleId
         );
     }
 }

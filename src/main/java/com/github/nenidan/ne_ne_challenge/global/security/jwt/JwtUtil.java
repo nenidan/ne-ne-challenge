@@ -58,6 +58,11 @@ public class JwtUtil {
         return authorizationHeader != null && BEARER_PATTERN.matcher(authorizationHeader).matches();
     }
 
+    public long getRemainingExpiration(String token) {
+        Date expiration = extractClaims(token).getExpiration();
+        return expiration.getTime() - System.currentTimeMillis();
+    }
+
     public String extractToken(String tokenValue) {
         if (StringUtils.hasText(tokenValue) && tokenValue.startsWith(BEARER_PREFIX)) {
             return tokenValue.substring(BEARER_PREFIX.length()); // "Bearer " 제거 후 반환
