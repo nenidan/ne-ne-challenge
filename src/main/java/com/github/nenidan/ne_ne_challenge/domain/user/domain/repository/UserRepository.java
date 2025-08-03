@@ -18,5 +18,13 @@ public interface UserRepository {
 
     List<User> findByKeyword(String cursor, String keyword, int limit);
 
-    User updateProfile(User user);
+    User update(User user);
+
+    Optional<User> findByKakaoId(String kakaoId);
+
+    Optional<User> findByNaverId(String naverId);
+
+    Optional<User> findByGoogleId(String googleId);
+
+    void delete(User user);
 }

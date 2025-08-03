@@ -1,8 +1,11 @@
 package com.github.nenidan.ne_ne_challenge.domain.payment.domain.model;
 
-import java.time.LocalDateTime;
+import static com.github.nenidan.ne_ne_challenge.domain.payment.util.DateTimeUtil.*;
 
-import com.github.nenidan.ne_ne_challenge.domain.payment.domain.type.PaymentMethod;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.TossConfirmResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.domain.type.PaymentStatus;
 import com.github.nenidan.ne_ne_challenge.domain.payment.exception.PaymentErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.payment.exception.PaymentException;
@@ -34,45 +37,55 @@ public class Payment extends BaseEntity {
     @Column(nullable = false)
     private int amount;
 
+    @Column(name = "payment_method")
+    private String paymentMethod;
+
+    @Column(name = "payment_key", unique = true)
+    private String paymentKey;
+
+    @Column(name = "order_id", nullable = false, unique = true)
+    private String orderId;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PaymentStatus status;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private PaymentMethod method;
+    @Column(name = "cancel_reason")
+    private String cancelReason;
 
-    @Column(nullable = false)
-    private LocalDateTime requestedAt; // 결제 요청 시각
+    @Column(name = "requested_at", nullable = false)
+    private LocalDateTime requestedAt;
 
-    private LocalDateTime confirmedAt; // 결제 완료 시각
+    @Column(name = "approved_at")
+    private LocalDateTime approvedAt;
 
-    private LocalDateTime failedAt; // 결제 실패 시각
+    @Column(name = "failed_at")
+    private LocalDateTime failedAt;
 
-    private Payment(Long userId, int amount, PaymentStatus status, PaymentMethod method, LocalDateTime requestedAt) {
+    @Column(name = "canceled_at")
+    private LocalDateTime canceledAt;
+
+    // ================= 생성자 =================
+
+    private Payment(Long userId, String orderId, int amount) {
         this.userId = userId;
+        this.orderId = orderId;
         this.amount = amount;
-        this.status = status;
-        this.method = method;
-        this.requestedAt = requestedAt;
+        this.status = PaymentStatus.PENDING;
+        this.requestedAt = LocalDateTime.now();
     }
 
-    public static Payment createChargePayment(Long userId, int amount, PaymentMethod method) {
-        return new Payment(
-            userId,
-            amount,
-            PaymentStatus.PENDING,
-            method,
-            LocalDateTime.now()
-        );
+    // ================= 정적 팩토리 메서드 =================
+
+    public static Payment createPreparePayment(Long userId, int amount) {
+        String orderId = generateOrderId();
+        return new Payment(userId, orderId, amount);
     }
 
-    public void succeed() {
-        if (this.status != PaymentStatus.PENDING) {
-            throw new PaymentException(PaymentErrorCode.ALREADY_PROCESSED_PAYMENT);
-        }
-        this.status = PaymentStatus.SUCCESS;
-        this.confirmedAt = LocalDateTime.now();
+    // ================= 비즈니스 로직 =================
+
+    private static String generateOrderId() {
+        return "order-" + UUID.randomUUID();
     }
 
     public void fail() {
@@ -82,4 +95,48 @@ public class Payment extends BaseEntity {
         this.status = PaymentStatus.FAIL;
         this.failedAt = LocalDateTime.now();
     }
+
+    private static String generateOrderName(int amount) {
+        return "포인트 " + amount + "원 충전";
+    }
+
+    public void updateConfirm(TossConfirmResult result) {
+        this.paymentKey = result.getPaymentKey();
+        this.paymentMethod = result.getMethod();
+        this.status = PaymentStatus.of(result.getStatus());
+        this.approvedAt = parseToLocalDateTime(result.getApprovedAt());
+    }
+
+    public void validateAmountForConfirm(int requestAmount) {
+        if (this.amount != requestAmount) {
+            throw new PaymentException(PaymentErrorCode.AMOUNT_MISMATCH);
+        }
+    }
+
+    // ================= 조회 메서드 =================
+
+    public void validateCancelable() {
+        // 상태 확인
+        if (this.status != PaymentStatus.DONE) {
+            throw new PaymentException(PaymentErrorCode.CANNOT_CANCEL_PAYMENT);
+        }
+
+        // 7일이 지났는지 확인
+        if (this.approvedAt != null && this.approvedAt.isBefore(LocalDateTime.now().minusDays(7))) {
+            throw new PaymentException(PaymentErrorCode.CANNOT_CANCEL_EXPIRED);
+        }
+    }
+
+    // ================= 유틸리티 메서드 =================
+
+    public void cancel(String cancelReason, String canceledAt, String status) {
+        this.cancelReason = cancelReason;
+        this.canceledAt = parseToLocalDateTime(canceledAt);
+        this.status = PaymentStatus.of(status);
+    }
+
+    public String getOrderName() {
+        return generateOrderName(this.amount);
+    }
+
 }

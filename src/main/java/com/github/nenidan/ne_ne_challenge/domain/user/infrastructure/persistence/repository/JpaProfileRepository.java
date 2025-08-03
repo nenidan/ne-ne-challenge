@@ -15,6 +15,12 @@ public interface JpaProfileRepository extends JpaRepository<ProfileEntity, Long>
 
     Optional<ProfileEntity> findByAccountEmail(String email);
 
+    Optional<ProfileEntity> findByAccount_KakaoId(String kakaoId);
+
+    Optional<ProfileEntity> findByAccount_NaverId(String naverId);
+
+    Optional<ProfileEntity> findByAccount_GoogleId(String googleId);
+
     @Query(value = """
     SELECT p.* FROM profile p
     JOIN account a ON p.id = a.id

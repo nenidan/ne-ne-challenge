@@ -1,5 +1,7 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.product.infrastructure.entity;
 
+import java.time.LocalDateTime;
+
 import org.hibernate.annotations.SQLRestriction;
 
 import com.github.nenidan.ne_ne_challenge.global.entity.BaseEntity;
@@ -37,9 +39,11 @@ public class ProductEntity extends BaseEntity {
     @Column(nullable = false)
     private Integer productPrice;
 
-    public ProductEntity(String productName, String productDescription, Integer productPrice) {
+    public ProductEntity(Long productId, String productName, String productDescription, Integer productPrice, LocalDateTime deletedAt) {
+        this.id = productId;
         this.productName = productName;
         this.productDescription = productDescription;
         this.productPrice = productPrice;
+        this.deletedAt = deletedAt;
     }
 }

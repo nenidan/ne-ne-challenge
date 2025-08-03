@@ -10,9 +10,13 @@ import lombok.Getter;
 public class AuditInfo {
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
-    private final LocalDateTime deletedAt;
+    private LocalDateTime deletedAt;
 
     public boolean isDeleted() {
         return deletedAt != null;
+    }
+
+    public void delete() {
+        deletedAt = LocalDateTime.now();
     }
 }

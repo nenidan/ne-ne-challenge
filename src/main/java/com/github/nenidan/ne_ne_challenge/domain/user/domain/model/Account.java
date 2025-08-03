@@ -19,27 +19,35 @@ public class Account {
 
     public static Account of(String email, String password) {
         return new Account(
-            null,
-            email,
-            password,
-            Role.USER,
-            null,
-            null
+                null,
+                email,
+                password,
+                Role.USER,
+                null,
+                null
         );
     }
 
     public static Account of(String email, SocialAccount socialAccount) {
         return new Account(
-            null,
-            email,
-            null,
-            Role.USER,
-            socialAccount,
-            null
+                null,
+                email,
+                null,
+                Role.USER,
+                socialAccount,
+                null
         );
     }
 
     public void updatePassword(String password) {
         this.password = password;
+    }
+
+    public void delete() {
+        auditInfo.delete();
+    }
+
+    public void updateRole(Role newRole) {
+        this.role = newRole;
     }
 }

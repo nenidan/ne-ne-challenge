@@ -52,7 +52,7 @@ public class PointTransaction extends BaseEntity {
         return new PointTransaction(pointWallet, amount, reason, description);
     }
 
-    public static PointTransaction createUseTransaction(PointWallet pointWallet, int amount, PointReason reason, String description) {
+    public static PointTransaction createUsageTransaction(PointWallet pointWallet, int amount, PointReason reason, String description) {
         return new PointTransaction(pointWallet, -amount, reason, description);
     }
 }

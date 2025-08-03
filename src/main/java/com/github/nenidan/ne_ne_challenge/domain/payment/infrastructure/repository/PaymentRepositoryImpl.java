@@ -2,6 +2,7 @@ package com.github.nenidan.ne_ne_challenge.domain.payment.infrastructure.reposit
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
 
@@ -24,8 +25,13 @@ public class PaymentRepositoryImpl implements PaymentRepository {
     }
 
     @Override
-    public List<Payment> searchPayments(Long userId, Long cursor, String method, String status,
+    public List<Payment> searchPayments(Long userId, Long cursor, String status,
         LocalDateTime startDate, LocalDateTime endDate, int limit) {
-        return jpaPaymentRepository.searchPayments(userId, cursor, method, status, startDate, endDate, limit);
+        return jpaPaymentRepository.searchPayments(userId, cursor, status, startDate, endDate, limit);
+    }
+
+    @Override
+    public Optional<Payment> findByOrderId(String orderId) {
+        return jpaPaymentRepository.findByOrderId(orderId);
     }
 }
