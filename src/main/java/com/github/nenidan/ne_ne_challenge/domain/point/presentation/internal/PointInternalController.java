@@ -3,6 +3,7 @@ package com.github.nenidan.ne_ne_challenge.domain.point.presentation.internal;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.github.nenidan.ne_ne_challenge.domain.point.application.PointFacade;
 import com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.request.PointAmountRequest;
 import com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.request.PointChargeRequest;
+import com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.request.PointRefundRequest;
 import com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.response.PointBalanceResponse;
 import com.github.nenidan.ne_ne_challenge.domain.point.presentation.mapper.PointPresentationMapper;
 
@@ -62,6 +64,21 @@ public class PointInternalController {
     public ResponseEntity<Void> decreasePoints(@PathVariable Long userId, @RequestBody PointAmountRequest request) {
 
         pointFacade.decrease(userId, PointPresentationMapper.toPointAmountCommand(request));
+
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/points/{orderId}")
+    public ResponseEntity<Void> cancelPoint(@PathVariable String orderId) {
+
+        pointFacade.cancelPoint(orderId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/points/refund")
+    public ResponseEntity<Void> refundPoints(@RequestBody PointRefundRequest request) {
+
+        pointFacade.refundPoints(PointPresentationMapper.toPointRefundCommand(request));
 
         return ResponseEntity.ok().build();
     }

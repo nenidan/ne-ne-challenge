@@ -36,7 +36,10 @@ public class UserMapper {
                 AccountEntity.of(
                         domain.getId() != null ? domain.getId().getValue() : null,
                         domain.getAccount().getEmail(),
-                        domain.getAccount().getPassword()
+                        domain.getAccount().getPassword(),
+                        domain.getAccount().getSocialAccount().getKakaoId(),
+                        domain.getAccount().getSocialAccount().getNaverId(),
+                        domain.getAccount().getSocialAccount().getGoogleId()
                 ),
                 domain.getProfile().getNickname(),
                 domain.getProfile().getBirth(),

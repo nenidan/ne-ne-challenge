@@ -40,7 +40,7 @@ public class OrderFacade {
         pointClient.decreasePoint(
             user.getId(),
             createOrderRequest.getQuantity() * product.getPrice(),
-            "SHOP_PURCHASE"
+            "PRODUCT_PURCHASE"
         );
 
         OrderDetail orderDetail = new OrderDetail(
@@ -60,7 +60,7 @@ public class OrderFacade {
             pointClient.increasePoint(
                 userId,
                 orderResult.getOrderDetail().getQuantity() * orderResult.getOrderDetail().getPriceAtOrder(),
-                "PRODUCT_ORDER_CANCEL"
+                "PRODUCT_REFUND"
             );
         } catch (Exception e) {
             // 실패하면 보상 트랜잭션 실행

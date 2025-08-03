@@ -1,5 +1,6 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.domain.model;
 
+import com.github.nenidan.ne_ne_challenge.domain.user.domain.type.Role;
 import lombok.Getter;
 
 @Getter
@@ -20,5 +21,14 @@ public class User {
 
     public void updateProfile(Profile profile) {
         this.profile.updateProfile(profile);
+    }
+
+    public void delete() {
+        account.delete();
+        profile.delete();
+    }
+
+    public void updateRole(Role newRole) {
+        account.updateRole(newRole);
     }
 }

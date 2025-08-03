@@ -1,16 +1,21 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.domain.service;
 
+import com.github.nenidan.ne_ne_challenge.domain.user.application.client.oauth.dto.OAuthUserInfo;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.exception.UserErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.exception.UserException;
+import com.github.nenidan.ne_ne_challenge.domain.user.domain.model.Account;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.model.Profile;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.model.User;
+import com.github.nenidan.ne_ne_challenge.domain.user.domain.model.vo.SocialAccount;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.repository.UserRepository;
+import com.github.nenidan.ne_ne_challenge.domain.user.domain.type.Role;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +34,9 @@ public class UserService {
             throw new UserException(UserErrorCode.DUPLICATE_NICKNAME);
         }
 
-        user.updatePassword(passwordEncoder.encode(user.getAccount().getPassword()));
+        if(user.getAccount().getPassword() != null) {
+            user.updatePassword(passwordEncoder.encode(user.getAccount().getPassword()));
+        }
 
         return userRepository.save(user);
     }
@@ -70,6 +77,73 @@ public class UserService {
 
         user.updateProfile(profile);
 
-        return userRepository.updateProfile(user);
+        return userRepository.update(user);
+    }
+
+    public User oauthJoin(OAuthUserInfo userInfo) {
+
+        Optional<User> existUser = switch (userInfo.getProvider()) {
+            case KAKAO -> userRepository.findByKakaoId(userInfo.getProviderId());
+            case NAVER -> userRepository.findByNaverId(userInfo.getProviderId());
+            case GOOGLE -> userRepository.findByGoogleId(userInfo.getProviderId());
+        };
+
+        if(existUser.isPresent()) {
+            return existUser.get();
+        }
+
+        SocialAccount socialAccount = switch (userInfo.getProvider()) {
+            case KAKAO -> SocialAccount.fromKakao(userInfo.getProviderId());
+            case NAVER -> SocialAccount.fromNaver(userInfo.getProviderId());
+            case GOOGLE -> SocialAccount.fromGoogle(userInfo.getProviderId());
+        };
+
+        User newUser = new User(
+                Account.of(userInfo.getEmail(), socialAccount),
+                Profile.of(userInfo.getNickname(), userInfo.getBirth(), null)
+        );
+
+        // 이메일 중복 로직 필요
+
+        return join(newUser);
+    }
+
+    public void delete(Long id) {
+        User findUser = userRepository.findById(id)
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+
+        findUser.delete();
+
+        userRepository.delete(findUser);
+    }
+
+    public void verifyPassword(Long id, String password) {
+        User findUser = userRepository.findById(id)
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+
+        if(!passwordEncoder.matches(password, findUser.getAccount().getPassword())) {
+            throw new UserException(UserErrorCode.INVALID_PASSWORD);
+        }
+    }
+
+    public void updatePassword(Long id, String newPassword) {
+        User findUser = userRepository.findById(id)
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+
+        findUser.updatePassword(newPassword);
+
+        userRepository.update(findUser);
+    }
+
+    public User updateRole(Long id, String role) {
+
+        User findUser = userRepository.findById(id)
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+
+        Role newRole = Role.of(role);
+
+        findUser.updateRole(newRole);
+
+        return userRepository.update(findUser);
     }
 }

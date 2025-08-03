@@ -1,6 +1,8 @@
 package com.github.nenidan.ne_ne_challenge.domain.payment.domain.model;
 
-import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.TossClientResult;
+import static com.github.nenidan.ne_ne_challenge.domain.payment.util.DateTimeUtil.*;
+
+import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.TossConfirmResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.domain.type.PaymentStatus;
 import com.github.nenidan.ne_ne_challenge.domain.payment.exception.PaymentErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.payment.exception.PaymentException;
@@ -11,8 +13,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.util.UUID;
 
 @Entity
@@ -43,6 +43,9 @@ public class Payment extends BaseEntity {
     @Column(nullable = false)
     private PaymentStatus status;
 
+    @Column(name = "cancel_reason")
+    private String cancelReason;
+
     @Column(name = "requested_at", nullable = false)
     private LocalDateTime requestedAt;
 
@@ -51,6 +54,9 @@ public class Payment extends BaseEntity {
 
     @Column(name = "failed_at")
     private LocalDateTime failedAt;
+
+    @Column(name = "canceled_at")
+    private LocalDateTime canceledAt;
 
     // ================= 생성자 =================
 
@@ -71,11 +77,11 @@ public class Payment extends BaseEntity {
 
     // ================= 비즈니스 로직 =================
 
-    public void updateConfirm(TossClientResult result) {
+    public void updateConfirm(TossConfirmResult result) {
         this.paymentKey = result.getPaymentKey();
         this.paymentMethod = result.getMethod();
         this.status = PaymentStatus.of(result.getStatus());
-        this.approvedAt = parseDateTime(result.getApprovedAt());
+        this.approvedAt = parseToLocalDateTime(result.getApprovedAt());
     }
 
     public void fail() {
@@ -92,6 +98,24 @@ public class Payment extends BaseEntity {
         }
     }
 
+    public void validateCancelable() {
+        // 상태 확인
+        if (this.status != PaymentStatus.DONE) {
+            throw new PaymentException(PaymentErrorCode.CANNOT_CANCEL_PAYMENT);
+        }
+
+        // 7일이 지났는지 확인
+        if (this.approvedAt != null && this.approvedAt.isBefore(LocalDateTime.now().minusDays(7))) {
+            throw new PaymentException(PaymentErrorCode.CANNOT_CANCEL_EXPIRED);
+        }
+    }
+
+    public void cancel(String cancelReason, String canceledAt, String status) {
+        this.cancelReason = cancelReason;
+        this.canceledAt = parseToLocalDateTime(canceledAt);
+        this.status = PaymentStatus.of(status);
+    }
+
     // ================= 조회 메서드 =================
 
     public String getOrderName() {
@@ -100,13 +124,6 @@ public class Payment extends BaseEntity {
 
     // ================= 유틸리티 메서드 =================
 
-    private static LocalDateTime parseDateTime(String dateTimeStr) {
-        if (dateTimeStr == null) return null;
-        return OffsetDateTime.parse(dateTimeStr)
-            .atZoneSameInstant(ZoneId.of("Asia/Seoul"))
-            .toLocalDateTime();
-    }
-
     private static String generateOrderId() {
         return "order-" + UUID.randomUUID();
     }
@@ -114,4 +131,5 @@ public class Payment extends BaseEntity {
     private static String generateOrderName(int amount) {
         return "포인트 " + amount + "원 충전";
     }
+
 }

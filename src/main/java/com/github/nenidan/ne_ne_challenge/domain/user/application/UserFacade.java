@@ -1,5 +1,8 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.application;
 
+import com.github.nenidan.ne_ne_challenge.domain.user.application.client.oauth.OAuthClient;
+import com.github.nenidan.ne_ne_challenge.domain.user.application.client.oauth.OAuthClientFactory;
+import com.github.nenidan.ne_ne_challenge.domain.user.application.client.oauth.dto.OAuthUserInfo;
 import com.github.nenidan.ne_ne_challenge.domain.user.application.dto.*;
 import com.github.nenidan.ne_ne_challenge.domain.user.application.mapper.UserMapper;
 import com.github.nenidan.ne_ne_challenge.domain.user.application.service.JwtTokenProvider;
@@ -21,6 +24,7 @@ public class UserFacade {
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
     private final PointClient pointClient;
+    private final OAuthClientFactory oauthClientFactory;
 
     @Transactional
     public UserWithTokenResult join(JoinCommand joinCommand) {
@@ -29,7 +33,6 @@ public class UserFacade {
 
         User savedUser = userService.join(user);
 
-        // Todo: 포인트 지갑 추가 - 병합 후 주석 해제
         pointClient.createPointWallet(savedUser.getId().getValue());
 
         return new UserWithTokenResult(
@@ -67,5 +70,56 @@ public class UserFacade {
     public UserResult updateProfile(Long id, UpdateProfileCommand dto) {
         User user = userService.updateProfile(id, UserMapper.toDomain(dto));
         return UserMapper.toDto(user);
+    }
+
+    @Transactional
+    public UserWithTokenResult oauthLogin(OAuthLoginCommand dto) {
+
+        OAuthClient oauthClient = oauthClientFactory.create(dto.getProvider());
+
+        OAuthUserInfo userInfo = oauthClient.getOAuthUserInfo(dto.getToken());
+
+        User savedUser = userService.oauthJoin(userInfo);
+
+        // Todo: 포인트 지갑 추가
+
+        return new UserWithTokenResult(
+                UserMapper.toDto(savedUser),
+                jwtTokenProvider.createAuthHeaders(savedUser)
+        );
+    }
+
+    @Transactional
+    public void logout(String bearerToken) {
+        jwtTokenProvider.addToBlacklist(bearerToken);
+    }
+
+    @Transactional
+    public void verifyPassword(Long id, String password, String bearerToken) {
+
+        userService.verifyPassword(id, password);
+
+        jwtTokenProvider.addToWhitelist(bearerToken);
+    }
+
+    @Transactional
+    public void updatePassword(Long id, String newPassword, String bearerToken) {
+        jwtTokenProvider.checkWhitelisted(bearerToken);
+
+        userService.updatePassword(id, newPassword);
+    }
+
+    @Transactional
+    public void delete(Long id, String bearerToken) {
+
+        jwtTokenProvider.checkWhitelisted(bearerToken);
+
+        userService.delete(id);
+
+        jwtTokenProvider.addToBlacklist(bearerToken);
+    }
+
+    public UserResult updateRole(Long id, String role) {
+        return UserMapper.toDto(userService.updateRole(id, role));
     }
 }
