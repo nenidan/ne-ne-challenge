@@ -39,17 +39,6 @@ public class Profile {
         );
     }
 
-    public static Profile of(String nickname, LocalDate birth, String bio, Long imageId) {
-        return new Profile(
-                null,
-                nickname,
-                birth,
-                bio,
-                imageId,
-                null
-        );
-    }
-
     public void updateProfile(Profile profile) {
         this.nickname = profile.getNickname()!= null ? profile.getNickname() : this.nickname;
         this.birth = profile.getBirth()!= null ? profile.getBirth() : this.birth;
