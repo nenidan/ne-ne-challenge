@@ -80,7 +80,7 @@ public class AccountController {
         );
     }
 
-    @PostMapping("/accounts/verify-password")
+    @PostMapping("/accounts/me/verify-password")
     public ResponseEntity<ApiResponse<Void>> verifyPassword(
             @RequestHeader("Authorization") String bearerToken,
             @AuthenticationPrincipal Auth auth,
@@ -96,7 +96,7 @@ public class AccountController {
         );
     }
 
-    @PatchMapping("/accounts/password")
+    @PatchMapping("/accounts/me/password")
     public ResponseEntity<ApiResponse<Void>> updatePassword(
             @RequestHeader("Authorization") String bearerToken,
             @AuthenticationPrincipal Auth auth,

@@ -20,7 +20,8 @@ public class StockMapper {
         return new StockEntity(
             stock.getStockId().getValue(),
             stock.getProductId().getValue(),
-            stock.getQuantity()
+            stock.getQuantity(),
+            stock.getDeletedAt()
         );
     }
 }

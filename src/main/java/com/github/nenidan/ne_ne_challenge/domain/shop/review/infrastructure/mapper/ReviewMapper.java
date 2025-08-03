@@ -19,7 +19,7 @@ public class ReviewMapper {
 
     public static ReviewEntity toEntity (Review review){
         return new ReviewEntity(
-            review.getReviewId().getValue(),
+            review.getReviewId() == null ? null : review.getReviewId().getValue(),
             review.getProductId().getValue(),
             review.getUserId().getValue(),
             review.getRating()

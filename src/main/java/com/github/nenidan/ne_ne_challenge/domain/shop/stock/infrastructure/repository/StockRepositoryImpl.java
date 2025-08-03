@@ -24,7 +24,8 @@ public class StockRepositoryImpl implements StockRepository {
         StockEntity stockEntity = new StockEntity(
             null,
             productId.getValue(),
-            0
+            0,
+            null
         );
         stockJpaRepository.save(stockEntity);
     }

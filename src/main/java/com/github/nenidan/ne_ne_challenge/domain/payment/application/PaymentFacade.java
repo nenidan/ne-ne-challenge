@@ -53,17 +53,15 @@ public class PaymentFacade {
             command.getAmount()
         );
 
+        TossConfirmResult tossConfirmResult = null;
+
         try {
             // 토스 페이먼츠의 /payments/confirm API 호출 (결제 승인)
-            TossConfirmResult tossConfirmResult = tossClient.confirmPayment(
+            tossConfirmResult = tossClient.confirmPayment(
                 command.getPaymentKey(),
                 command.getOrderId(),
                 command.getAmount()
             );
-
-            if (tossConfirmResult == null) {
-                throw new PaymentException(PaymentErrorCode.CONFIRM_FAILED);
-            }
 
             // prepare 에서 저장되어있던 payment 객체에 토스 confirm API 에서 전달받은 값 업데이트
             // paymentKey, paymentMethod, paymentStatus, approvedAt 저장
@@ -78,13 +76,28 @@ public class PaymentFacade {
             );
 
         } catch (RestClientResponseException e) {
-            // Toss 오류 로그로 남김 (code + message)
-            log.warn("Toss 결제 실패 - status: {}, body: {}", e.getRawStatusCode(), e.getResponseBodyAsString());
+
+            if (tossConfirmResult == null) {
+                // Toss 오류 로그로 남김 (code + message)
+                log.warn("Toss 결제 실패 - status: {}, body: {}", e.getRawStatusCode(), e.getResponseBodyAsString());
+            } else {
+                try {
+                    tossClient.cancelPayment(command.getPaymentKey(), "시스템 오류로 인한 결제 취소");
+                } catch (Exception cancelEx) {
+                    log.error("Toss 결제 취소 실패 - 수동 처리 필요: {}", tossConfirmResult.getPaymentKey());
+                }
+                paymentService.failPayment(payment);
+            }
+
 
             paymentService.failPayment(payment);
             throw new PaymentException(PaymentErrorCode.TOSS_ERROR, e);
         }
         catch (Exception e) {
+
+            // 토스 결제 성공 + payment 업데이트 실패, 토스 결제 성공 + payment 업데이트 성공 + point 증가 실패 시 토스 결제 취소 api 호출
+            tossClient.cancelPayment(command.getPaymentKey(), "시스템 오류로 인한 결제 취소");
+
             // DB에 실패를 기록함 Status = PENDING -> FAIL, failedAt에 실패 시간 저장
             paymentService.failPayment(payment);
             throw new PaymentException(PaymentErrorCode.PAYMENT_PROCESSING_FAILED, e);

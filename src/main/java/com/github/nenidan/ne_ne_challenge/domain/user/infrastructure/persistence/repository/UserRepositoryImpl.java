@@ -66,7 +66,9 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public User update(User user) {
         ProfileEntity profileEntity = UserMapper.toEntity(user);
-        return UserMapper.toDomain(jpaProfileRepository.save(profileEntity));
+        ProfileEntity savedEntity = jpaProfileRepository.save(profileEntity);
+        jpaProfileRepository.flush();
+        return UserMapper.toDomain(savedEntity);
     }
 
     @Override

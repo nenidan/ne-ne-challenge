@@ -1,5 +1,7 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity;
 
+import java.time.LocalDateTime;
+
 import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.embedded.AuditInfo;
 import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.type.Role;
 import jakarta.persistence.*;
@@ -12,7 +14,6 @@ import org.hibernate.annotations.SQLRestriction;
 @Getter
 @Entity
 @Table(name = "account")
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @SQLRestriction("deleted_at IS NULL")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AccountEntity extends AuditInfo {
@@ -39,15 +40,39 @@ public class AccountEntity extends AuditInfo {
     @Column(unique = true)
     private String googleId;
 
-    public static AccountEntity of(Long id, String email, String password, String kakaoId, String naverId, String googleId) {
+    public static AccountEntity of(Long id, String email, String password, Role role, String kakaoId, String naverId, String googleId) {
         return new AccountEntity(
                 id,
                 email,
                 password,
-                Role.USER,
+                role,
                 kakaoId,
                 naverId,
                 googleId
         );
+    }
+
+    public AccountEntity(Long id, String email, String password, Role role, String kakaoId,
+        String naverId, String googleId, LocalDateTime createdAt, LocalDateTime updatedAt,
+        LocalDateTime deletedAt) {
+        super(createdAt, updatedAt, deletedAt);
+        this.id = id;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.kakaoId = kakaoId;
+        this.naverId = naverId;
+        this.googleId = googleId;
+    }
+
+    public AccountEntity(Long id, String email, String password, Role role, String kakaoId, String naverId,
+        String googleId) {
+        this.id = id;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.kakaoId = kakaoId;
+        this.naverId = naverId;
+        this.googleId = googleId;
     }
 }

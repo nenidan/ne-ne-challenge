@@ -26,7 +26,7 @@ public class JoinRequest {
     @Size(min = 2, max = 12, message = "닉네임은 2자 이상 12자 이하여야 합니다.")
     private String nickname;
 
-    @NotBlank(message = "생년월일은 필수입니다.")
+    @NotNull(message = "생년월일은 필수입니다.")
     private LocalDate birth;
 
     private String bio;

@@ -119,6 +119,7 @@ public class UserFacade {
         jwtTokenProvider.addToBlacklist(bearerToken);
     }
 
+    @Transactional
     public UserResult updateRole(Long id, String role) {
         return UserMapper.toDto(userService.updateRole(id, role));
     }

@@ -1,5 +1,7 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.stock.infrastructure.entity;
 
+import java.time.LocalDateTime;
+
 import com.github.nenidan.ne_ne_challenge.global.entity.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -27,9 +29,10 @@ public class StockEntity extends BaseEntity {
     @Column(nullable = false)
     private Integer quantity;
 
-    public StockEntity(Long id, Long productId, Integer quantity) {
+    public StockEntity(Long id, Long productId, Integer quantity, LocalDateTime deletedAt) {
         this.id = id;
         this.productId = productId;
         this.quantity = quantity;
+        this.deletedAt = deletedAt;
     }
 }
