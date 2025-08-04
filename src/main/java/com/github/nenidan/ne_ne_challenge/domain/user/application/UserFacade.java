@@ -2,6 +2,7 @@ package com.github.nenidan.ne_ne_challenge.domain.user.application;
 
 import java.util.List;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -87,7 +88,7 @@ public class UserFacade {
 
         User savedUser = userService.oauthJoin(userInfo);
 
-        // Todo: 포인트 지갑 추가
+        pointClient.createPointWallet(savedUser.getId().getValue());
 
         return new UserWithTokenResult(
                 UserMapper.toDto(savedUser),
@@ -96,8 +97,9 @@ public class UserFacade {
     }
 
     @Transactional
-    public void logout(String bearerToken) {
+    public void logout(String bearerToken, Long id) {
         jwtTokenProvider.addToBlacklist(bearerToken);
+        jwtTokenProvider.removeRefreshToken(id);
     }
 
     @Transactional
@@ -123,10 +125,20 @@ public class UserFacade {
         userService.delete(id);
 
         jwtTokenProvider.addToBlacklist(bearerToken);
+        jwtTokenProvider.removeRefreshToken(id);
     }
 
     @Transactional
     public UserResult updateRole(Long id, String role) {
         return UserMapper.toDto(userService.updateRole(id, role));
+    }
+
+    @Transactional
+    public HttpHeaders refresh(String refreshToken) {
+        Long id = jwtTokenProvider.getUserIdFromRefreshToken(refreshToken);
+
+        User user = userService.getProfile(id);
+
+        return jwtTokenProvider.updateAuthHeaders(user, refreshToken);
     }
 }

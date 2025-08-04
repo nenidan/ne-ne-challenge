@@ -81,10 +81,11 @@ public class AccountController {
 
     @PostMapping("/accounts/logout")
     public ResponseEntity<ApiResponse<Void>> logout(
-            @RequestHeader("Authorization") String bearerToken
+            @RequestHeader("Authorization") String bearerToken,
+            @AuthenticationPrincipal Auth auth
     ) {
 
-        userFacade.logout(bearerToken);
+        userFacade.logout(bearerToken, auth.getId());
 
         return ApiResponse.success(
                 HttpStatus.OK,
@@ -124,9 +125,6 @@ public class AccountController {
         );
     }
 
-
-
-
     @DeleteMapping("/accounts/me")
     public ResponseEntity<ApiResponse<Void>> delete(
             @RequestHeader("Authorization") String bearerToken,
@@ -139,6 +137,18 @@ public class AccountController {
                 HttpStatus.OK,
                 "회원탈퇴가 완료되었습니다.",
                 null
+        );
+    }
+
+    @PostMapping("/accounts/refresh")
+    public ResponseEntity<ApiResponse<Void>> refresh(
+            @RequestHeader("Refresh-Token") String refreshToken
+    ) {
+        return ApiResponse.success(
+                HttpStatus.OK,
+                "토큰 갱신이 완료되었습니다.",
+                null,
+                userFacade.refresh(refreshToken)
         );
     }
 }
