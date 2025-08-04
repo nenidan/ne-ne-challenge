@@ -15,8 +15,6 @@ public class PaymentSearchResult {
 
     private int amount;
 
-    private String orderName;
-
     private String paymentStatus;
 
     private String paymentMethod;

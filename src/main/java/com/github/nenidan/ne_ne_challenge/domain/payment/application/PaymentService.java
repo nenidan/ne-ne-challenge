@@ -10,10 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PaymentCancelCommand;
-import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PaymentPrepareCommand;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PaymentSearchCommand;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentCancelResult;
-import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentPrepareResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentSearchResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.TossCancelResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.TossConfirmResult;
@@ -62,37 +60,39 @@ public class PaymentService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void failPayment(Payment payment) {
-        payment.fail();
+    public void failPayment(TossCancelResult result) {
+
+        Payment payment = getPaymentByOrderId(result.getOrderId());
+
+        payment.fail(
+            result.getStatus(),
+            result.getCanceledAt().toLocalDateTime()
+        );
         paymentRepository.save(payment);
     }
 
     @Transactional
-    public void updatePaymentFromConfirm(Payment payment, TossConfirmResult result) {
+    public Payment createPaymentFromConfirm(Long userId, TossConfirmResult result) {
 
-        payment.updateConfirm(result);
-        paymentRepository.save(payment);
+        Payment payment = Payment.createPaymentFromConfirm(
+            userId,
+            result.getPaymentKey(),
+            result.getOrderId(),
+            result.getStatus(),
+            result.getMethod(),
+            result.getRequestedAt().toLocalDateTime(),
+            result.getApprovedAt().toLocalDateTime(),
+            result.getTotalAmount()
+        );
+
+        return paymentRepository.save(payment);
     }
 
-    @Transactional
-    public PaymentPrepareResult createPreparePayment(Long userId, PaymentPrepareCommand command) {
-
-        Payment preparePayment = Payment.createPreparePayment(userId, command.getAmount());
-
-        Payment savedPreparePayment = paymentRepository.save(preparePayment);
-
-        return PaymentApplicationMapper.toPaymentPrepareResult(savedPreparePayment);
-    }
-
-    public Payment validatePaymentForConfirm(String orderId, int amount) {
-
-        // orderId를 이용해서 /payments/prepare API 에서 저장한 payment 객체를 찾음
-        Payment payment = getPaymentByOrderId(orderId);
-
-        // 보안 검증 : 클라이언트에서 전달받은 금액과 DB에 저장된 금액이 일치하는지 확인
-        payment.validateAmountForConfirm(amount);
-
-        return payment;
+    // 프론트에서 요청한 금액과, 토스에서 승인된 금액이 같은지 확인하는 메서드
+    public void validatePaymentAmount(int totalAmount, int amount) {
+        if (totalAmount != amount) {
+            throw new PaymentException(PaymentErrorCode.AMOUNT_MISMATCH);
+        }
     }
 
     public Payment validatePaymentForCancel(Long userId, String orderId) {
@@ -142,7 +142,7 @@ public class PaymentService {
     public PaymentCancelResult updatePaymentCancel(Payment payment, TossCancelResult tossCancelResult,
         PaymentCancelCommand command) {
 
-        payment.cancel(command.getCancelReason(), tossCancelResult.getCanceledAt(), tossCancelResult.getStatus());
+        payment.cancel(command.getCancelReason(), tossCancelResult.getCanceledAt().toLocalDateTime(), tossCancelResult.getStatus());
 
         paymentRepository.save(payment);
 
