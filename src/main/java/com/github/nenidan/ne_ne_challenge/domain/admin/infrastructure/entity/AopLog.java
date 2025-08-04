@@ -21,9 +21,6 @@ public class AopLog  extends BaseEntity {
     @Column(nullable = false)
     private DomainType type;
 
-    @Column(nullable = false)
-    private String message;
-
     private String userId;
 
     @Column(nullable = false)
@@ -34,6 +31,7 @@ public class AopLog  extends BaseEntity {
 
     @Column(columnDefinition = "TEXT")
     private String result;
+
 
     // 생성자 (필드 모두 초기화)
     public AopLog(DomainType type, String method, String params, String result) {

@@ -10,7 +10,6 @@ public class LogMapper {
         return AopLogModel.of(
                 entity.getId(),
                 entity.getType(),
-                entity.getMessage(),
                 entity.getUserId(),
                 entity.getMethod(),
                 entity.getParams(),

@@ -5,16 +5,16 @@ import com.github.nenidan.ne_ne_challenge.domain.admin.domain.repository.AopLogR
 import com.github.nenidan.ne_ne_challenge.domain.admin.domain.type.DomainType;
 import com.github.nenidan.ne_ne_challenge.domain.admin.infrastructure.mapper.LogMapper;
 import com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.request.LogSearchCond;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
+@RequiredArgsConstructor
 public class AopLogRepositoryImpl implements AopLogRepository {
 
     private final LogTransactionRepository logTransactionRepository;
-
-    public AopLogRepositoryImpl(LogTransactionRepository logTransactionRepository) {
-        this.logTransactionRepository = logTransactionRepository;
-    }
 
     @Override
    public List<AopLogModel> findLogs(DomainType type, LogSearchCond cond){

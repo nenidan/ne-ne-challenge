@@ -6,15 +6,26 @@ import java.time.LocalDateTime;
 
 @Getter
 public class PaymentHistoryResponse extends LogsResponse {
-    private String itemName;
-    private int price;
-    private String user;
 
-    public PaymentHistoryResponse(String type, LocalDateTime createdAt, String itemName, int price, String user) {
+    private Long paymentId;
+    private Long userId;
+    private Integer amount;
+    private String status; //.name() 필요
+    private LocalDateTime requestedAt = null;
+    private LocalDateTime canceledAt = null;
+    private LocalDateTime failedAt = null;
+
+    public PaymentHistoryResponse(String type, LocalDateTime createdAt,
+                                  Long paymentId, Long userId, Integer amount,
+                                  String status, LocalDateTime requestedAt,
+                                  LocalDateTime canceledAt, LocalDateTime failedAt) {
         super(type, createdAt);
-        this.itemName = itemName;
-        this.price = price;
-        this.user = user;
+        this.paymentId = paymentId;
+        this.userId = userId;
+        this.amount = amount;
+        this.status = status;
+        this.requestedAt = requestedAt;
+        this.canceledAt = canceledAt;
+        this.failedAt = failedAt;
     }
-
 }

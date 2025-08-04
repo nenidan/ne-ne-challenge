@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class LogSearchCond {
 
-    private Long Id;
+    private Long userId;
     private String keyword;
     private LogLevel level;
 

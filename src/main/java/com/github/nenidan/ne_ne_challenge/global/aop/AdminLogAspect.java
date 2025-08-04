@@ -25,7 +25,8 @@ public class AdminLogAspect {
     private final LogTransactionRepository logTransactionRepository;
 
     //결제 테스트 1순위 진행, 추후 도메인별 어드바이스 생성 리팩토링 예정
-    @Around("execution(* com..github.nenidan.ne_ne_challenge.domain.payment.controller..*(..))")
+    /*
+    @Around("execution(* com..github.nenidan.ne_ne_challenge.domain.payment.application..*(..))")
     public Object logAdminAction(ProceedingJoinPoint joinPoint) throws Throwable {
         long start = System.currentTimeMillis();
 
@@ -67,6 +68,7 @@ public class AdminLogAspect {
             AopLog logEntity = new AopLog(DomainType.PAYMENT, fullMethodName, params, result != null ? result.toString() : null);
 
             logTransactionRepository.save(logEntity);
+
         }
-    }
+    } */
 }
