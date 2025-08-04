@@ -37,12 +37,6 @@ public class OrderFacade {
         UserResponse user = userClient.getUserById(createOrderRequest.getUserId().getValue());
         // 상품 검증 및 상품 정보 호출
         ProductResponse product = productRestClient.getProduct(createOrderRequest.getProductId());
-        // 포인트 결제 호출
-        pointClient.decreasePoint(
-            user.getId(),
-            createOrderRequest.getQuantity() * product.getPrice(),
-            "PRODUCT_PURCHASE"
-        );
 
         OrderDetail orderDetail = new OrderDetail(
             null,
@@ -52,7 +46,16 @@ public class OrderFacade {
             product.getPrice(),
             createOrderRequest.getQuantity()
         );
-        return orderService.createOrder(new UserId(user.getId()), orderDetail);
+        OrderResult order = orderService.createOrder(new UserId(user.getId()), orderDetail);
+
+        // 포인트 결제 호출
+        pointClient.decreasePoint(
+            user.getId(),
+            createOrderRequest.getQuantity() * product.getPrice(),
+            "PRODUCT_PURCHASE"
+        );
+
+        return order;
     }
 
     public void cancelOrder (Long userId, Long orderId) {

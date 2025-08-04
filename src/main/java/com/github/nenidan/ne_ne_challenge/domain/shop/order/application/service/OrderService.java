@@ -120,6 +120,6 @@ public class OrderService {
 
         Long nextCursor = hasNext ? orderList.get(orderList.size() - 1).getOrderId() : null;
 
-        return new CursorResponse<>(content, nextCursor, orderList.size() > size);
+        return CursorResponse.of(content, nextCursor, orderList.size() > size);
     }
 }
