@@ -66,7 +66,7 @@ public class ChallengeApplicationService {
         userClient.getUserById(userId);
         challengeFacade.checkChallengeHost(userId, challengeId);
 
-        List<Long> userIdList = challengeFacade.getParticipantList(challengeId).stream().map(Participant::getId).toList();
+        List<Long> userIdList = challengeFacade.getParticipantList(challengeId).stream().map(Participant::getUserId).toList();
         int amount = challengeFacade.getChallengeParticipationFee(challengeId);
         pointClient.refundPoints(userIdList, amount);
 
