@@ -112,7 +112,7 @@ public class ProductService {
 
         Long nextCursor = hasNext ? productList.get(productList.size() - 1).getId().getValue() : null;
 
-        return new CursorResponse<>(content, nextCursor, productList.size() > size);
+        return CursorResponse.of(content, nextCursor, productList.size() > size);
     }
 
     /**
