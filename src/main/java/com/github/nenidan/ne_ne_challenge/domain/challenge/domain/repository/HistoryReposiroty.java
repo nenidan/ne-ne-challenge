@@ -16,4 +16,6 @@ public interface HistoryReposiroty {
     List<History> getHistoryList(Long challengeId, Long userId, LocalDateTime cursor, int limit);
 
     int countOfSuccess(Long challengeId, Long userId);
+
+    List<History> findAll();
 }
