@@ -1,22 +1,24 @@
 package com.github.nenidan.ne_ne_challenge.global.security.jwt;
 
-import com.github.nenidan.ne_ne_challenge.domain.user.type.UserRole;
+import java.security.Key;
+import java.util.Base64;
+import java.util.Date;
+import java.util.regex.Pattern;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
 import com.github.nenidan.ne_ne_challenge.global.security.auth.Auth;
+import com.github.nenidan.ne_ne_challenge.global.security.auth.Role;
 import com.github.nenidan.ne_ne_challenge.global.security.exception.CustomSecurityException;
 import com.github.nenidan.ne_ne_challenge.global.security.exception.SecurityErrorCode;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
-import java.security.Key;
-import java.util.Base64;
-import java.util.Date;
-import java.util.regex.Pattern;
 
 @Component
 public class JwtUtil {
@@ -58,6 +60,11 @@ public class JwtUtil {
         return authorizationHeader != null && BEARER_PATTERN.matcher(authorizationHeader).matches();
     }
 
+    public long getRemainingExpiration(String token) {
+        Date expiration = extractClaims(token).getExpiration();
+        return expiration.getTime() - System.currentTimeMillis();
+    }
+
     public String extractToken(String tokenValue) {
         if (StringUtils.hasText(tokenValue) && tokenValue.startsWith(BEARER_PREFIX)) {
             return tokenValue.substring(BEARER_PREFIX.length()); // "Bearer " 제거 후 반환
@@ -78,7 +85,7 @@ public class JwtUtil {
         return new Auth(
                 Long.parseLong(claims.getSubject()),
                 claims.get("nickname", String.class),
-                UserRole.of(claims.get("role", String.class))
+                Role.of(claims.get("role", String.class))
         );
     }
 

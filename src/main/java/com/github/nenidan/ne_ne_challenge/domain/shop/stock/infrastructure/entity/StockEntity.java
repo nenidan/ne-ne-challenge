@@ -1,7 +1,7 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.stock.infrastructure.entity;
 
-import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopErrorCode;
-import com.github.nenidan.ne_ne_challenge.domain.shop.exception.ShopException;
+import java.time.LocalDateTime;
+
 import com.github.nenidan.ne_ne_challenge.global.entity.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -27,29 +27,12 @@ public class StockEntity extends BaseEntity {
     private Long productId;
 
     @Column(nullable = false)
-    private int quantity;
+    private Integer quantity;
 
-    public StockEntity(Long productId) {
-        this.productId = productId;
-        this.quantity = 0;
-    }
-
-    public StockEntity(Long productId, int quantity) {
+    public StockEntity(Long id, Long productId, Integer quantity, LocalDateTime deletedAt) {
+        this.id = id;
         this.productId = productId;
         this.quantity = quantity;
-    }
-    public void increaseStock(int quantity) {
-        this.quantity += quantity;
-    }
-
-
-    public void decreaseStock(int quantity) {
-        if(quantity <= 0) {
-            throw new ShopException(ShopErrorCode.INVALID_DECREASE_QUANTITY);
-        }
-        if(this.quantity < quantity) {
-            throw new ShopException(ShopErrorCode.OUT_OF_STOCK);
-        }
-        this.quantity -= quantity;
+        this.deletedAt = deletedAt;
     }
 }

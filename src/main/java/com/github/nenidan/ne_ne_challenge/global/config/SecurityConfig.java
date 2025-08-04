@@ -1,12 +1,7 @@
 package com.github.nenidan.ne_ne_challenge.global.config;
 
-import static com.github.nenidan.ne_ne_challenge.domain.user.type.UserRole.*;
+import static com.github.nenidan.ne_ne_challenge.global.security.auth.Role.*;
 
-import com.github.nenidan.ne_ne_challenge.global.security.handler.CustomAccessDeniedHandler;
-import com.github.nenidan.ne_ne_challenge.global.security.handler.CustomAuthenticationEntryPoint;
-import com.github.nenidan.ne_ne_challenge.global.security.jwt.JwtFilter;
-import com.github.nenidan.ne_ne_challenge.global.security.jwt.JwtUtil;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -20,12 +15,21 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 
+import com.github.nenidan.ne_ne_challenge.global.security.handler.CustomAccessDeniedHandler;
+import com.github.nenidan.ne_ne_challenge.global.security.handler.CustomAuthenticationEntryPoint;
+import com.github.nenidan.ne_ne_challenge.global.security.jwt.JwtFilter;
+import com.github.nenidan.ne_ne_challenge.global.security.jwt.JwtTokenAccessService;
+import com.github.nenidan.ne_ne_challenge.global.security.jwt.JwtUtil;
+
+import lombok.RequiredArgsConstructor;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
+    private final JwtTokenAccessService jwtTokenAccessService;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final CorsConfigurationSource corsConfigurationSource;
@@ -39,47 +43,54 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
         return httpSecurity
-                .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource))
-                .httpBasic(AbstractHttpConfigurer::disable)
-                .formLogin(AbstractHttpConfigurer::disable)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .csrf(AbstractHttpConfigurer::disable)
+            .cors(cors -> cors.configurationSource(corsConfigurationSource))
+            .httpBasic(AbstractHttpConfigurer::disable)
+            .formLogin(AbstractHttpConfigurer::disable)
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                // 접근 제어
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/health", "/error").permitAll()
+            // 접근 제어
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/health", "/error").permitAll()
 
-                        .requestMatchers(HttpMethod.POST, "/api/accounts/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/accounts", "/api/accounts/login").permitAll()
 
-                        // product
-                        .requestMatchers(HttpMethod.POST, "/api/products").hasRole(ADMIN.name())
-                        .requestMatchers(HttpMethod.GET , "/api/products/**").permitAll()
-                        .requestMatchers(HttpMethod.PATCH, "/api/products/**").hasRole(ADMIN.name())
-                        .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasRole(ADMIN.name())
+                // review
+                .requestMatchers(HttpMethod.POST, "/api/products/*/reviews").hasRole(USER.name())
+                .requestMatchers(HttpMethod.PATCH, "/api/products/*/reviews").permitAll()
 
-                        // order
-                        .requestMatchers(HttpMethod.POST, "/api/orders").hasRole(USER.name())
-                        .requestMatchers(HttpMethod.PATCH, "/api/orders/**").hasRole(USER.name())
-                        .requestMatchers(HttpMethod.GET, "/api/orders/**").hasRole(USER.name())
+                .requestMatchers("/internal/**").permitAll()
 
-                        // stock
-                        .requestMatchers(HttpMethod.PATCH, "/api/stocks/**").hasRole(USER.name())
-                        .requestMatchers(HttpMethod.GET, "/api/stocks/**").permitAll()
+                // stock
+                .requestMatchers(HttpMethod.PATCH, "/api/products/*/stocks").hasRole(ADMIN.name())
+                .requestMatchers(HttpMethod.GET, "/api/products/*/stocks").permitAll()
 
-                        .requestMatchers("/api/**").authenticated()
+                // product
+                .requestMatchers(HttpMethod.POST, "/api/products").hasRole(ADMIN.name())
+                .requestMatchers(HttpMethod.GET, "/api/products/*").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/products").permitAll()
+                .requestMatchers(HttpMethod.PATCH, "/api/products/*").hasRole(ADMIN.name())
+                .requestMatchers(HttpMethod.DELETE, "/api/products/*").hasRole(ADMIN.name())
 
-                        .anyRequest().denyAll()
-                )
+                // order
+                .requestMatchers(HttpMethod.POST, "/api/orders").hasRole(USER.name())
+                .requestMatchers(HttpMethod.PATCH, "/api/orders/**").hasRole(USER.name())
+                .requestMatchers(HttpMethod.GET, "/api/orders/**").hasRole(USER.name())
 
-                // 필터 등록
-                .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
+                .requestMatchers("/api/**").authenticated()
 
-                .exceptionHandling(configurer ->
-                        configurer
-                                .authenticationEntryPoint(customAuthenticationEntryPoint)
-                                .accessDeniedHandler(customAccessDeniedHandler)
-                )
+                .anyRequest().denyAll()
+            )
 
-                .build();
+            // 필터 등록
+            .addFilterBefore(new JwtFilter(jwtUtil, jwtTokenAccessService), UsernamePasswordAuthenticationFilter.class)
+
+            .exceptionHandling(configurer ->
+                configurer
+                    .authenticationEntryPoint(customAuthenticationEntryPoint)
+                    .accessDeniedHandler(customAccessDeniedHandler)
+            )
+
+            .build();
     }
 }

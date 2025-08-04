@@ -1,6 +1,9 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.order.infrastructure.entity;
 
+import java.time.LocalDateTime;
+
 import com.github.nenidan.ne_ne_challenge.global.entity.BaseEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -44,12 +47,14 @@ public class OrderDetailEntity extends BaseEntity {
     @Column(nullable = false)
     private int quantity;
 
-    public OrderDetailEntity(Long productId, String productName, String productDescription, int priceAtOrder,
-        int quantity) {
+    public OrderDetailEntity(Long id, Long productId, String productName, String productDescription, int priceAtOrder,
+        int quantity,  LocalDateTime deletedAt) {
+        this.id = id;
         this.productId = productId;
         this.productName = productName;
         this.productDescription = productDescription;
         this.priceAtOrder = priceAtOrder;
         this.quantity = quantity;
+        this.deletedAt = deletedAt;
     }
 }
