@@ -77,7 +77,10 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PATCH, "/api/orders/**").hasRole(USER.name())
                 .requestMatchers(HttpMethod.GET, "/api/orders/**").hasRole(USER.name())
 
-                .requestMatchers("/api/**").authenticated()
+                // prometheus
+                .requestMatchers(HttpMethod.GET, "/api/orders/**").hasRole(USER.name())
+
+                .requestMatchers("/actuator/**").permitAll()
 
                 .anyRequest().denyAll()
             )
