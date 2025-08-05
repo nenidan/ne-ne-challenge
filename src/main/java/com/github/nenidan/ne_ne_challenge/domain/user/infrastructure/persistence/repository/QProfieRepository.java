@@ -3,6 +3,7 @@ package com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistenc
 import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.ProfileEntity;
 import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.QAccountEntity;
 import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.QProfileEntity;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -19,12 +20,15 @@ public class QProfieRepository {
     QAccountEntity account = QAccountEntity.accountEntity;
 
     public List<ProfileEntity> findByKeyword(String cursor, String keyword, int limit) {
+        BooleanExpression cursorCondition = cursor == null ? null : profile.nickname.goe(cursor);
+        BooleanExpression keywordCondition = keyword == null ? null : profile.nickname.startsWith(keyword);
+
         return queryFactory
                 .selectFrom(profile)
                 .join(account).on(profile.id.eq(account.id))
                 .where(
-                        cursor == null ? null : profile.nickname.goe(cursor),
-                        profile.nickname.contains(keyword)
+                        cursorCondition,
+                        keywordCondition
                 )
                 .orderBy(profile.nickname.asc())
                 .limit(limit)
