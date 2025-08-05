@@ -41,10 +41,6 @@ jwt:
 external:
   base-url: http://127.0.0.1:8080
 
-logging:
-  level:
-    org.springframework.jdbc.core: DEBUG
-
 ---
 spring:
   config:
@@ -62,8 +58,8 @@ spring:
 
   data:
     redis:
-      host: localhost
-      port: 6379
+      host: ${SPRING_REDIS_HOST}
+      port: ${SPRING_REDIS_PORT}
 
 ---
 spring:
