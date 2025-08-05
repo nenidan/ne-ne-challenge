@@ -110,35 +110,6 @@ public class PaymentService {
         return payment;
     }
 
-
-    // ================= 유틸성 메서드 =================
-    private Payment getPaymentByOrderId(String orderId) {
-        return paymentRepository.findByOrderId(orderId)
-            .orElseThrow(() -> new PaymentException(PaymentErrorCode.PAYMENT_NOT_FOUND));
-    }
-
-    // 시작일을 LocalDateTime 으로 변환 (00:00:00)
-    private LocalDateTime convertToStartDateTime(LocalDate startDate) {
-        return (startDate != null) ? startDate.atStartOfDay() : null;
-    }
-
-
-     // 종료일을 LocalDateTime 으로 변환 (23:59:59)
-    private LocalDateTime convertToEndDateTime(LocalDate endDate) {
-        return (endDate != null) ? endDate.atTime(23, 59, 59) : null;
-    }
-
-    // 상태 문자열 정리 (빈 문자열 → null)
-    private String convertToStatusString(String status) {
-        if (!StringUtils.hasText(status)) {
-            return null;
-        }
-
-        PaymentStatus paymentStatus = PaymentStatus.of(status);
-
-        return paymentStatus.name();
-    }
-
     @Transactional
     public PaymentCancelResult updatePaymentCancel(Payment payment, TossCancelResult tossCancelResult,
         PaymentCancelCommand command) {
@@ -154,6 +125,34 @@ public class PaymentService {
         return paymentRepository.findAll().stream()
             .map(PaymentApplicationMapper::toPaymentStatisticsResult)
             .toList();
+    }
+
+    // ================= 유틸성 메서드 =================
+    private Payment getPaymentByOrderId(String orderId) {
+        return paymentRepository.findByOrderId(orderId)
+            .orElseThrow(() -> new PaymentException(PaymentErrorCode.PAYMENT_NOT_FOUND));
+    }
+
+    // 시작일을 LocalDateTime 으로 변환 (00:00:00)
+    private LocalDateTime convertToStartDateTime(LocalDate startDate) {
+        return (startDate != null) ? startDate.atStartOfDay() : null;
+    }
+
+
+    // 종료일을 LocalDateTime 으로 변환 (23:59:59)
+    private LocalDateTime convertToEndDateTime(LocalDate endDate) {
+        return (endDate != null) ? endDate.atTime(23, 59, 59) : null;
+    }
+
+    // 상태 문자열 정리 (빈 문자열 → null)
+    private String convertToStatusString(String status) {
+        if (!StringUtils.hasText(status)) {
+            return null;
+        }
+
+        PaymentStatus paymentStatus = PaymentStatus.of(status);
+
+        return paymentStatus.name();
     }
 }
 

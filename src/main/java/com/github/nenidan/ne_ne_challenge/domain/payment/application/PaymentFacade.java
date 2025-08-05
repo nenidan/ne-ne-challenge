@@ -86,7 +86,6 @@ public class PaymentFacade {
             throw new PaymentException(PaymentErrorCode.TOSS_ERROR, e);
 
         } catch (Exception e) {
-
             try {
                 tossCancelResult = tossClient.cancelPayment(command.getPaymentKey(), "시스템 오류로 인한 결제 취소");
 
