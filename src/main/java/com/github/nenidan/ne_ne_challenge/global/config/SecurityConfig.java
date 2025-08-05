@@ -71,11 +71,13 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/products").permitAll()
                 .requestMatchers(HttpMethod.PATCH, "/api/products/*").hasRole(ADMIN.name())
                 .requestMatchers(HttpMethod.DELETE, "/api/products/*").hasRole(ADMIN.name())
+                .requestMatchers(HttpMethod.GET, "/internal/statistics/products").permitAll()
 
                 // order
                 .requestMatchers(HttpMethod.POST, "/api/orders").hasRole(USER.name())
                 .requestMatchers(HttpMethod.PATCH, "/api/orders/**").hasRole(USER.name())
                 .requestMatchers(HttpMethod.GET, "/api/orders/**").hasRole(USER.name())
+                .requestMatchers(HttpMethod.GET, "/internal/statistics/orders").permitAll()
 
                 .requestMatchers("/api/**").authenticated()
 
