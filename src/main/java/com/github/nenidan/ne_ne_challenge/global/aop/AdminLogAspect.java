@@ -19,6 +19,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.Arrays;
+import java.util.Set;
 
 @Slf4j
 @Aspect
@@ -27,6 +28,10 @@ import java.util.Arrays;
 public class AdminLogAspect {
 
     private final ApplicationEventPublisher applicationEventPublisher;
+
+    private static final Set<String> CLEAR_TRIGGER_METHODS = Set.of(
+            "PaymentFacade.confirmAndChargePoint()"
+    );//체인의 종료메서드 명시
 
     //결제 테스트 1순위 진행, 추후 도메인별 어드바이스 생성 리팩토링 예정
     @Around("execution(* com..github.nenidan.ne_ne_challenge.domain.payment.application..*(..))")
@@ -60,14 +65,18 @@ public class AdminLogAspect {
             success = false;
             fullMethodName = ex.getMessage() + "(" + fullMethodName + ")"; //에러메시지 커스텀
             targetId = LoggingContext.getId();
-            System.out.println("error: "+targetId); //디버깅 용도
 
+            System.out.println("error: "+targetId);
+
+            LoggingContext.clear();
             throw ex;
         } finally {
             System.out.println("result: " + result);
             if (success && result instanceof BaseEntity entity) {
                 targetId = entity.getId();
+
                 System.out.println("targetId: " + targetId);
+
                 LoggingContext.updateId(targetId);
             }
 
@@ -77,16 +86,16 @@ public class AdminLogAspect {
             log.info("[ADMIN_LOG] uri={}, method={}, clientIp={}, params={}, success={}, elapsed={}ms",
                     requestURI, fullMethodName, clientIp, params, success, elapsedTime);
 
-            // DB 저장용 DTO 생성
-//            AopLog logEntity = new AopLog(DomainType.PAYMENT, targetId, fullMethodName, params, result != null ? result.toString() : null, success);
-//            System.out.println("after"+logEntity.getTargetId()); //디버깅 용도
-//            logTransactionRepository.save(logEntity);
+            if(CLEAR_TRIGGER_METHODS.contains(fullMethodName)){
+                System.out.println("끝");
+                LoggingContext.clear();
+            }
 
             applicationEventPublisher.publishEvent(
                     new AdminActionLoggedEvent(DomainType.PAYMENT, targetId, fullMethodName, params, result != null ? result.toString() : null, success)
             );
 
-            //LoggingContext.clear();
+
 
         }
     }
