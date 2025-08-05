@@ -9,8 +9,9 @@ public class LogMapper {
     public static AopLogModel toDomain(AopLog entity) {
         return AopLogModel.of(
                 entity.getId(),
+                entity.getTargetId(),
                 entity.getType(),
-                entity.getUserId(),
+                entity.isSuccess(),
                 entity.getMethod(),
                 entity.getParams(),
                 entity.getResult(),
