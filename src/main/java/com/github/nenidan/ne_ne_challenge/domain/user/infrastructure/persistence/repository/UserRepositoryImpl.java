@@ -19,6 +19,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     private final JpaAccountRepository jpaAccountRepository;
     private final JpaProfileRepository jpaProfileRepository;
+    private final QProfieRepository qProfieRepository;
 
 
     @Override
@@ -59,7 +60,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public List<User> findByKeyword(String cursor, String keyword, int limit) {
-        return jpaProfileRepository.findByKeyword(cursor, keyword, limit)
+        return qProfieRepository.findByKeyword(cursor, keyword, limit)
                 .stream()
                 .map(UserMapper::toDomain)
                 .toList();
