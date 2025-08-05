@@ -11,7 +11,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum JwtTokenProviderErrorCode implements ErrorCode {
 
-    NOT_WHITELIST("접근이 거부되었습니다.", HttpStatus.FORBIDDEN);
+    NOT_WHITELIST("접근이 거부되었습니다.", HttpStatus.FORBIDDEN),
+    INVALID_REFRESH_TOKEN("리프레시 토큰이 유효하지 않습니다.", HttpStatus.UNAUTHORIZED);
 
     private final String message;
     private final HttpStatus status;
