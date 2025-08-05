@@ -1,5 +1,6 @@
 package com.github.nenidan.ne_ne_challenge.global.entity;
 
+import com.github.nenidan.ne_ne_challenge.global.aop.LogTarget;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
@@ -13,8 +14,9 @@ import java.time.LocalDateTime;
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public abstract class BaseEntity {
+public abstract class BaseEntity implements LogTarget {
 
+    @Override
     public abstract Long getId();
 
     @CreatedDate
@@ -30,6 +32,5 @@ public abstract class BaseEntity {
     public void delete() {
         this.deletedAt = LocalDateTime.now();
     }
-
 
 }
