@@ -13,6 +13,7 @@ import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PaymentSearchCommand;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentCancelResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentSearchResult;
+import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentStatisticsResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.TossCancelResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.TossConfirmResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.mapper.PaymentApplicationMapper;
@@ -147,6 +148,12 @@ public class PaymentService {
         paymentRepository.save(payment);
 
         return PaymentApplicationMapper.toPaymentCancelResult(payment);
+    }
+
+    public List<PaymentStatisticsResult> getAllPayments() {
+        return paymentRepository.findAll().stream()
+            .map(PaymentApplicationMapper::toPaymentStatisticsResult)
+            .toList();
     }
 }
 

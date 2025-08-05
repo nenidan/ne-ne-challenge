@@ -7,12 +7,14 @@ import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentCancelResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentConfirmResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentSearchResult;
+import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentStatisticsResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.request.PaymentCancelRequest;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.request.PaymentConfirmRequest;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.request.PaymentSearchRequest;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.response.PaymentCancelResponse;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.response.PaymentConfirmResponse;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.response.PaymentSearchResponse;
+import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.response.PaymentStatisticsResponse;
 
 public class PaymentPresentationMapper {
 
@@ -70,6 +72,23 @@ public class PaymentPresentationMapper {
             result.getStatus(),
             result.getRefundAmount(),
             result.getCancelReason(),
+            result.getCanceledAt()
+        );
+    }
+
+    public static PaymentStatisticsResponse toPaymentStatisticsResponse(PaymentStatisticsResult result) {
+        return new PaymentStatisticsResponse(
+            result.getId(),
+            result.getUserId(),
+            result.getAmount(),
+            result.getPaymentMethod(),
+            result.getPaymentKey(),
+            result.getOrderId(),
+            result.getStatus(),
+            result.getCancelReason(),
+            result.getRequestedAt(),
+            result.getApprovedAt(),
+            result.getFailedAt(),
             result.getCanceledAt()
         );
     }
