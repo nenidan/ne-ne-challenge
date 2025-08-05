@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.github.nenidan.ne_ne_challenge.domain.payment.domain.model.Payment;
-import com.github.nenidan.ne_ne_challenge.domain.payment.domain.type.PaymentStatus;
 
 public interface JpaPaymentRepository extends JpaRepository<Payment, Long> {
 

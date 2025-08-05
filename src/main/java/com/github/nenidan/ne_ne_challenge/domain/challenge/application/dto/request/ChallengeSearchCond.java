@@ -1,12 +1,13 @@
 package com.github.nenidan.ne_ne_challenge.domain.challenge.application.dto.request;
 
-import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeCategory;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeCategory;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus;
+
+import lombok.Getter;
+import lombok.Setter;
 
 // Todo 빈 검증 제약 조건
 @Getter

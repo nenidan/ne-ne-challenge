@@ -51,7 +51,7 @@ public class OrderPresentationMapper {
             .map(OrderPresentationMapper::fromOrderResult)
             .toList();
 
-        return new CursorResponse<>(
+        return CursorResponse.of(
             orderResponses,
             cursorOrderResult.getNextCursor(),
             cursorOrderResult.isHasNext()

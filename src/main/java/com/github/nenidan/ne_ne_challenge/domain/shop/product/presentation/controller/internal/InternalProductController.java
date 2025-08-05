@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.service.ProductService;
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto.ProductResult;
+import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.service.ProductService;
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.presentation.dto.ProductResponse;
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.presentation.mapper.ProductPresentationMapper;
 

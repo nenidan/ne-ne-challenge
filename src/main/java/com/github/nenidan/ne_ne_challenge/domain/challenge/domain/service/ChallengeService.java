@@ -1,5 +1,11 @@
 package com.github.nenidan.ne_ne_challenge.domain.challenge.domain.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.dto.ChallengeInfo;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.exception.ChallengeErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.exception.ChallengeException;
@@ -7,12 +13,8 @@ import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity.C
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeCategory;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.repository.ChallengeRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor

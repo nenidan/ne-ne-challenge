@@ -1,9 +1,11 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.domain.exception;
 
+import org.springframework.http.HttpStatus;
+
 import com.github.nenidan.ne_ne_challenge.global.exception.ErrorCode;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor

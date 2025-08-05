@@ -11,10 +11,10 @@ import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto.Pro
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto.UpdateProductCommand;
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.domain.model.Product;
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.domain.repository.ProductRepository;
-import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.event.StockDeleteEvent;
-import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 import com.github.nenidan.ne_ne_challenge.domain.shop.review.domain.event.ReviewDeleteEvent;
+import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.event.StockDeleteEvent;
 import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.event.StockRegisteredEvent;
+import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 
 import lombok.extern.slf4j.Slf4j;
@@ -112,7 +112,7 @@ public class ProductService {
 
         Long nextCursor = hasNext ? productList.get(productList.size() - 1).getId().getValue() : null;
 
-        return new CursorResponse<>(content, nextCursor, productList.size() > size);
+        return CursorResponse.of(content, nextCursor, productList.size() > size);
     }
 
     /**

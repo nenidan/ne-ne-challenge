@@ -46,7 +46,7 @@ public class ProductPresentationMapper {
             .map(ProductResponse::from)
             .toList();
 
-        return new CursorResponse<>(
+        return CursorResponse.of(
             mappedContents,
             cursorResponse.getNextCursor(),
             cursorResponse.isHasNext()

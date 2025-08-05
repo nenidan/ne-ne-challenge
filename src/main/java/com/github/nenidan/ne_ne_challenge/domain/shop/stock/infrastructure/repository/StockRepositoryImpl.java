@@ -2,13 +2,12 @@ package com.github.nenidan.ne_ne_challenge.domain.shop.stock.infrastructure.repo
 
 import org.springframework.stereotype.Repository;
 
-
-import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.model.Stock;
-import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.repository.StockRepository;
 import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.exception.StockErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.exception.StockException;
-import com.github.nenidan.ne_ne_challenge.domain.shop.stock.infrastructure.mapper.StockMapper;
+import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.model.Stock;
+import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.repository.StockRepository;
 import com.github.nenidan.ne_ne_challenge.domain.shop.stock.infrastructure.entity.StockEntity;
+import com.github.nenidan.ne_ne_challenge.domain.shop.stock.infrastructure.mapper.StockMapper;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 
 import lombok.RequiredArgsConstructor;

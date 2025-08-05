@@ -1,12 +1,18 @@
 package com.github.nenidan.ne_ne_challenge.domain.point.domain;
 
-import java.time.LocalDateTime;
-
-import org.springframework.util.StringUtils;
-
 import com.github.nenidan.ne_ne_challenge.domain.point.domain.type.PointReason;
 import com.github.nenidan.ne_ne_challenge.global.entity.BaseEntity;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

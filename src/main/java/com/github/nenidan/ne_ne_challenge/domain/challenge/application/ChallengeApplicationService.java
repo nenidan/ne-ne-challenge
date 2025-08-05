@@ -1,6 +1,16 @@
 package com.github.nenidan.ne_ne_challenge.domain.challenge.application;
 
-import com.github.nenidan.ne_ne_challenge.domain.challenge.application.dto.request.*;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.github.nenidan.ne_ne_challenge.domain.challenge.application.dto.request.ChallengeSearchCond;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.application.dto.request.CreateChallengeRequest;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.application.dto.request.CreateHistoryRequest;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.application.dto.request.HistorySearchCond;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.application.dto.request.UpdateChallengeInfoRequest;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.dto.response.ChallengeHistoryResponse;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.dto.response.ChallengeResponse;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.dto.response.ChallengeSuccessRateResponse;
@@ -13,13 +23,8 @@ import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.service.Challe
 import com.github.nenidan.ne_ne_challenge.global.client.point.PointClient;
 import com.github.nenidan.ne_ne_challenge.global.client.user.UserClient;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -61,7 +66,7 @@ public class ChallengeApplicationService {
         userClient.getUserById(userId);
         challengeFacade.checkChallengeHost(userId, challengeId);
 
-        List<Long> userIdList = challengeFacade.getParticipantList(challengeId).stream().map(Participant::getId).toList();
+        List<Long> userIdList = challengeFacade.getParticipantList(challengeId).stream().map(Participant::getUserId).toList();
         int amount = challengeFacade.getChallengeParticipationFee(challengeId);
         pointClient.refundPoints(userIdList, amount);
 

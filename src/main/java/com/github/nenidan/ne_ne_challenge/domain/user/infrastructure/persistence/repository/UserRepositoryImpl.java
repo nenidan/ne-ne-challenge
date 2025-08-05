@@ -1,15 +1,17 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.repository;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.stereotype.Repository;
+
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.model.User;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.repository.UserRepository;
 import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.AccountEntity;
 import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.ProfileEntity;
 import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.mapper.UserMapper;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor

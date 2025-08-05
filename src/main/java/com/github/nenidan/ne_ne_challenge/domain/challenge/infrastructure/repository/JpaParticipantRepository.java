@@ -1,11 +1,12 @@
 package com.github.nenidan.ne_ne_challenge.domain.challenge.infrastructure.repository;
 
-import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity.Participant;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity.Participant;
 
 @Repository
 public interface JpaParticipantRepository extends JpaRepository<Participant, Long> {

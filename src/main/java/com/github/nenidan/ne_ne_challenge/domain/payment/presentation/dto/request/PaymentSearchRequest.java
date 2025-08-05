@@ -2,7 +2,6 @@ package com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.reque
 
 import java.time.LocalDate;
 
-
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.Getter;

@@ -1,33 +1,30 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.external.oauth;
 
-import com.github.nenidan.ne_ne_challenge.domain.user.application.client.oauth.OAuthClient;
-import com.github.nenidan.ne_ne_challenge.domain.user.application.client.oauth.dto.OAuthUserInfo;
-import com.github.nenidan.ne_ne_challenge.domain.user.application.client.oauth.type.Provider;
-import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.external.oauth.dto.naver.NaverTokenRequest;
-import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.external.oauth.dto.naver.NaverTokenResponse;
-import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.external.oauth.dto.naver.NaverUserInfoResponse;
-import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.external.oauth.dto.naver.Profile;
-import lombok.RequiredArgsConstructor;
+import java.time.LocalDate;
+import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
-import java.time.LocalDate;
-import java.util.Objects;
+import com.github.nenidan.ne_ne_challenge.domain.user.application.client.oauth.OAuthClient;
+import com.github.nenidan.ne_ne_challenge.domain.user.application.client.oauth.dto.OAuthUserInfo;
+import com.github.nenidan.ne_ne_challenge.domain.user.application.client.oauth.type.Provider;
+import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.external.oauth.dto.naver.NaverUserInfoResponse;
+import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.external.oauth.dto.naver.Profile;
+
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
 public class NaverOAuthClient implements OAuthClient {
 
+    private static final String GRANT_TYPE = "authorization_code";
     private final RestClient oauthRestClient;
-
     @Value("${oauth.naver.client-id}")
     private String clientId;
-
     @Value("${oauth.naver.client-secret}")
     private String clientSecret;
-
-    private static final String GRANT_TYPE = "authorization_code";
 
     @Override
     public Provider getProvider() {

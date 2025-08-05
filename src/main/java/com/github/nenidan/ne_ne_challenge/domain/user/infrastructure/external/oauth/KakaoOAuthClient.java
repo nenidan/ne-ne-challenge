@@ -1,31 +1,29 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.external.oauth;
 
-import com.github.nenidan.ne_ne_challenge.domain.user.application.client.oauth.OAuthClient;
-import com.github.nenidan.ne_ne_challenge.domain.user.application.client.oauth.dto.OAuthUserInfo;
-import com.github.nenidan.ne_ne_challenge.domain.user.application.client.oauth.type.Provider;
-import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.external.oauth.dto.kakao.*;
-import lombok.RequiredArgsConstructor;
+import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Objects;
+import com.github.nenidan.ne_ne_challenge.domain.user.application.client.oauth.OAuthClient;
+import com.github.nenidan.ne_ne_challenge.domain.user.application.client.oauth.dto.OAuthUserInfo;
+import com.github.nenidan.ne_ne_challenge.domain.user.application.client.oauth.type.Provider;
+import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.external.oauth.dto.kakao.KakaoTokenInfoResponse;
+import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.external.oauth.dto.kakao.KakaoUserInfoResponse;
+
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
 public class KakaoOAuthClient implements OAuthClient {
 
+    private static final String GRANT_TYPE = "authorization_code";
     private final RestClient oauthRestClient;
-
     @Value("${oauth.kakao.client-id}")
     private String clientId;
-
     @Value("${oauth.kakao.redirect-uri}")
     private String redirectUri;
-
-    private static final String GRANT_TYPE = "authorization_code";
 
     @Override
     public Provider getProvider() {

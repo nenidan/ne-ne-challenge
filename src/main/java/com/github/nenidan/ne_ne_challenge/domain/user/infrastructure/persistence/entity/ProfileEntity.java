@@ -1,12 +1,25 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity;
 
-import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.embedded.AuditInfo;
-import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.annotations.SQLRestriction;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import org.hibernate.annotations.SQLRestriction;
+
+import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.embedded.AuditInfo;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapsId;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "profile")

@@ -1,8 +1,9 @@
 package com.github.nenidan.ne_ne_challenge.domain.point.presentation.internal;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,7 +17,9 @@ import com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.request.
 import com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.request.PointChargeRequest;
 import com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.request.PointRefundRequest;
 import com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.response.PointBalanceResponse;
+import com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.response.PointHistoryResponse;
 import com.github.nenidan.ne_ne_challenge.domain.point.presentation.mapper.PointPresentationMapper;
+import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -81,5 +84,19 @@ public class PointInternalController {
         pointFacade.refundPoints(PointPresentationMapper.toPointRefundCommand(request));
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/statistics/pointTransactions")
+    public ResponseEntity<ApiResponse<List<PointHistoryResponse>>> getAllPointTransactions() {
+
+        List<PointHistoryResponse> pointHistoryResponseList = pointFacade.getAllPointTransactions().stream()
+            .map(PointPresentationMapper::toPointHistoryResponse)
+            .toList();
+
+        return ApiResponse.success(
+            HttpStatus.OK,
+            "포인트 사용 이력을 조회하였습니다.",
+            pointHistoryResponseList
+        );
     }
 }

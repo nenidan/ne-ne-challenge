@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.github.nenidan.ne_ne_challenge.domain.payment.domain.model.Payment;
-import com.github.nenidan.ne_ne_challenge.domain.payment.domain.type.PaymentStatus;
 
 public interface PaymentRepository{
 
@@ -21,4 +20,6 @@ public interface PaymentRepository{
     );
 
     Optional<Payment> findByOrderId(String orderId);
+
+    List<Payment> findAll();
 }

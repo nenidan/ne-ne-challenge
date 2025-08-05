@@ -1,9 +1,9 @@
 package com.github.nenidan.ne_ne_challenge.domain.challenge.domain.repository;
 
-import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity.History;
-
 import java.time.LocalDateTime;
 import java.util.List;
+
+import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity.History;
 
 public interface HistoryReposiroty {
 
@@ -16,4 +16,6 @@ public interface HistoryReposiroty {
     List<History> getHistoryList(Long challengeId, Long userId, LocalDateTime cursor, int limit);
 
     int countOfSuccess(Long challengeId, Long userId);
+
+    List<History> findAll();
 }

@@ -1,9 +1,10 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.repository;
 
-import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.AccountEntity;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
+import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.AccountEntity;
 
 public interface JpaAccountRepository extends JpaRepository<AccountEntity, Long> {
 

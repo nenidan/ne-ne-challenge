@@ -1,9 +1,9 @@
 package com.github.nenidan.ne_ne_challenge.domain.challenge.domain.repository;
 
-import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity.Participant;
-
 import java.util.List;
 import java.util.Optional;
+
+import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity.Participant;
 
 public interface ParticipantRepository {
     Participant save(Participant participant);
@@ -15,4 +15,6 @@ public interface ParticipantRepository {
     List<Participant> findbyChallengeId(Long challengeId);
 
     int getParticipantCount(Long challengeId);
+
+    List<Participant> findAll();
 }

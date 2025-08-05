@@ -53,7 +53,6 @@ public class TossClientImpl implements TossClient {
             response.getOrderId(),
             response.getStatus(),
             response.getMethod(),
-            response.getOrderName(),
             response.getRequestedAt(),
             response.getApprovedAt(),
             response.getTotalAmount()

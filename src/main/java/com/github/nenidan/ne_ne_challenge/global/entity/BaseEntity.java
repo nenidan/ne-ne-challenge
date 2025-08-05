@@ -32,5 +32,4 @@ public abstract class BaseEntity implements LogTarget {
     public void delete() {
         this.deletedAt = LocalDateTime.now();
     }
-
 }

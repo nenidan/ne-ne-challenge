@@ -3,6 +3,7 @@ package com.github.nenidan.ne_ne_challenge.domain.user.domain.model;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.model.vo.AuditInfo;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.model.vo.SocialAccount;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.type.Role;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

@@ -1,6 +1,7 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.presentation.dto.request;
 
 import com.github.nenidan.ne_ne_challenge.domain.user.application.client.oauth.type.Provider;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

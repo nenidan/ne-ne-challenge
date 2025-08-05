@@ -1,12 +1,12 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.presentation.dto.request;
 
+import java.time.LocalDate;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.time.LocalDate;
 
 @Getter
 @AllArgsConstructor

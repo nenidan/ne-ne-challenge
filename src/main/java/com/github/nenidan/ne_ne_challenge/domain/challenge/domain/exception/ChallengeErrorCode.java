@@ -1,7 +1,8 @@
 package com.github.nenidan.ne_ne_challenge.domain.challenge.domain.exception;
 
-import com.github.nenidan.ne_ne_challenge.global.exception.ErrorCode;
 import org.springframework.http.HttpStatus;
+
+import com.github.nenidan.ne_ne_challenge.global.exception.ErrorCode;
 
 public enum ChallengeErrorCode implements ErrorCode {
     CHALLENGE_NOT_FOUND("챌린지를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),

@@ -18,8 +18,6 @@ public class PaymentSearchResponse {
 
     private int amount;
 
-    private String orderName;
-
     private String paymentStatus;
 
     private String paymentMethod;

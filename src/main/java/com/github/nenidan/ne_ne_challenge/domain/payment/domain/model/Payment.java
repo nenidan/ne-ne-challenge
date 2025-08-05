@@ -1,19 +1,22 @@
 package com.github.nenidan.ne_ne_challenge.domain.payment.domain.model;
 
-import static com.github.nenidan.ne_ne_challenge.domain.payment.util.DateTimeUtil.*;
+import java.time.LocalDateTime;
 
-import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.TossConfirmResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.domain.type.PaymentStatus;
 import com.github.nenidan.ne_ne_challenge.domain.payment.exception.PaymentErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.payment.exception.PaymentException;
 import com.github.nenidan.ne_ne_challenge.global.entity.BaseEntity;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Getter
@@ -58,45 +61,52 @@ public class Payment extends BaseEntity {
     @Column(name = "canceled_at")
     private LocalDateTime canceledAt;
 
-    // ================= 생성자 =================
-
-    private Payment(Long userId, String orderId, int amount) {
+    private Payment(Long userId, String paymentKey, String orderId, String status, String method,
+        LocalDateTime requestedAt, LocalDateTime approvedAt, int totalAmount) {
         this.userId = userId;
+        this.paymentKey = paymentKey;
         this.orderId = orderId;
-        this.amount = amount;
-        this.status = PaymentStatus.PENDING;
-        this.requestedAt = LocalDateTime.now();
+        this.status = PaymentStatus.of(status);
+        this.paymentMethod = method;
+        this.requestedAt = requestedAt;
+        this.approvedAt = approvedAt;
+        this.amount = totalAmount;
     }
 
-    // ================= 정적 팩토리 메서드 =================
-
-    public static Payment createPreparePayment(Long userId, int amount) {
-        String orderId = generateOrderId();
-        return new Payment(userId, orderId, amount);
+    public static Payment createPaymentFromConfirm(
+        Long userId,
+        String paymentKey,
+        String orderId,
+        String status,
+        String method,
+        LocalDateTime requestedAt,
+        LocalDateTime approvedAt,
+        int totalAmount
+    ) {
+        return new Payment(
+            userId,
+            paymentKey,
+            orderId,
+            status,
+            method,
+            requestedAt,
+            approvedAt,
+            totalAmount
+        );
     }
 
     // ================= 비즈니스 로직 =================
 
-    public void updateConfirm(TossConfirmResult result) {
-        this.paymentKey = result.getPaymentKey();
-        this.paymentMethod = result.getMethod();
-        this.status = PaymentStatus.of(result.getStatus());
-        this.approvedAt = parseToLocalDateTime(result.getApprovedAt());
-    }
-
-    public void fail() {
-        if (this.status != PaymentStatus.PENDING) {
+    public void fail(String status, LocalDateTime canceledAt) {
+        PaymentStatus paymentStatus = PaymentStatus.of(status);
+        if (paymentStatus != PaymentStatus.CANCELED) {
             throw new PaymentException(PaymentErrorCode.ALREADY_PROCESSED_PAYMENT);
         }
         this.status = PaymentStatus.FAIL;
-        this.failedAt = LocalDateTime.now();
+        this.failedAt = canceledAt;
     }
 
-    public void validateAmountForConfirm(int requestAmount) {
-        if (this.amount != requestAmount) {
-            throw new PaymentException(PaymentErrorCode.AMOUNT_MISMATCH);
-        }
-    }
+    // ================= 조회 메서드 =================
 
     public void validateCancelable() {
         // 상태 확인
@@ -110,26 +120,12 @@ public class Payment extends BaseEntity {
         }
     }
 
-    public void cancel(String cancelReason, String canceledAt, String status) {
-        this.cancelReason = cancelReason;
-        this.canceledAt = parseToLocalDateTime(canceledAt);
-        this.status = PaymentStatus.of(status);
-    }
-
-    // ================= 조회 메서드 =================
-
-    public String getOrderName() {
-        return generateOrderName(this.amount);
-    }
-
     // ================= 유틸리티 메서드 =================
 
-    private static String generateOrderId() {
-        return "order-" + UUID.randomUUID();
-    }
-
-    private static String generateOrderName(int amount) {
-        return "포인트 " + amount + "원 충전";
+    public void cancel(String cancelReason, LocalDateTime canceledAt, String status) {
+        this.cancelReason = cancelReason;
+        this.canceledAt = canceledAt;
+        this.status = PaymentStatus.of(status);
     }
 
 }

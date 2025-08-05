@@ -1,17 +1,17 @@
 package com.github.nenidan.ne_ne_challenge.domain.challenge.infrastructure.repository;
 
-import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity.Challenge;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeCategory;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.repository.ChallengeRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.stereotype.Repository;
+
+import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity.Challenge;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.repository.ChallengeRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor
@@ -41,5 +41,10 @@ public class ChallengeRepositoryImpl implements ChallengeRepository {
         int limit
     ) {
         return jpaChallengeRepository.getChallengeList(userId, name, status, dueAt, category, maxParticipationFee, cursor, limit);
+    }
+
+    @Override
+    public List<Challenge> findAll() {
+        return jpaChallengeRepository.findAll();
     }
 }

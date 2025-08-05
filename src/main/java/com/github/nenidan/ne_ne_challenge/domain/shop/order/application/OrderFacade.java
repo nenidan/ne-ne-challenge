@@ -1,25 +1,26 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.order.application;
 
+import org.springframework.stereotype.Component;
+
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.CreateOrderCommand;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.FindCursorOrderCommand;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.OrderResult;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.service.OrderCompensationService;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.service.OrderService;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.exception.OrderErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.exception.OrderException;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.OrderDetail;
+import com.github.nenidan.ne_ne_challenge.domain.shop.vo.OrderId;
+import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
+import com.github.nenidan.ne_ne_challenge.domain.shop.vo.UserId;
 import com.github.nenidan.ne_ne_challenge.global.client.point.PointClient;
+import com.github.nenidan.ne_ne_challenge.global.client.product.ProductRestClient;
 import com.github.nenidan.ne_ne_challenge.global.client.product.dto.ProductResponse;
 import com.github.nenidan.ne_ne_challenge.global.client.user.UserClient;
 import com.github.nenidan.ne_ne_challenge.global.client.user.dto.UserResponse;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
-
-import com.github.nenidan.ne_ne_challenge.global.client.product.ProductRestClient;
-import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.CreateOrderCommand;
-import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.FindCursorOrderCommand;
-import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.OrderResult;
-import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.OrderDetail;
-import com.github.nenidan.ne_ne_challenge.domain.shop.vo.OrderId;
-import com.github.nenidan.ne_ne_challenge.domain.shop.vo.UserId;
-import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
+
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
@@ -36,12 +37,6 @@ public class OrderFacade {
         UserResponse user = userClient.getUserById(createOrderRequest.getUserId().getValue());
         // 상품 검증 및 상품 정보 호출
         ProductResponse product = productRestClient.getProduct(createOrderRequest.getProductId());
-        // 포인트 결제 호출
-        pointClient.decreasePoint(
-            user.getId(),
-            createOrderRequest.getQuantity() * product.getPrice(),
-            "PRODUCT_PURCHASE"
-        );
 
         OrderDetail orderDetail = new OrderDetail(
             null,
@@ -51,7 +46,16 @@ public class OrderFacade {
             product.getPrice(),
             createOrderRequest.getQuantity()
         );
-        return orderService.createOrder(new UserId(user.getId()), orderDetail);
+        OrderResult order = orderService.createOrder(new UserId(user.getId()), orderDetail);
+
+        // 포인트 결제 호출
+        pointClient.decreasePoint(
+            user.getId(),
+            createOrderRequest.getQuantity() * product.getPrice(),
+            "PRODUCT_PURCHASE"
+        );
+
+        return order;
     }
 
     public void cancelOrder (Long userId, Long orderId) {

@@ -10,9 +10,9 @@ import lombok.Getter;
 
 @Getter
 public class Review {
-    private ReviewId reviewId;
     private final ProductId productId;
     private final UserId userId;
+    private ReviewId reviewId;
     private int rating;
 
     private Review(ProductId productId, UserId userId, int rating) {

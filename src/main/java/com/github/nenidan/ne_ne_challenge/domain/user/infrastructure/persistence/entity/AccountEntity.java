@@ -2,14 +2,22 @@ package com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistenc
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.SQLRestriction;
+
 import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.embedded.AuditInfo;
 import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.type.Role;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @Entity
@@ -40,18 +48,6 @@ public class AccountEntity extends AuditInfo {
     @Column(unique = true)
     private String googleId;
 
-    public static AccountEntity of(Long id, String email, String password, Role role, String kakaoId, String naverId, String googleId) {
-        return new AccountEntity(
-                id,
-                email,
-                password,
-                role,
-                kakaoId,
-                naverId,
-                googleId
-        );
-    }
-
     public AccountEntity(Long id, String email, String password, Role role, String kakaoId,
         String naverId, String googleId, LocalDateTime createdAt, LocalDateTime updatedAt,
         LocalDateTime deletedAt) {
@@ -74,5 +70,17 @@ public class AccountEntity extends AuditInfo {
         this.kakaoId = kakaoId;
         this.naverId = naverId;
         this.googleId = googleId;
+    }
+
+    public static AccountEntity of(Long id, String email, String password, Role role, String kakaoId, String naverId, String googleId) {
+        return new AccountEntity(
+                id,
+                email,
+                password,
+                role,
+                kakaoId,
+                naverId,
+                googleId
+        );
     }
 }

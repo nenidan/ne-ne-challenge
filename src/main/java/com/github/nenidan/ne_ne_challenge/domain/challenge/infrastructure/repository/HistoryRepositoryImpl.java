@@ -1,13 +1,14 @@
 package com.github.nenidan.ne_ne_challenge.domain.challenge.infrastructure.repository;
 
-import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity.History;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.repository.HistoryReposiroty;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import org.springframework.stereotype.Repository;
+
+import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity.History;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.repository.HistoryReposiroty;
+
+import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor
@@ -38,6 +39,11 @@ public class HistoryRepositoryImpl implements HistoryReposiroty {
     @Override
     public int countOfSuccess(Long challengeId, Long userId) {
         return jpaHistoryRepository.countByChallenge_IdAndUserIdAndIsSuccessTrue(challengeId, userId);
+    }
+
+    @Override
+    public List<History> findAll() {
+        return jpaHistoryRepository.findAll();
     }
 
 }

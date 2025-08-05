@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import com.github.nenidan.ne_ne_challenge.domain.payment.domain.model.Payment;
 import com.github.nenidan.ne_ne_challenge.domain.payment.domain.repository.PaymentRepository;
-import com.github.nenidan.ne_ne_challenge.domain.payment.domain.type.PaymentStatus;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,5 +33,10 @@ public class PaymentRepositoryImpl implements PaymentRepository {
     @Override
     public Optional<Payment> findByOrderId(String orderId) {
         return jpaPaymentRepository.findByOrderId(orderId);
+    }
+
+    @Override
+    public List<Payment> findAll() {
+        return jpaPaymentRepository.findAll();
     }
 }

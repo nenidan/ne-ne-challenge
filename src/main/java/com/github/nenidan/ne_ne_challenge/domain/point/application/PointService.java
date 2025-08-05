@@ -15,10 +15,10 @@ import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.response.
 import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.response.PointHistoryResult;
 import com.github.nenidan.ne_ne_challenge.domain.point.application.mapper.PointApplicationMapper;
 import com.github.nenidan.ne_ne_challenge.domain.point.domain.Point;
-import com.github.nenidan.ne_ne_challenge.domain.point.domain.repository.PointRepository;
-import com.github.nenidan.ne_ne_challenge.domain.point.domain.type.PointReason;
 import com.github.nenidan.ne_ne_challenge.domain.point.domain.PointTransaction;
 import com.github.nenidan.ne_ne_challenge.domain.point.domain.PointWallet;
+import com.github.nenidan.ne_ne_challenge.domain.point.domain.repository.PointRepository;
+import com.github.nenidan.ne_ne_challenge.domain.point.domain.type.PointReason;
 import com.github.nenidan.ne_ne_challenge.domain.point.exception.PointErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.point.exception.PointException;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
@@ -237,5 +237,11 @@ public class PointService {
             );
             pointRepository.save(pointTransaction);
         }
+    }
+
+    public List<PointHistoryResult> getAllPointTransactions() {
+        return pointRepository.findAll().stream()
+            .map(PointApplicationMapper::toPointHistoryResult)
+            .toList();
     }
 }

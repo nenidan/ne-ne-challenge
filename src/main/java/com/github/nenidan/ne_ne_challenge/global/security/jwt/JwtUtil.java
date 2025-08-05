@@ -1,22 +1,24 @@
 package com.github.nenidan.ne_ne_challenge.global.security.jwt;
 
+import java.security.Key;
+import java.util.Base64;
+import java.util.Date;
+import java.util.regex.Pattern;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
 import com.github.nenidan.ne_ne_challenge.global.security.auth.Auth;
 import com.github.nenidan.ne_ne_challenge.global.security.auth.Role;
 import com.github.nenidan.ne_ne_challenge.global.security.exception.CustomSecurityException;
 import com.github.nenidan.ne_ne_challenge.global.security.exception.SecurityErrorCode;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
-import java.security.Key;
-import java.util.Base64;
-import java.util.Date;
-import java.util.regex.Pattern;
 
 @Component
 public class JwtUtil {
@@ -24,7 +26,8 @@ public class JwtUtil {
     private static final String BEARER_PREFIX = "Bearer ";
     private static final Pattern BEARER_PATTERN = Pattern.compile("^Bearer\\s+[A-Za-z0-9-_.]+$");
 
-    private static final long TOKEN_TIME = 60 * 60 * 1000L;
+    private static final long ACCESS_TOKEN_TIME = 60 * 60 * 1000L;
+    private static final long REFRESH_TOKEN_TIME = 7 * 24 * 60 * 60 * 1000L;
 
     @Value("${jwt.secret.key}")
     private String secretKey;
@@ -37,14 +40,25 @@ public class JwtUtil {
         key = Keys.hmacShaKeyFor(bytes);
     }
 
-    public String createToken(Auth auth) {
+    public String createAccessToken(Auth auth) {
         Date date = new Date();
 
         return Jwts.builder()
                 .setSubject(String.valueOf(auth.getId()))
                 .claim("nickname", auth.getNickname())
                 .claim("role", auth.getRole().name())
-                .setExpiration(new Date(date.getTime() + TOKEN_TIME))
+                .setExpiration(new Date(date.getTime() + ACCESS_TOKEN_TIME))
+                .setIssuedAt(date)
+                .signWith(key, signatureAlgorithm)
+                .compact();
+    }
+
+    public String createRefreshToken(Long userId) {
+        Date date = new Date();
+
+        return Jwts.builder()
+                .setSubject(String.valueOf(userId))
+                .setExpiration(new Date(date.getTime() + REFRESH_TOKEN_TIME))
                 .setIssuedAt(date)
                 .signWith(key, signatureAlgorithm)
                 .compact();
@@ -87,4 +101,8 @@ public class JwtUtil {
         );
     }
 
+    public Long extractUserIdFromToken(String token) {
+        Claims claims = extractClaims(token);
+        return Long.parseLong(claims.getSubject());
+    }
 }

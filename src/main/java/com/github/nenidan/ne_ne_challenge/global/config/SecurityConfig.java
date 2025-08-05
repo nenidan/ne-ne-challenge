@@ -1,13 +1,6 @@
 package com.github.nenidan.ne_ne_challenge.global.config;
 
-import com.github.nenidan.ne_ne_challenge.domain.user.application.service.JwtTokenProvider;
-import com.github.nenidan.ne_ne_challenge.global.security.handler.CustomAccessDeniedHandler;
-import com.github.nenidan.ne_ne_challenge.global.security.handler.CustomAuthenticationEntryPoint;
-import com.github.nenidan.ne_ne_challenge.global.security.jwt.JwtFilter;
-import com.github.nenidan.ne_ne_challenge.global.security.jwt.JwtTokenAccessService;
-import com.github.nenidan.ne_ne_challenge.global.security.jwt.JwtUtil;
-
-import lombok.RequiredArgsConstructor;
+import static com.github.nenidan.ne_ne_challenge.global.security.auth.Role.*;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,8 +15,13 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 
-import static com.github.nenidan.ne_ne_challenge.global.security.auth.Role.ADMIN;
-import static com.github.nenidan.ne_ne_challenge.global.security.auth.Role.USER;
+import com.github.nenidan.ne_ne_challenge.global.security.handler.CustomAccessDeniedHandler;
+import com.github.nenidan.ne_ne_challenge.global.security.handler.CustomAuthenticationEntryPoint;
+import com.github.nenidan.ne_ne_challenge.global.security.jwt.JwtFilter;
+import com.github.nenidan.ne_ne_challenge.global.security.jwt.JwtTokenAccessService;
+import com.github.nenidan.ne_ne_challenge.global.security.jwt.JwtUtil;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
@@ -55,7 +53,11 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/health", "/error").permitAll()
 
-                .requestMatchers(HttpMethod.POST, "/api/accounts", "/api/accounts/login").permitAll()
+                .requestMatchers(HttpMethod.POST,
+                        "/api/accounts",
+                        "/api/accounts/login",
+                        "/api/accounts/refresh"
+                ).permitAll()
 
                 // review
                 .requestMatchers(HttpMethod.POST, "/api/products/*/reviews").hasRole(USER.name())

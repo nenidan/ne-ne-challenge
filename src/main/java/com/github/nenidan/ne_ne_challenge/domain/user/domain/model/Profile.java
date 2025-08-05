@@ -1,10 +1,11 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.domain.model;
 
+import java.time.LocalDate;
+
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.model.vo.AuditInfo;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.time.LocalDate;
 
 @Getter
 @AllArgsConstructor
@@ -18,23 +19,23 @@ public class Profile {
 
     public static Profile of(String nickname, LocalDate birth, String bio) {
         return new Profile(
-                null,
-                nickname,
-                birth,
-                bio,
-                null,
-                null
+            null,
+            nickname,
+            birth,
+            bio,
+            null,
+            null
         );
     }
 
     public static Profile of(String nickname, LocalDate birth, String bio, Long imageId) {
         return new Profile(
-                null,
-                nickname,
-                birth,
-                bio,
-                imageId,
-                null
+            null,
+            nickname,
+            birth,
+            bio,
+            imageId,
+            null
         );
     }
 

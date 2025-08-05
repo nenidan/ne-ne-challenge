@@ -3,20 +3,18 @@ package com.github.nenidan.ne_ne_challenge.domain.payment.presentation.mapper;
 
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PaymentCancelCommand;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PaymentConfirmCommand;
-import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PaymentPrepareCommand;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PaymentSearchCommand;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentCancelResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentConfirmResult;
-import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentPrepareResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentSearchResult;
+import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentStatisticsResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.request.PaymentCancelRequest;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.request.PaymentConfirmRequest;
-import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.request.PaymentPrepareRequest;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.request.PaymentSearchRequest;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.response.PaymentCancelResponse;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.response.PaymentConfirmResponse;
-import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.response.PaymentPrepareResponse;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.response.PaymentSearchResponse;
+import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.response.PaymentStatisticsResponse;
 
 public class PaymentPresentationMapper {
 
@@ -28,12 +26,6 @@ public class PaymentPresentationMapper {
             request.getStatus(),
             request.getStartDate(),
             request.getEndDate()
-        );
-    }
-
-    public static PaymentPrepareCommand toPaymentPrepareCommand(PaymentPrepareRequest request) {
-        return new PaymentPrepareCommand(
-            request.getAmount()
         );
     }
 
@@ -57,19 +49,10 @@ public class PaymentPresentationMapper {
             paymentSearchResult.getPaymentId(),
             paymentSearchResult.getOrderId(),
             paymentSearchResult.getAmount(),
-            paymentSearchResult.getOrderName(),
             paymentSearchResult.getPaymentStatus(),
             paymentSearchResult.getPaymentMethod(),
             paymentSearchResult.getApprovedAt(),
             paymentSearchResult.getFailedAt()
-        );
-    }
-
-    public static PaymentPrepareResponse toPaymentPrepareResponse(PaymentPrepareResult result) {
-        return new PaymentPrepareResponse(
-            result.getAmount(),
-            result.getOrderId(),
-            result.getOrderName()
         );
     }
 
@@ -79,7 +62,6 @@ public class PaymentPresentationMapper {
             result.getAmount(),
             result.getMethod(),
             result.getStatus(),
-            result.getOrderName(),
             result.getApprovedAt()
         );
     }
@@ -90,6 +72,23 @@ public class PaymentPresentationMapper {
             result.getStatus(),
             result.getRefundAmount(),
             result.getCancelReason(),
+            result.getCanceledAt()
+        );
+    }
+
+    public static PaymentStatisticsResponse toPaymentStatisticsResponse(PaymentStatisticsResult result) {
+        return new PaymentStatisticsResponse(
+            result.getId(),
+            result.getUserId(),
+            result.getAmount(),
+            result.getPaymentMethod(),
+            result.getPaymentKey(),
+            result.getOrderId(),
+            result.getStatus(),
+            result.getCancelReason(),
+            result.getRequestedAt(),
+            result.getApprovedAt(),
+            result.getFailedAt(),
             result.getCanceledAt()
         );
     }

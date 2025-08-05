@@ -1,14 +1,13 @@
 package com.github.nenidan.ne_ne_challenge.domain.challenge.infrastructure.repository;
 
-import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity.Challenge;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity.History;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.query.Param;
-import org.springframework.data.jpa.repository.Query;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity.History;
 
 public interface JpaHistoryRepository extends JpaRepository<History, Long> {
     List<History> findByChallenge_Id(Long challengeId);
