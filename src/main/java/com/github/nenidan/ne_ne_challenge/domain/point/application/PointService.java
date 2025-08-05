@@ -238,4 +238,10 @@ public class PointService {
             pointRepository.save(pointTransaction);
         }
     }
+
+    public List<PointHistoryResult> getAllPointTransactions() {
+        return pointRepository.findAll().stream()
+            .map(PointApplicationMapper::toPointHistoryResult)
+            .toList();
+    }
 }
