@@ -15,6 +15,8 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity {
 
+    public abstract Long getId();
+
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     protected LocalDateTime createdAt;
@@ -28,4 +30,6 @@ public abstract class BaseEntity {
     public void delete() {
         this.deletedAt = LocalDateTime.now();
     }
+
+
 }

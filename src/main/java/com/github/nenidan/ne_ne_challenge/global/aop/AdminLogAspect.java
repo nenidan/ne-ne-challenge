@@ -3,6 +3,9 @@ package com.github.nenidan.ne_ne_challenge.global.aop;
 import com.github.nenidan.ne_ne_challenge.domain.admin.infrastructure.entity.AopLog;
 import com.github.nenidan.ne_ne_challenge.domain.admin.infrastructure.respository.LogTransactionRepository;
 import com.github.nenidan.ne_ne_challenge.domain.admin.domain.type.DomainType;
+import com.github.nenidan.ne_ne_challenge.domain.payment.domain.model.Payment;
+import com.github.nenidan.ne_ne_challenge.global.aop.event.AdminActionLoggedEvent;
+import com.github.nenidan.ne_ne_challenge.global.entity.BaseEntity;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +13,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -22,10 +26,9 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class AdminLogAspect {
 
-    private final LogTransactionRepository logTransactionRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     //결제 테스트 1순위 진행, 추후 도메인별 어드바이스 생성 리팩토링 예정
-    /*
     @Around("execution(* com..github.nenidan.ne_ne_challenge.domain.payment.application..*(..))")
     public Object logAdminAction(ProceedingJoinPoint joinPoint) throws Throwable {
         long start = System.currentTimeMillis();
@@ -47,17 +50,27 @@ public class AdminLogAspect {
         String clientIp = request.getRemoteAddr();
 
         Object result = null;
+        Long targetId = LoggingContext.getId();
         boolean success = true;
-        String errorMessage = null;
 
         try {
             result = joinPoint.proceed();
             return result;
         } catch (Throwable ex) {
             success = false;
-            errorMessage = ex.getMessage();
+            fullMethodName = ex.getMessage() + "(" + fullMethodName + ")"; //에러메시지 커스텀
+            targetId = LoggingContext.getId();
+            System.out.println("error: "+targetId); //디버깅 용도
+
             throw ex;
         } finally {
+            System.out.println("result: " + result);
+            if (success && result instanceof BaseEntity entity) {
+                targetId = entity.getId();
+                System.out.println("targetId: " + targetId);
+                LoggingContext.updateId(targetId);
+            }
+
             long elapsedTime = System.currentTimeMillis() - start;
 
             // 로그 출력
@@ -65,10 +78,16 @@ public class AdminLogAspect {
                     requestURI, fullMethodName, clientIp, params, success, elapsedTime);
 
             // DB 저장용 DTO 생성
-            AopLog logEntity = new AopLog(DomainType.PAYMENT, fullMethodName, params, result != null ? result.toString() : null);
+//            AopLog logEntity = new AopLog(DomainType.PAYMENT, targetId, fullMethodName, params, result != null ? result.toString() : null, success);
+//            System.out.println("after"+logEntity.getTargetId()); //디버깅 용도
+//            logTransactionRepository.save(logEntity);
 
-            logTransactionRepository.save(logEntity);
+            applicationEventPublisher.publishEvent(
+                    new AdminActionLoggedEvent(DomainType.PAYMENT, targetId, fullMethodName, params, result != null ? result.toString() : null, success)
+            );
+
+            //LoggingContext.clear();
 
         }
-    } */
+    }
 }
