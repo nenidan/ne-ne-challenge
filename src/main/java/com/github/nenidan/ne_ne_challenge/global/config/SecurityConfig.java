@@ -53,7 +53,11 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/health", "/error").permitAll()
 
-                .requestMatchers(HttpMethod.POST, "/api/accounts", "/api/accounts/login").permitAll()
+                .requestMatchers(HttpMethod.POST,
+                        "/api/accounts",
+                        "/api/accounts/login",
+                        "/api/accounts/refresh"
+                ).permitAll()
 
                 // review
                 .requestMatchers(HttpMethod.POST, "/api/products/*/reviews").hasRole(USER.name())
