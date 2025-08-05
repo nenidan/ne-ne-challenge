@@ -40,4 +40,9 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
     public int getParticipantCount(Long challengeId) {
         return jpaParticipantRepository.countByChallenge_Id(challengeId);
     }
+
+    @Override
+    public List<Participant> findAll() {
+        return jpaParticipantRepository.findAll();
+    }
 }

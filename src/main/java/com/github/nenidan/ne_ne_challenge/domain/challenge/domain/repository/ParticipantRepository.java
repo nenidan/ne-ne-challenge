@@ -15,4 +15,6 @@ public interface ParticipantRepository {
     List<Participant> findbyChallengeId(Long challengeId);
 
     int getParticipantCount(Long challengeId);
+
+    List<Participant> findAll();
 }

@@ -42,4 +42,9 @@ public class ChallengeRepositoryImpl implements ChallengeRepository {
     ) {
         return jpaChallengeRepository.getChallengeList(userId, name, status, dueAt, category, maxParticipationFee, cursor, limit);
     }
+
+    @Override
+    public List<Challenge> findAll() {
+        return jpaChallengeRepository.findAll();
+    }
 }

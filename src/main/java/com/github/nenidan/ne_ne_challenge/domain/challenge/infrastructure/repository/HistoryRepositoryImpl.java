@@ -41,4 +41,9 @@ public class HistoryRepositoryImpl implements HistoryReposiroty {
         return jpaHistoryRepository.countByChallenge_IdAndUserIdAndIsSuccessTrue(challengeId, userId);
     }
 
+    @Override
+    public List<History> findAll() {
+        return jpaHistoryRepository.findAll();
+    }
+
 }
