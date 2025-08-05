@@ -59,6 +59,14 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public List<User> findAll() {
+        return jpaProfileRepository.findAll()
+                .stream()
+                .map(UserMapper::toDomain)
+                .toList();
+    }
+
+    @Override
     public List<User> findByKeyword(String cursor, String keyword, int limit) {
         return qProfieRepository.findByKeyword(cursor, keyword, limit)
                 .stream()
