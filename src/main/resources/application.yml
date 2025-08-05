@@ -12,11 +12,7 @@ spring:
     show-sql: true
     open-in-view: false
     hibernate:
-      ddl-auto: create
-    properties:
-      hibernate:
-        format_sql: true
-        show_sql: true
+      ddl-auto: update
 
 oauth:
   kakao:
@@ -44,6 +40,10 @@ jwt:
 
 external:
   base-url: http://127.0.0.1:8080
+
+logging:
+  level:
+    org.springframework.jdbc.core: DEBUG
 
 ---
 spring:
