@@ -34,4 +34,6 @@ public interface PointRepository {
     Optional<Point> findBySourceOrderId(String orderId);
 
     List<Point> findUsablePointsByWalletId(Long walletId);
+
+    List<PointTransaction> findAll();
 }

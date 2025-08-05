@@ -1,5 +1,7 @@
 package com.github.nenidan.ne_ne_challenge.domain.payment.infrastructure.client.dto.response;
 
+import java.time.OffsetDateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -10,8 +12,7 @@ public class TossConfirmResponse {
     private String orderId;
     private String status;
     private String method;
-    private String orderName;
     private int totalAmount;
-    private String requestedAt;
-    private String approvedAt;
+    private OffsetDateTime requestedAt;
+    private OffsetDateTime approvedAt;
 }

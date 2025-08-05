@@ -13,6 +13,5 @@ public class PaymentConfirmResponse {
     private int amount;
     private String method;
     private String status;
-    private String orderName;
     private LocalDateTime approvedAt;
 }

@@ -25,4 +25,6 @@ public interface ChallengeRepository {
         LocalDateTime cursor,
         int limit
     );
+
+    List<Challenge> findAll();
 }

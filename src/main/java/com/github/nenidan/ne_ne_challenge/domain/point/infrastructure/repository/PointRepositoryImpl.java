@@ -62,4 +62,9 @@ public class PointRepositoryImpl implements PointRepository {
     public List<Point> findUsablePointsByWalletId(Long walletId) {
         return jpaPointRepository.findUsablePointsByWalletId(walletId);
     }
+
+    @Override
+    public List<PointTransaction> findAll() {
+        return jpaPointTransactionRepository.findAll();
+    }
 }

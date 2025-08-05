@@ -23,7 +23,7 @@ public class PointPresentationMapper {
         return new PointHistoryResponse(
             result.getPointTransactionId(),
             result.getAmount(),
-            result.getReason(),
+            result.getReason().name(),
             result.getDescription()
         );
     }

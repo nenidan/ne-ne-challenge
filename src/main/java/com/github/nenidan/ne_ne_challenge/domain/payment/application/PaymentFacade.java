@@ -6,11 +6,9 @@ import org.springframework.web.client.RestClientResponseException;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.client.TossClient;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PaymentCancelCommand;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PaymentConfirmCommand;
-import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PaymentPrepareCommand;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PaymentSearchCommand;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentCancelResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentConfirmResult;
-import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentPrepareResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentSearchResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.TossCancelResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.TossConfirmResult;
@@ -35,25 +33,14 @@ public class PaymentFacade {
     private final PointClient pointClient;
     private final TossClient tossClient;
 
-    public PaymentPrepareResult createPreparePayment(Long userId, PaymentPrepareCommand command) {
-
-        userClient.getUserById(userId);
-
-        return paymentService.createPreparePayment(userId, command);
-    }
-
     public PaymentConfirmResult confirmAndChargePoint(Long userId, PaymentConfirmCommand command) {
 
         // 유저 검증
         userClient.getUserById(userId);
 
-        // 결제 정보 조회 및 금액 검증
-        Payment payment = paymentService.validatePaymentForConfirm(
-            command.getOrderId(),
-            command.getAmount()
-        );
-
+        Payment payment = null;
         TossConfirmResult tossConfirmResult = null;
+        TossCancelResult tossCancelResult = null;
 
         try {
             // 토스 페이먼츠의 /payments/confirm API 호출 (결제 승인)
@@ -63,47 +50,56 @@ public class PaymentFacade {
                 command.getAmount()
             );
 
-            // prepare 에서 저장되어있던 payment 객체에 토스 confirm API 에서 전달받은 값 업데이트
-            // paymentKey, paymentMethod, paymentStatus, approvedAt 저장
-            paymentService.updatePaymentFromConfirm(payment, tossConfirmResult);
+            // 프론트에서 결제 요청한 금액과, 토스에서 실제로 결제한 금액이 일치하는지 확인
+            // 일치하지 않는다면 예외를 터트려서 토스 결제 취소
+            paymentService.validatePaymentAmount(tossConfirmResult.getTotalAmount(), command.getAmount());
+
+            // 토스 결제를 완료하고, 금액 검증을 통과하였으면 토스에서 응답받은 값을 이용하여 payment 객체 생성
+            payment = paymentService.createPaymentFromConfirm(userId, tossConfirmResult);
 
             // 포인트 충전
             pointClient.chargePoint(
                 userId,
                 command.getAmount(),
                 "CHARGE",
-                payment.getOrderId()
+                tossConfirmResult.getOrderId()
             );
 
-        } catch (RestClientResponseException e) {
+            return PaymentApplicationMapper.toPaymentConfirmResult(payment);
 
+        } catch (RestClientResponseException e) {
             if (tossConfirmResult == null) {
                 // Toss 오류 로그로 남김 (code + message)
                 log.warn("Toss 결제 실패 - status: {}, body: {}", e.getRawStatusCode(), e.getResponseBodyAsString());
+                throw new PaymentException(PaymentErrorCode.TOSS_ERROR);
             } else {
                 try {
-                    tossClient.cancelPayment(command.getPaymentKey(), "시스템 오류로 인한 결제 취소");
+                    tossCancelResult = tossClient.cancelPayment(command.getPaymentKey(), "시스템 오류로 인한 결제 취소");
+                    log.info("result = {}", tossCancelResult);
+                    paymentService.failPayment(tossCancelResult);
                 } catch (Exception cancelEx) {
-                    log.error("Toss 결제 취소 실패 - 수동 처리 필요: {}", tossConfirmResult.getPaymentKey());
+                    log.error("토스 취소 실패 - 긴급 수동 처리 필요: paymentKey={}", command.getPaymentKey(), cancelEx);
+                    throw new PaymentException(PaymentErrorCode.TOSS_ERROR);
                 }
-                paymentService.failPayment(payment);
             }
 
-
-            paymentService.failPayment(payment);
             throw new PaymentException(PaymentErrorCode.TOSS_ERROR, e);
-        }
-        catch (Exception e) {
 
-            // 토스 결제 성공 + payment 업데이트 실패, 토스 결제 성공 + payment 업데이트 성공 + point 증가 실패 시 토스 결제 취소 api 호출
-            tossClient.cancelPayment(command.getPaymentKey(), "시스템 오류로 인한 결제 취소");
+        } catch (Exception e) {
 
-            // DB에 실패를 기록함 Status = PENDING -> FAIL, failedAt에 실패 시간 저장
-            paymentService.failPayment(payment);
+            try {
+                tossCancelResult = tossClient.cancelPayment(command.getPaymentKey(), "시스템 오류로 인한 결제 취소");
+
+                if (payment != null) {
+                    paymentService.failPayment(tossCancelResult);
+                } else {
+                    throw new PaymentException(PaymentErrorCode.PAYMENT_PROCESSING_FAILED);
+                }
+            } catch (Exception cancelEx) {
+                log.error("토스 취소 실패 - 수동 처리 필요: paymentKey={}", command.getPaymentKey(), cancelEx);
+            }
             throw new PaymentException(PaymentErrorCode.PAYMENT_PROCESSING_FAILED, e);
         }
-
-        return PaymentApplicationMapper.toPaymentConfirmResult(payment);
     }
 
     public CursorResponse<PaymentSearchResult, Long> searchMyPayments(Long userId, PaymentSearchCommand command) {
