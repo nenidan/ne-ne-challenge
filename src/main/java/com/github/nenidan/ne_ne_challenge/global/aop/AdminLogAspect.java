@@ -90,11 +90,11 @@ public class AdminLogAspect {
                 System.out.println("끝");
                 LoggingContext.clear();
             }
-
+        if(targetId!=null) {
             applicationEventPublisher.publishEvent(
                     new AdminActionLoggedEvent(DomainType.PAYMENT, targetId, fullMethodName, params, result != null ? result.toString() : null, success)
             );
-
+        }
 
 
         }

@@ -13,9 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,13 +26,26 @@ public class LogQueryService {
     private final SavedHistoryRepositoryImpl savedHistoryRepository;
 
 
-    private List<LogsResponse> mergeAndSort(List<? extends LogsResponse> aopLogs,
-                                            List<? extends LogsResponse> histories,
+    private List<LogsResponse> mergeAndSort(List<AopLogResponse> aopLogs,
+                                            List<PaymentHistoryResponse> histories,
                                             int limit) {
         List<LogsResponse> merged = new ArrayList<>();
-        merged.addAll(aopLogs);
-        merged.addAll(histories);
+
+        Map<Long, List<AopLogResponse>> logsGroupedByTargetId = aopLogs.stream()
+                .map(log -> log)
+                .collect(Collectors.groupingBy(AopLogResponse::getTargetId, LinkedHashMap::new, Collectors.toList()));
+
+        for (PaymentHistoryResponse history : histories) {
+            // 로그 주입
+            List<AopLogResponse> relatedLogs = logsGroupedByTargetId.getOrDefault(history.getId(), List.of());
+            history.setLogs(relatedLogs);
+
+            merged.add(history);
+        }
+
+        // 전체 정렬
         merged.sort(Comparator.comparing(LogsResponse::getCreatedAt).reversed());
+
         return merged;
     }
 

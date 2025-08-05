@@ -15,6 +15,7 @@ public class LoggingContext {
 
     public static void clear() {
         extractTargetId.remove();
+        System.out.println("끝");
     }
 
 }

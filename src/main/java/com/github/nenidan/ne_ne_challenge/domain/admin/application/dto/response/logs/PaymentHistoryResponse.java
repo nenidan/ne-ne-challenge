@@ -1,26 +1,31 @@
 package com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.response.logs;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
+@Setter
 public class PaymentHistoryResponse extends LogsResponse {
 
-    private Long paymentId;
+    private Long Id;
     private Long userId;
     private Integer amount;
     private String status; //.name() 필요
     private LocalDateTime requestedAt = null;
     private LocalDateTime canceledAt = null;
     private LocalDateTime failedAt = null;
+    private List<AopLogResponse> logs = new ArrayList<>();
 
     public PaymentHistoryResponse(String type, LocalDateTime createdAt,
-                                  Long paymentId, Long userId, Integer amount,
+                                  Long Id, Long userId, Integer amount,
                                   String status, LocalDateTime requestedAt,
                                   LocalDateTime canceledAt, LocalDateTime failedAt) {
         super(type, createdAt);
-        this.paymentId = paymentId;
+        this.Id = Id;
         this.userId = userId;
         this.amount = amount;
         this.status = status;
@@ -28,4 +33,5 @@ public class PaymentHistoryResponse extends LogsResponse {
         this.canceledAt = canceledAt;
         this.failedAt = failedAt;
     }
+
 }
