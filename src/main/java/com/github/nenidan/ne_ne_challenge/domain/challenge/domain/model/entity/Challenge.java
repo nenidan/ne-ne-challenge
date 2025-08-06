@@ -7,18 +7,18 @@ import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.Cha
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus;
 import com.github.nenidan.ne_ne_challenge.global.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
 import static com.github.nenidan.ne_ne_challenge.domain.challenge.domain.exception.ChallengeErrorCode.*;
+import static com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus.WAITING;
 
 @Entity
-@Getter
 @NoArgsConstructor
 public class Challenge extends BaseEntity {
 
@@ -42,7 +42,7 @@ public class Challenge extends BaseEntity {
     private Set<Participant> participants = new HashSet<>();
     private int minParticipants;
     private int maxParticipants;
-    private int currentParticipants;
+    private int currentParticipantCount;
 
     private int participationFee;
     private int totalFee;
@@ -108,7 +108,7 @@ public class Challenge extends BaseEntity {
         this.hostId = hostId;
         this.minParticipants = minParticipants;
         this.maxParticipants = maxParticipants;
-        this.currentParticipants = 1;
+        this.currentParticipantCount = 1;
         this.participationFee = participationFee;
         this.totalFee = participationFee; // 생성 시 방장이 포인트 지불
         this.startAt = startAt;
@@ -120,7 +120,7 @@ public class Challenge extends BaseEntity {
     // null은 처리하지 않는다.
     public void updateInfo(Long loginUserId, UpdateChallengeInfoCommand command) {
         verifyHost(loginUserId);
-        if(status != ChallengeStatus.WAITING) {
+        if(status != WAITING) {
             throw new ChallengeException(NOT_WAITING);
         }
 
@@ -164,6 +164,20 @@ public class Challenge extends BaseEntity {
         }
     }
 
+    public List<Long> getParticipantIdList() {
+        return participants.stream().map(Participant::getUserId).toList();
+    }
+
+    public void deleteChallenge(Long loginUserId) {
+        verifyHost(loginUserId);
+        if(status != WAITING) {
+            throw new ChallengeException(NOT_WAITING);
+        }
+
+        delete();
+        participants.forEach(Participant::delete);
+    }
+
     /**
      * 방장이 챌린지를 새로 생성하는 경우
      * @param requesterId 요청자 id
@@ -177,8 +191,60 @@ public class Challenge extends BaseEntity {
         }
 
         return new Challenge(
-            info.getName(), info.getDescription(), ChallengeStatus.WAITING, info.getCategory(), requesterId,
+            info.getName(), info.getDescription(), WAITING, info.getCategory(), requesterId,
             info.getMinParticipants(), info.getMaxParticipants(), info.getParticipationFee(), info.getStartAt(), info.getDueAt()
         );
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public ChallengeStatus getStatus() {
+        return status;
+    }
+
+    public ChallengeCategory getCategory() {
+        return category;
+    }
+
+    public Long getHostId() {
+        return hostId;
+    }
+
+    public int getMinParticipants() {
+        return minParticipants;
+    }
+
+    public int getMaxParticipants() {
+        return maxParticipants;
+    }
+
+    public int getCurrentParticipantCount() {
+        return currentParticipantCount;
+    }
+
+    public int getParticipationFee() {
+        return participationFee;
+    }
+
+    public int getTotalFee() {
+        return totalFee;
+    }
+
+    public LocalDate getStartAt() {
+        return startAt;
+    }
+
+    public LocalDate getDueAt() {
+        return dueAt;
     }
 }

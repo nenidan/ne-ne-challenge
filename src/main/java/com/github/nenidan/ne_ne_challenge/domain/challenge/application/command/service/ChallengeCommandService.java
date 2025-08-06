@@ -9,6 +9,7 @@ import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.exception.Chal
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity.Challenge;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.repository.ChallengeRepository;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.service.ChallengeDeletionService;
 import com.github.nenidan.ne_ne_challenge.global.client.point.PointClient;
 import com.github.nenidan.ne_ne_challenge.global.client.user.UserClient;
 import lombok.RequiredArgsConstructor;
@@ -27,29 +28,37 @@ public class ChallengeCommandService {
 
     private static final ChallengeMapper challengeMapper = ChallengeMapper.INSTANCE;
 
+    private final ChallengeDeletionService challengeDeletionService;
+
     public Long createChallenge(Long loginUserId, CreateChallengeCommand command) {
-        userClient.getUserById(loginUserId);
+        verifyUserExists(loginUserId);
         int userPoint = pointClient.getMyBalance(loginUserId).getBalance();
 
         Challenge newChallenge = Challenge.createChallenge(loginUserId, userPoint, challengeMapper.toInfo(command));
 
         Challenge savedChallenge = challengeRepository.save(newChallenge);
-        pointClient.decreasePoint(loginUserId, command.getParticipationFee(), "CHALLENGE_ENTRY");
+        pointClient.decreasePoint(loginUserId, newChallenge.getParticipationFee(), "CHALLENGE_ENTRY");
         return savedChallenge.getId();
     }
 
     public void updateChallengeInfo(Long loginUserId, Long challengeId, UpdateChallengeInfoCommand command) {
-        Challenge challenge = challengeRepository.findById(challengeId)
-            .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND));
+        Challenge challenge = getChallengeOrThrow(challengeId);
 
         challenge.updateInfo(loginUserId, command);
     }
 
-    public void deleteChallenge(Long userId, Long challengeId) {
-        // Todo
+    public void deleteChallenge(Long loginUserId, Long challengeId) {
+        verifyUserExists(loginUserId);
+        Challenge challenge = getChallengeOrThrow(challengeId);
+
+        challengeDeletionService.deleteChallenge(loginUserId, challenge);
     }
 
     public void joinChallenge(Long userId, Long challengeId) {
+        // Todo
+    }
+
+    public void quitChallenge(Long userId, Long challengeId) {
         // Todo
     }
 
@@ -59,5 +68,14 @@ public class ChallengeCommandService {
 
     public Long createHistory(CreateHistoryCommand command, Long userId, Long challengeId) {
         return null; // Todo
+    }
+
+    private void verifyUserExists(Long loginUserId) {
+        userClient.getUserById(loginUserId);
+    }
+
+    private Challenge getChallengeOrThrow(Long challengeId) {
+        return challengeRepository.findById(challengeId)
+            .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND));
     }
 }

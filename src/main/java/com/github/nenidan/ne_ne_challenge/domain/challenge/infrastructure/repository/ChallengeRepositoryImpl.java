@@ -21,11 +21,11 @@ public class ChallengeRepositoryImpl implements ChallengeRepository {
 
     @Override
     public Optional<Challenge> findById(Long id) {
-        return jpaChallengeRepository.findById(id);
+        return jpaChallengeRepository.findByIdAndDeletedAtIsNull(id);
     }
 
     @Override
     public List<Challenge> findAll() {
-        return jpaChallengeRepository.findAll();
+        return jpaChallengeRepository.findAllByDeletedAtIsNull();
     }
 }

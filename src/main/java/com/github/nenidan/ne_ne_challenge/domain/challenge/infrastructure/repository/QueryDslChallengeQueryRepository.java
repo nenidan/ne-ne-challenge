@@ -7,6 +7,7 @@ import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity.Q
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeCategory;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -30,9 +31,9 @@ public class QueryDslChallengeQueryRepository implements ChallengeQueryRepositor
 
     @Override
     public Optional<ChallengeResponse> findChallengeById(Long challengeId) {
-        ChallengeResponse result = projectToChallengeResponse(challenge)
+        ChallengeResponse result = projectToChallengeResponse()
             .from(challenge)
-            .where(challenge.id.eq(challengeId))
+            .where(challenge.id.eq(challengeId).and(notSoftDeleted()))
             .fetchOne();
 
         return Optional.ofNullable(result);
@@ -48,8 +49,9 @@ public class QueryDslChallengeQueryRepository implements ChallengeQueryRepositor
         builder.and(categoryEq(cond.getCategory()));
         builder.and(maxParticipationFeeLoe(cond.getMaxParticipationFee()));
         builder.and(createdAtLoe(cond.getCursor()));
+        builder.and(notSoftDeleted());
 
-        return projectToChallengeResponse(challenge)
+        return projectToChallengeResponse()
             .from(challenge)
             .join(challenge.participants, participant)
             .where(builder)
@@ -58,7 +60,7 @@ public class QueryDslChallengeQueryRepository implements ChallengeQueryRepositor
             .fetch();
     }
 
-    private JPAQuery<ChallengeResponse> projectToChallengeResponse(QChallenge challenge) {
+    private JPAQuery<ChallengeResponse> projectToChallengeResponse() {
         return queryFactory
             .select(Projections.bean(ChallengeResponse.class,
                 challenge.id,
@@ -76,6 +78,10 @@ public class QueryDslChallengeQueryRepository implements ChallengeQueryRepositor
                 challenge.updatedAt,
                 challenge.deletedAt
             ));
+    }
+
+    private BooleanExpression notSoftDeleted() {
+        return challenge.deletedAt.isNull();
     }
 
     private BooleanExpression userIdEq(Long userId) {
