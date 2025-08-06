@@ -7,14 +7,18 @@ import com.github.nenidan.ne_ne_challenge.domain.challenge.application.command.m
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.exception.ChallengeErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.exception.ChallengeException;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity.Challenge;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity.History;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.repository.ChallengeRepository;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.repository.HistoryRepository;
 import com.github.nenidan.ne_ne_challenge.global.client.point.PointClient;
 import com.github.nenidan.ne_ne_challenge.global.client.user.UserClient;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -26,6 +30,7 @@ public class ChallengeCommandService {
     private final PointClient pointClient;
 
     private final ChallengeRepository challengeRepository;
+    private final HistoryRepository historyRepository;
 
     private static final ChallengeMapper challengeMapper = ChallengeMapper.INSTANCE;
 
@@ -77,12 +82,21 @@ public class ChallengeCommandService {
         // Todo
     }
 
-    public Long createHistory(CreateHistoryCommand command, Long userId, Long challengeId) {
-        return null; // Todo
+    public Long createHistory(Long requesterId, Long challengeId, CreateHistoryCommand command) {
+        Challenge challenge = getChallengeOrThrow(challengeId);
+        challenge.checkParticipation(requesterId);
+        challenge.checkCanWrite();
+
+        History history = History.createSuccesfulHistory(requesterId, challengeId, command.getContent());
+        try {
+            return historyRepository.save(history).getId();
+        } catch (DataIntegrityViolationException e) {
+            throw new ChallengeException(ChallengeErrorCode.ALREADY_VERIFIED);
+        }
     }
 
-    private void verifyUserExists(Long loginUserId) {
-        userClient.getUserById(loginUserId);
+    private void verifyUserExists(Long requesterId) {
+        userClient.getUserById(requesterId);
     }
 
     private Challenge getChallengeOrThrow(Long challengeId) {

@@ -119,6 +119,7 @@ public class Challenge extends BaseEntity {
     }
 
     // null은 처리하지 않는다.
+    // fixme Command를 ChallengeInfo로 매핑 필요
     public void updateInfo(Long loginUserId, UpdateChallengeInfoCommand command) {
         verifyHost(loginUserId);
         verifyWaiting();
@@ -210,6 +211,19 @@ public class Challenge extends BaseEntity {
         currentParticipantCount--;
     }
 
+    public void checkParticipation(Long requesterId) {
+        participants.stream()
+            .filter(p -> p.getUserId().equals(requesterId))
+            .findFirst()
+            .orElseThrow(() -> new ChallengeException(NOT_PARTICIPATING));
+    }
+
+    public void checkCanWrite() {
+        if(status != ONGOING) {
+            throw new ChallengeException(NOT_ONGOING);
+        }
+    }
+
     private void verifyEnoughPoint(int userPoint) {
         if(userPoint < participationFee) {
             throw new ChallengeException(POINT_INSUFFICIENT);
@@ -221,7 +235,6 @@ public class Challenge extends BaseEntity {
             throw new ChallengeException(NOT_WAITING);
         }
     }
-
 
     /**
      * 방장이 챌린지를 새로 생성하는 경우
@@ -292,4 +305,5 @@ public class Challenge extends BaseEntity {
     public LocalDate getDueAt() {
         return dueAt;
     }
+
 }

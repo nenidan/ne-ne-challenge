@@ -28,16 +28,6 @@ public class ChallengeQueryController {
         return ApiResponse.success(HttpStatus.OK, "챌린지를 조회했습니다.", queryService.findChallengeById(id));
     }
 
-    @GetMapping("/challenges/{id}/success-rate")
-    public ResponseEntity<ApiResponse<ChallengeSuccessRateResponse>> getSuccessRate(@PathVariable Long id,
-        @RequestParam Long userId
-    ) {
-        return ApiResponse.success(HttpStatus.OK,
-            "현재까지의 인증율을 조회했습니다.",
-            queryService.getSuccessRate(userId, id)
-        );
-    }
-
     @GetMapping("/challenges")
     public ResponseEntity<ApiResponse<CursorResponse<ChallengeResponse, LocalDateTime>>> getChallengeList(@ModelAttribute ChallengeSearchCond cond) {
         return ApiResponse.success(HttpStatus.OK,
@@ -54,6 +44,16 @@ public class ChallengeQueryController {
         return ApiResponse.success(HttpStatus.OK,
             "챌린지 기록을 조회했습니다.",
             queryService.getHistoryList(challengeId, cond)
+        );
+    }
+
+    @GetMapping("/challenges/{id}/success-rate")
+    public ResponseEntity<ApiResponse<ChallengeSuccessRateResponse>> getSuccessRate(@PathVariable Long id,
+        @RequestParam Long userId
+    ) {
+        return ApiResponse.success(HttpStatus.OK,
+            "현재까지의 인증율을 조회했습니다.",
+            queryService.getSuccessRate(userId, id)
         );
     }
 }

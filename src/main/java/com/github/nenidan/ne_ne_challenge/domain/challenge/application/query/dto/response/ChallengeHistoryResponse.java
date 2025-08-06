@@ -3,6 +3,7 @@ package com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dt
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -15,11 +16,11 @@ public class ChallengeHistoryResponse {
     private Long challengeId;
 
     private String content;
-
     private boolean isSuccess;
+
+    private LocalDate date;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
-
 }

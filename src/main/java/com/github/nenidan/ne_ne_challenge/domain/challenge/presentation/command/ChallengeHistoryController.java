@@ -31,7 +31,7 @@ public class ChallengeHistoryController {
         @PathVariable("id") Long challengeId,
         @RequestBody CreateHistoryCommand request
     ) {
-        Long historyId = commandService.createHistory(request, authUser.getId(), challengeId);
+        Long historyId = commandService.createHistory(authUser.getId(), challengeId, request);
 
         return ApiResponse.success(HttpStatus.CREATED,
             "챌린지 기록을 남겼습니다.",
