@@ -25,7 +25,7 @@ public class QProfieRepository {
 
         return queryFactory
                 .selectFrom(profile)
-                .join(account).on(profile.id.eq(account.id))
+                .join(profile.account, account).fetchJoin()
                 .where(
                         cursorCondition,
                         keywordCondition

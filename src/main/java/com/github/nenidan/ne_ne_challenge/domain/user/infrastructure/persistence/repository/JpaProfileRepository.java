@@ -3,6 +3,8 @@ package com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistenc
 import java.util.List;
 import java.util.Optional;
 
+import lombok.NonNull;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,13 +15,25 @@ public interface JpaProfileRepository extends JpaRepository<ProfileEntity, Long>
 
     boolean existsByNickname(String nickname);
 
+    @EntityGraph(attributePaths = {"account"})
     Optional<ProfileEntity> findByAccountEmail(String email);
 
+    @EntityGraph(attributePaths = {"account"})
     Optional<ProfileEntity> findByAccount_KakaoId(String kakaoId);
 
+    @EntityGraph(attributePaths = {"account"})
     Optional<ProfileEntity> findByAccount_NaverId(String naverId);
 
+    @EntityGraph(attributePaths = {"account"})
     Optional<ProfileEntity> findByAccount_GoogleId(String googleId);
+
+    @NonNull
+    @EntityGraph(attributePaths = {"account"})
+    Optional<ProfileEntity> findById(@NonNull Long id);
+
+    @NonNull
+    @EntityGraph(attributePaths = {"account"})
+    List<ProfileEntity> findAll();
 
     @Query(value = """
     SELECT p.* FROM profile p
