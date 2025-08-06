@@ -2,6 +2,7 @@ package com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity;
 
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.command.dto.UpdateChallengeInfoCommand;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.dto.ChallengeRequestInfo;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.exception.ChallengeErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.exception.ChallengeException;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeCategory;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus;
@@ -120,9 +121,7 @@ public class Challenge extends BaseEntity {
     // null은 처리하지 않는다.
     public void updateInfo(Long loginUserId, UpdateChallengeInfoCommand command) {
         verifyHost(loginUserId);
-        if(status != WAITING) {
-            throw new ChallengeException(NOT_WAITING);
-        }
+        verifyWaiting();
 
         String newName = command.getName();
         if(newName != null && !newName.isEmpty()) {
@@ -170,12 +169,38 @@ public class Challenge extends BaseEntity {
 
     public void deleteChallenge(Long loginUserId) {
         verifyHost(loginUserId);
-        if(status != WAITING) {
-            throw new ChallengeException(NOT_WAITING);
-        }
+        verifyWaiting();
 
         delete();
         participants.forEach(Participant::delete);
+    }
+
+    public void join(Long loginUserId, int userPoint) {
+        verifyWaiting();
+        if(currentParticipantCount >= maxParticipants) {
+            throw new ChallengeException(ChallengeErrorCode.CHALLENGE_FULL);
+        }
+        verifyEnoughPoint(userPoint);
+
+        if(participants.stream().anyMatch(p -> Objects.equals(p.getUserId(), loginUserId))) {
+            throw new ChallengeException(ALREADY_PARTICIPATED);
+        }
+
+        participants.add(new Participant(loginUserId));
+        totalFee += participationFee;
+        currentParticipantCount++;
+    }
+
+    private void verifyEnoughPoint(int userPoint) {
+        if(userPoint < participationFee) {
+            throw new ChallengeException(POINT_INSUFFICIENT);
+        }
+    }
+
+    private void verifyWaiting() {
+        if(status != WAITING) {
+            throw new ChallengeException(NOT_WAITING);
+        }
     }
 
     /**

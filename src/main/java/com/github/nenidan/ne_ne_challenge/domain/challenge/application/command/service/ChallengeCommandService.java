@@ -9,7 +9,6 @@ import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.exception.Chal
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity.Challenge;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.repository.ChallengeRepository;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.service.ChallengeDeletionService;
 import com.github.nenidan.ne_ne_challenge.global.client.point.PointClient;
 import com.github.nenidan.ne_ne_challenge.global.client.user.UserClient;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +36,7 @@ public class ChallengeCommandService {
         Challenge newChallenge = Challenge.createChallenge(loginUserId, userPoint, challengeMapper.toInfo(command));
 
         Challenge savedChallenge = challengeRepository.save(newChallenge);
-        pointClient.decreasePoint(loginUserId, newChallenge.getParticipationFee(), "CHALLENGE_ENTRY");
+        pointClient.decreasePoint(loginUserId, savedChallenge.getParticipationFee(), "CHALLENGE_ENTRY");
         return savedChallenge.getId();
     }
 
@@ -56,8 +55,13 @@ public class ChallengeCommandService {
         pointClient.refundPoints(participantIdList, challenge.getParticipationFee());
     }
 
-    public void joinChallenge(Long userId, Long challengeId) {
+    public void joinChallenge(Long loginUserId, Long challengeId) {
+        verifyUserExists(loginUserId);
+        int userPoint = pointClient.getMyBalance(loginUserId).getBalance();
+        Challenge challenge = getChallengeOrThrow(challengeId);
 
+        challenge.join(loginUserId, userPoint);
+        pointClient.decreasePoint(loginUserId, challenge.getParticipationFee(), "CHALLENGE_ENTRY");
     }
 
     public void quitChallenge(Long userId, Long challengeId) {
