@@ -1,5 +1,6 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.presentation.controller.internal;
 
+import com.github.nenidan.ne_ne_challenge.domain.user.application.dto.UserResult;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,9 +31,7 @@ public class InternalProfileController {
     }
 
     @GetMapping("/profiles")
-    public ResponseEntity<List<UserResponse>> getProfiles() {
-        return ResponseEntity.ok().body(
-                userFacade.getProfiles().stream().map(userMapper::toResponse).toList()
-        );
+    public List<UserResult> getProfiles() {
+        return userFacade.getProfileAll();
     }
 }

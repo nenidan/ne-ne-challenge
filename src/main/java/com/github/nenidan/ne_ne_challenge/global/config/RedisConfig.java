@@ -49,7 +49,7 @@ public class RedisConfig {
         Map<String, RedisCacheConfiguration> cacheConfigs = new HashMap<>();
 
         cacheConfigs.put("profileSearch", defaultConfig.entryTtl(Duration.ofMinutes(5)));
-        cacheConfigs.put("otherCache", defaultConfig.entryTtl(Duration.ofHours(1)));
+        cacheConfigs.put("statistics", defaultConfig.entryTtl(Duration.ofHours(1)));
 
         return RedisCacheManager.builder(redisConnectionFactory)
                 .cacheDefaults(defaultConfig)

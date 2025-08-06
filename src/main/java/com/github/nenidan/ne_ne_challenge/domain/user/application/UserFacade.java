@@ -66,8 +66,8 @@ public class UserFacade {
         return UserMapper.toDto(userService.getProfile(id));
     }
 
-    public List<UserResult> getProfiles() {
-        return userService.getProfiles().stream().map(UserMapper::toDto).toList();
+    public List<UserResult> getProfileAll() {
+        return cachedUserService.getProfileAll();
     }
 
     public CursorResponse<UserResult, String> searchProfiles(String cursor, int size, String keyword) {
