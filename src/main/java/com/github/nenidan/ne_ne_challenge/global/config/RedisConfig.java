@@ -1,6 +1,8 @@
 package com.github.nenidan.ne_ne_challenge.global.config;
 
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -38,13 +40,20 @@ public class RedisConfig {
                 .fromSerializer(new GenericJackson2JsonRedisSerializer(objectMapper));
 
 
-        RedisCacheConfiguration cacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
+        RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
                 .serializeKeysWith(keySerializer)
                 .serializeValuesWith(valueSerializer)
                 .entryTtl(Duration.ofMinutes(30)); // TTL: 30분 (유효시간)
 
+
+        Map<String, RedisCacheConfiguration> cacheConfigs = new HashMap<>();
+
+        cacheConfigs.put("profileSearch", defaultConfig.entryTtl(Duration.ofMinutes(5)));
+        cacheConfigs.put("otherCache", defaultConfig.entryTtl(Duration.ofHours(1)));
+
         return RedisCacheManager.builder(redisConnectionFactory)
-                .cacheDefaults(cacheConfiguration)
+                .cacheDefaults(defaultConfig)
+                .withInitialCacheConfigurations(cacheConfigs)
                 .build();
     }
 
