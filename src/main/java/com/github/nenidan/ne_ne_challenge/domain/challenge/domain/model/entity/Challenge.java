@@ -36,7 +36,7 @@ public class Challenge extends BaseEntity {
 
     private Long hostId;
 
-    @OneToMany
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "challenge_id")
     private Set<Participant> participants = new HashSet<>();
     private int minParticipants;
@@ -60,18 +60,6 @@ public class Challenge extends BaseEntity {
         LocalDate startAt,
         LocalDate dueAt
     ) {
-        this.name = name;
-        this.description = description;
-        this.status = status;
-        this.category = category;
-        this.hostId = hostId;
-        this.minParticipants = minParticipants;
-        this.maxParticipants = maxParticipants;
-        this.participationFee = participationFee;
-        this.totalFee = participationFee; // 생성 시 방장이 포인트 지불
-        this.startAt = startAt;
-        this.dueAt = dueAt;
-
         if (name == null || name.isEmpty()) {
             throw new ChallengeException(REQUEST_ERROR);
         }
@@ -85,6 +73,14 @@ public class Challenge extends BaseEntity {
         }
 
         if(category == null) {
+            throw new ChallengeException(REQUEST_ERROR);
+        }
+
+        if(minParticipants < 0 || maxParticipants < 0) {
+            throw new ChallengeException(REQUEST_ERROR);
+        }
+
+        if(minParticipants > maxParticipants) {
             throw new ChallengeException(REQUEST_ERROR);
         }
 
@@ -103,6 +99,21 @@ public class Challenge extends BaseEntity {
         if(dueAt.isBefore(today) || dueAt.isEqual(today)) {
             throw new ChallengeException(REQUEST_ERROR);
         }
+
+        this.name = name;
+        this.description = description;
+        this.status = status;
+        this.category = category;
+        this.hostId = hostId;
+        this.minParticipants = minParticipants;
+        this.maxParticipants = maxParticipants;
+        this.currentParticipants = 1;
+        this.participationFee = participationFee;
+        this.totalFee = participationFee; // 생성 시 방장이 포인트 지불
+        this.startAt = startAt;
+        this.dueAt = dueAt;
+
+        participants.add(new Participant(hostId));
     }
 
     /**

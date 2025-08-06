@@ -32,6 +32,7 @@ public class ChallengeCommandService {
         Challenge newChallenge = Challenge.createChallenge(loginUserId, userPoint, challengeMapper.toInfo(command));
 
         Challenge savedChallenge = challengeRepository.save(newChallenge);
+        pointClient.decreasePoint(loginUserId, command.getParticipationFee(), "CHALLENGE_ENTRY");
         return savedChallenge.getId();
     }
 
