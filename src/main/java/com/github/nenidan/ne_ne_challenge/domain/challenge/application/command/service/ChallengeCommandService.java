@@ -16,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -27,8 +29,6 @@ public class ChallengeCommandService {
     private final ChallengeRepository challengeRepository;
 
     private static final ChallengeMapper challengeMapper = ChallengeMapper.INSTANCE;
-
-    private final ChallengeDeletionService challengeDeletionService;
 
     public Long createChallenge(Long loginUserId, CreateChallengeCommand command) {
         verifyUserExists(loginUserId);
@@ -51,11 +51,13 @@ public class ChallengeCommandService {
         verifyUserExists(loginUserId);
         Challenge challenge = getChallengeOrThrow(challengeId);
 
-        challengeDeletionService.deleteChallenge(loginUserId, challenge);
+        List<Long> participantIdList = challenge.getParticipantIdList();
+        challenge.deleteChallenge(loginUserId);
+        pointClient.refundPoints(participantIdList, challenge.getParticipationFee());
     }
 
     public void joinChallenge(Long userId, Long challengeId) {
-        // Todo
+
     }
 
     public void quitChallenge(Long userId, Long challengeId) {
