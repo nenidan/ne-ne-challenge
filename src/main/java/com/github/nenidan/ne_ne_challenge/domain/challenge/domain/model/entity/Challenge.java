@@ -1,5 +1,6 @@
 package com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity;
 
+import com.github.nenidan.ne_ne_challenge.domain.challenge.application.command.dto.UpdateChallengeInfoCommand;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.dto.ChallengeRequestInfo;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.exception.ChallengeException;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeCategory;
@@ -11,10 +12,10 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
-import static com.github.nenidan.ne_ne_challenge.domain.challenge.domain.exception.ChallengeErrorCode.POINT_INSUFFICIENT;
-import static com.github.nenidan.ne_ne_challenge.domain.challenge.domain.exception.ChallengeErrorCode.REQUEST_ERROR;
+import static com.github.nenidan.ne_ne_challenge.domain.challenge.domain.exception.ChallengeErrorCode.*;
 
 @Entity
 @Getter
@@ -114,6 +115,53 @@ public class Challenge extends BaseEntity {
         this.dueAt = dueAt;
 
         participants.add(new Participant(hostId));
+    }
+
+    // null은 처리하지 않는다.
+    public void updateInfo(Long loginUserId, UpdateChallengeInfoCommand command) {
+        verifyHost(loginUserId);
+        if(status != ChallengeStatus.WAITING) {
+            throw new ChallengeException(NOT_WAITING);
+        }
+
+        String newName = command.getName();
+        if(newName != null && !newName.isEmpty()) {
+            this.name = newName;
+        }
+
+        String newDescription = command.getDescription();
+        if(newDescription != null && !newDescription.isEmpty()) {
+            this.description = newDescription;
+        }
+
+        LocalDate newStartAt = command.getStartAt() == null ? this.startAt : command.getStartAt();
+        LocalDate newDueAt = command.getDueAt() == null ? this.dueAt : command.getDueAt();
+
+        if (newStartAt.isEqual(newDueAt) || newStartAt.isAfter(newDueAt)) {
+            throw new ChallengeException(REQUEST_ERROR);
+        }
+
+        LocalDate today = LocalDate.now();
+        if (newStartAt.isBefore(today)) {
+            throw new ChallengeException(REQUEST_ERROR);
+        }
+        if(newDueAt.isBefore(today) || newDueAt.isEqual(today)) {
+            throw new ChallengeException(REQUEST_ERROR);
+        }
+
+        this.startAt = newStartAt;
+        this.dueAt = newDueAt;
+
+        ChallengeCategory newCategory = command.getCategory();
+        if(newCategory != null) {
+            this.category = newCategory;
+        }
+    }
+
+    private void verifyHost(Long loginUserId) {
+        if(!Objects.equals(hostId, loginUserId)) {
+            throw new ChallengeException(NOT_HOST);
+        }
     }
 
     /**

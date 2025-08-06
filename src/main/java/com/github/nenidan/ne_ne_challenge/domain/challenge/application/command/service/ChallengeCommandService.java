@@ -4,6 +4,8 @@ import com.github.nenidan.ne_ne_challenge.domain.challenge.application.command.d
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.command.dto.CreateHistoryCommand;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.command.dto.UpdateChallengeInfoCommand;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.command.mapper.ChallengeMapper;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.exception.ChallengeErrorCode;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.exception.ChallengeException;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity.Challenge;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.repository.ChallengeRepository;
@@ -37,7 +39,10 @@ public class ChallengeCommandService {
     }
 
     public void updateChallengeInfo(Long loginUserId, Long challengeId, UpdateChallengeInfoCommand command) {
-        // Todo
+        Challenge challenge = challengeRepository.findById(challengeId)
+            .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND));
+
+        challenge.updateInfo(loginUserId, command);
     }
 
     public void deleteChallenge(Long userId, Long challengeId) {
