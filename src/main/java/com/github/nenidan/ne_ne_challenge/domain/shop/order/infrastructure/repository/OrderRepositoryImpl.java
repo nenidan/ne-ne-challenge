@@ -40,7 +40,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     public List<Order> findAllOrders(UserId userId, Long cursor, String keyword, int size) {
         return orderQueryDslRepository.findAllOrdersBy(userId.getValue(), cursor, keyword, size)
             .stream()
-            .map(OrderMapper::toProjection)
+            .map(OrderMapper::toDomain)
             .toList();
     }
 

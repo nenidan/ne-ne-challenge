@@ -2,8 +2,8 @@ package com.github.nenidan.ne_ne_challenge.domain.shop.order.infrastructure.repo
 
 import java.util.List;
 
-import com.github.nenidan.ne_ne_challenge.domain.shop.order.infrastructure.mapper.OrderFlatProjection;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.infrastructure.entity.OrderEntity;
 
 public interface OrderQueryDslRepository {
-    List<OrderFlatProjection> findAllOrdersBy(Long userId, Long cursor, String keyword, int limit );
+    List<OrderEntity> findAllOrdersBy(Long userId, Long cursor, String keyword, int limit );
 }
