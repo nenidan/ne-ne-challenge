@@ -10,23 +10,21 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ChallengeInfo {
+public class ChallengeRequestInfo {
+
+    private Long Id;
 
     private String name;
-
-    private ChallengeStatus status;
-
     private String description;
 
-    private int minParticipants;
+    private ChallengeStatus status;
+    private ChallengeCategory category;
 
+    private int minParticipants;
     private int maxParticipants;
 
     private LocalDate startAt;
-
     private LocalDate dueAt;
-
-    private ChallengeCategory category;
 
     private int participationFee;
 }

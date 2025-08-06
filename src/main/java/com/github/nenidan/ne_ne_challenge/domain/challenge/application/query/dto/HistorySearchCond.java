@@ -1,12 +1,11 @@
-package com.github.nenidan.ne_ne_challenge.domain.challenge.application.dto.request;
-
-import java.time.LocalDateTime;
+package com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
-// Todo 빈 검증 제약 조건
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 public class HistorySearchCond {

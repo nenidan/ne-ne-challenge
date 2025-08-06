@@ -1,10 +1,9 @@
-package com.github.nenidan.ne_ne_challenge.domain.challenge.application;
+package com.github.nenidan.ne_ne_challenge.domain.challenge.application.query;
 
-import com.github.nenidan.ne_ne_challenge.domain.challenge.application.dto.response.ChallengeResponse;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.application.dto.response.inner.InnerChallengeResponse;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.application.dto.response.inner.InnerHistoryResponse;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.application.dto.response.inner.InnerParticipantResponse;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.application.mapper.InnerChallengeMapper;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.inner.InnerChallengeResponse;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.inner.InnerHistoryResponse;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.inner.InnerParticipantResponse;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.mapper.InnerChallengeMapper;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.repository.ChallengeRepository;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.repository.HistoryReposiroty;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.repository.ParticipantRepository;

@@ -1,8 +1,8 @@
-package com.github.nenidan.ne_ne_challenge.domain.challenge.application.mapper;
+package com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.mapper;
 
-import com.github.nenidan.ne_ne_challenge.domain.challenge.application.dto.response.inner.InnerChallengeResponse;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.application.dto.response.inner.InnerHistoryResponse;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.application.dto.response.inner.InnerParticipantResponse;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.inner.InnerChallengeResponse;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.inner.InnerHistoryResponse;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.inner.InnerParticipantResponse;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity.Challenge;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity.History;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity.Participant;

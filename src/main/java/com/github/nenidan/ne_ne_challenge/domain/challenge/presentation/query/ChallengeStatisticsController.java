@@ -1,9 +1,9 @@
-package com.github.nenidan.ne_ne_challenge.domain.challenge.presentation.controller;
+package com.github.nenidan.ne_ne_challenge.domain.challenge.presentation.query;
 
-import com.github.nenidan.ne_ne_challenge.domain.challenge.application.ChallengeStatisticsService;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.application.dto.response.inner.InnerChallengeResponse;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.application.dto.response.inner.InnerHistoryResponse;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.application.dto.response.inner.InnerParticipantResponse;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.ChallengeStatisticsService;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.inner.InnerChallengeResponse;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.inner.InnerHistoryResponse;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.inner.InnerParticipantResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

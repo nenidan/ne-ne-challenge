@@ -1,4 +1,4 @@
-package com.github.nenidan.ne_ne_challenge.domain.challenge.application.dto.response.inner;
+package com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.inner;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,4 +1,4 @@
-package com.github.nenidan.ne_ne_challenge.domain.challenge.application.dto.response.inner;
+package com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.inner;
 
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeCategory;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus;
