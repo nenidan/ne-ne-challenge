@@ -26,7 +26,7 @@ public class ChallengeQueryService {
     }
 
     public CursorResponse<ChallengeResponse, LocalDateTime> getChallengeList(ChallengeSearchCond cond) {
-        return null; // Todo
+        return CursorResponse.of(repository.findChallenges(cond), ChallengeResponse::getCreatedAt, cond.getSize());
     }
 
     public ChallengeSuccessRateResponse getSuccessRate(Long userId, Long challengeId) {
