@@ -9,4 +9,5 @@ public interface ProductRepository {
     Product save(Product product);
     Product findById(ProductId productId);
     List<Product> findAllByCursor(Long cursor, int size, String keyword);
+    List<Product> findAll();
 }

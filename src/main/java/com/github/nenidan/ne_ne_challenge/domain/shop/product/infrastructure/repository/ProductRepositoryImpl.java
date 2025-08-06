@@ -41,4 +41,12 @@ public class ProductRepositoryImpl implements ProductRepository {
                     .map(ProductMapper::toDomain)
                     .toList();
     }
+
+    @Override
+    public List<Product> findAll() {
+        return productJpaRepository.findAll()
+            .stream()
+            .map(ProductMapper::toDomain)
+            .toList();
+    }
 }

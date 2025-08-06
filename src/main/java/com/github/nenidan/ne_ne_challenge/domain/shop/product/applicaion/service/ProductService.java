@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto.CreateProductCommand;
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto.ProductResult;
+import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto.ProductStatisticsResult;
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto.UpdateProductCommand;
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.domain.model.Product;
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.domain.repository.ProductRepository;
@@ -130,5 +131,12 @@ public class ProductService {
         // 상품이 삭제될 때, 상품과 관련된 재고와 리뷰도 삭제하기 위해 이벤트 발행
         applicationEventPublisher.publishEvent(new StockDeleteEvent(new ProductId(productId)));
         applicationEventPublisher.publishEvent(new ReviewDeleteEvent(new ProductId(productId)));
+    }
+
+    public List<ProductStatisticsResult> getAllProducts() {
+        return productRepository.findAll()
+            .stream()
+            .map(ProductStatisticsResult::fromEntity)
+            .toList();
     }
 }
