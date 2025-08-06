@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     container_name: dev-app
     ports:
-      - "8081:8080"
+      - "8080:8080"
     depends_on:
       mysql:
         condition: service_healthy
@@ -16,7 +16,7 @@ services:
     env_file:
       - .env
     environment:
-      SPRING_PROFILES_ACTIVE: dev
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
       DB_URL: ${DB_URL}
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
@@ -37,23 +37,23 @@ services:
     image: mysql:8
     container_name: dev-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      MYSQL_DATABASE: capital
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: final_db
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql-dev-data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: [ "CMD", "mysql", "-uroot", "-p1234", "-e", "USE final_db;" ]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
 
   redis:
     image: redis
     container_name: dev-redis
     ports:
-      - "6379:6379"
+      - "6380:6379"
     volumes:
       - redis-dev-data:/data
     healthcheck:
@@ -62,6 +62,33 @@ services:
       timeout: 3s
       retries: 5
 
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./monitor/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin  # 기본 Grafana 비밀번호 설정
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - monitoring
+
 volumes:
   mysql-dev-data:
   redis-dev-data:
+  grafana_data:
+
+networks:
+  monitoring:
+    driver: bridge
