@@ -37,7 +37,7 @@ public class ProfileEntity extends AuditInfo {
     @JoinColumn(name = "id") // FK 이면서 PK
     private AccountEntity account;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 20)
     private String nickname;
 
     private LocalDate birth;

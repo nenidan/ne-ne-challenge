@@ -12,6 +12,8 @@ import com.github.nenidan.ne_ne_challenge.domain.user.presentation.mapper.UserMa
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/internal")
@@ -24,6 +26,13 @@ public class InternalProfileController {
     public ResponseEntity<UserResponse> getProfile(@PathVariable Long id) {
         return ResponseEntity.ok().body(
                 userMapper.toResponse(userFacade.getProfile(id))
+        );
+    }
+
+    @GetMapping("/profiles")
+    public ResponseEntity<List<UserResponse>> getProfiles() {
+        return ResponseEntity.ok().body(
+                userFacade.getProfiles().stream().map(userMapper::toResponse).toList()
         );
     }
 }

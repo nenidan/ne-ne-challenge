@@ -16,6 +16,8 @@ public interface UserRepository {
 
     Optional<User> findById(Long id);
 
+    List<User> findAll();
+
     List<User> findByKeyword(String cursor, String keyword, int limit);
 
     User update(User user);

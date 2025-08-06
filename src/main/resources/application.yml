@@ -13,10 +13,6 @@ spring:
     open-in-view: false
     hibernate:
       ddl-auto: update
-    properties:
-      hibernate:
-        format_sql: true
-        show_sql: true
 
 oauth:
   kakao:
@@ -62,8 +58,8 @@ spring:
 
   data:
     redis:
-      host: localhost
-      port: 6379
+      host: ${SPRING_REDIS_HOST}
+      port: ${SPRING_REDIS_PORT}
 
 ---
 spring:
