@@ -2,7 +2,11 @@ package com.github.nenidan.ne_ne_challenge.domain.shop.product.infrastructure.re
 
 import java.util.List;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.domain.exception.ProductErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.domain.exception.ProductException;
@@ -12,19 +16,39 @@ import com.github.nenidan.ne_ne_challenge.domain.shop.product.infrastructure.ent
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.infrastructure.mapper.ProductMapper;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Repository
-@RequiredArgsConstructor
 public class ProductRepositoryImpl implements ProductRepository {
 
     private final ProductJpaRepository productJpaRepository;
     private final ProductQueryDslRepository  productQueryDslRepository;
+    private final ProductCacheService productCacheService;
+
+    public ProductRepositoryImpl(
+        ProductJpaRepository productJpaRepository,
+        ProductCacheService productCacheService,
+        ProductQueryDslRepository  productQueryDslRepository
+    ) {
+        this.productJpaRepository = productJpaRepository;
+        this.productCacheService = productCacheService;
+        this.productQueryDslRepository = productQueryDslRepository;
+    }
 
     @Override
+    @CacheEvict(cacheNames = "first_page", key = "'productList'")
     public Product save(Product product) {
         ProductEntity productEntity = ProductMapper.toEntity(product);
         productJpaRepository.save(productEntity);
+
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                productCacheService.refreshFirstPageCache();
+            }
+        });
+
         return ProductMapper.toDomain(productEntity);
     }
 
@@ -36,6 +60,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
+    @Cacheable(condition = "#cursor == null && #keyword == null", cacheNames = "first_page", key = "'productList'")
     public List<Product> findAllByCursor(Long cursor, int limit, String keyword) {
         return productQueryDslRepository.findAllProductsBy(cursor, keyword, limit)
                     .stream()
