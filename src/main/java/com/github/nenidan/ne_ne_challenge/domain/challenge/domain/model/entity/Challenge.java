@@ -17,7 +17,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import static com.github.nenidan.ne_ne_challenge.domain.challenge.domain.exception.ChallengeErrorCode.*;
-import static com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus.WAITING;
+import static com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus.*;
 
 @Entity
 @NoArgsConstructor
@@ -191,6 +191,25 @@ public class Challenge extends BaseEntity {
         currentParticipantCount++;
     }
 
+    public void quit(Long requesterId) {
+        if(status == READY || status == FINISHED) {
+            throw new ChallengeException(ChallengeErrorCode.NOT_QUITABLE);
+        }
+
+        if(requesterId.equals(hostId)) {
+            throw new ChallengeException(ChallengeErrorCode.HOST_CANNOT_QUIT);
+        }
+
+        Participant participant = participants.stream()
+            .filter(p -> p.getUserId().equals(requesterId))
+            .findFirst()
+            .orElseThrow(() -> new ChallengeException(NOT_PARTICIPATING));
+
+        participant.delete();
+        participants.remove(participant);
+        currentParticipantCount--;
+    }
+
     private void verifyEnoughPoint(int userPoint) {
         if(userPoint < participationFee) {
             throw new ChallengeException(POINT_INSUFFICIENT);
@@ -202,6 +221,7 @@ public class Challenge extends BaseEntity {
             throw new ChallengeException(NOT_WAITING);
         }
     }
+
 
     /**
      * 방장이 챌린지를 새로 생성하는 경우

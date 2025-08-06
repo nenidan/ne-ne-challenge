@@ -29,43 +29,48 @@ public class ChallengeCommandService {
 
     private static final ChallengeMapper challengeMapper = ChallengeMapper.INSTANCE;
 
-    public Long createChallenge(Long loginUserId, CreateChallengeCommand command) {
-        verifyUserExists(loginUserId);
-        int userPoint = pointClient.getMyBalance(loginUserId).getBalance();
+    public Long createChallenge(Long requesterId, CreateChallengeCommand command) {
+        verifyUserExists(requesterId);
+        int userPoint = pointClient.getMyBalance(requesterId).getBalance();
 
-        Challenge newChallenge = Challenge.createChallenge(loginUserId, userPoint, challengeMapper.toInfo(command));
+        Challenge newChallenge = Challenge.createChallenge(requesterId, userPoint, challengeMapper.toInfo(command));
 
         Challenge savedChallenge = challengeRepository.save(newChallenge);
-        pointClient.decreasePoint(loginUserId, savedChallenge.getParticipationFee(), "CHALLENGE_ENTRY");
+        pointClient.decreasePoint(requesterId, savedChallenge.getParticipationFee(), "CHALLENGE_ENTRY");
         return savedChallenge.getId();
     }
 
-    public void updateChallengeInfo(Long loginUserId, Long challengeId, UpdateChallengeInfoCommand command) {
+    public void updateChallengeInfo(Long requesterId, Long challengeId, UpdateChallengeInfoCommand command) {
         Challenge challenge = getChallengeOrThrow(challengeId);
 
-        challenge.updateInfo(loginUserId, command);
+        challenge.updateInfo(requesterId, command);
     }
 
-    public void deleteChallenge(Long loginUserId, Long challengeId) {
-        verifyUserExists(loginUserId);
+    public void deleteChallenge(Long requesterId, Long challengeId) {
+        verifyUserExists(requesterId);
         Challenge challenge = getChallengeOrThrow(challengeId);
 
         List<Long> participantIdList = challenge.getParticipantIdList();
-        challenge.deleteChallenge(loginUserId);
+        challenge.deleteChallenge(requesterId);
         pointClient.refundPoints(participantIdList, challenge.getParticipationFee());
     }
 
-    public void joinChallenge(Long loginUserId, Long challengeId) {
-        verifyUserExists(loginUserId);
-        int userPoint = pointClient.getMyBalance(loginUserId).getBalance();
+    public void joinChallenge(Long requesterId, Long challengeId) {
+        verifyUserExists(requesterId);
+        int userPoint = pointClient.getMyBalance(requesterId).getBalance();
         Challenge challenge = getChallengeOrThrow(challengeId);
 
-        challenge.join(loginUserId, userPoint);
-        pointClient.decreasePoint(loginUserId, challenge.getParticipationFee(), "CHALLENGE_ENTRY");
+        challenge.join(requesterId, userPoint);
+        pointClient.decreasePoint(requesterId, challenge.getParticipationFee(), "CHALLENGE_ENTRY");
     }
 
-    public void quitChallenge(Long userId, Long challengeId) {
-        // Todo
+    public void quitChallenge(Long requesterId, Long challengeId) {
+        Challenge challenge = getChallengeOrThrow(challengeId);
+
+        challenge.quit(requesterId);
+        if(challenge.getStatus() == ChallengeStatus.WAITING) {
+            pointClient.refundPoints(List.of(requesterId), challenge.getParticipationFee());
+        }
     }
 
     public void updateChallengeStatus(Long userId, Long challengeId, ChallengeStatus status) {

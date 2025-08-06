@@ -83,4 +83,16 @@ public class ChallengeController {
             queryService.findChallengeById(id)
         );
     }
+
+    @PostMapping("/challenges/{id}/quit")
+    public ResponseEntity<ApiResponse<Void>> quitChallenge(@PathVariable Long id,
+        @AuthenticationPrincipal Auth authUser
+    ) {
+        commandService.quitChallenge(authUser.getId(), id);
+
+        return ApiResponse.success(HttpStatus.OK,
+            "챌린지를 나왔습니다.",
+            null
+        );
+    }
 }
