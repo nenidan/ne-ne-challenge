@@ -12,13 +12,13 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper
 public interface InnerChallengeMapper {
-    InnerChallengeMapper INSTANCE = Mappers.getMapper(InnerChallengeMapper.class);
-
-    InnerChallengeResponse toResponse(Challenge challenge);
-
-    @Mapping(source = "challenge.id", target = "challengeId")
-    InnerParticipantResponse toResponse(Participant participant);
-
-    @Mapping(source = "challenge.id", target = "challengeId")
-    InnerHistoryResponse toResponse(History history);
+//    InnerChallengeMapper INSTANCE = Mappers.getMapper(InnerChallengeMapper.class);
+//
+//    InnerChallengeResponse toResponse(Challenge challenge);
+//
+//    @Mapping(source = "challenge.id", target = "challengeId")
+//    InnerParticipantResponse toResponse(Participant participant);
+//
+//    @Mapping(source = "challenge.id", target = "challengeId")
+//    InnerHistoryResponse toResponse(History history);
 }

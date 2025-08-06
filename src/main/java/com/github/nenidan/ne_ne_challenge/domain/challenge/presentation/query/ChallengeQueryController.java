@@ -1,7 +1,11 @@
 package com.github.nenidan.ne_ne_challenge.domain.challenge.presentation.query;
 
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.ChallengeQueryService;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.*;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.request.ChallengeSearchCond;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.request.HistorySearchCond;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.response.ChallengeHistoryResponse;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.response.ChallengeResponse;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.response.ChallengeSuccessRateResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 import jakarta.validation.Valid;

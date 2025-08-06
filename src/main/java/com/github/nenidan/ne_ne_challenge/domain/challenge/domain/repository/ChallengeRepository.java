@@ -15,16 +15,5 @@ public interface ChallengeRepository {
 
     Optional<Challenge> findById(Long id);
 
-    List<Challenge> getChallengeList(
-        Long userId,
-        String name,
-        ChallengeStatus status,
-        LocalDate dueAt,
-        ChallengeCategory category,
-        Integer maxParticipationFee,
-        LocalDateTime cursor,
-        int limit
-    );
-
-    List<Challenge> findAll();
+    List<Challenge> findAll(); // fixme: 통계 쿼리까지 분리 시 제거 예정
 }

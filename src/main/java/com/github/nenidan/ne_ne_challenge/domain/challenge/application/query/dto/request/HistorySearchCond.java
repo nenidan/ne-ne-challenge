@@ -1,4 +1,4 @@
-package com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto;
+package com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

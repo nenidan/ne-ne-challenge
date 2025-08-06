@@ -4,7 +4,7 @@ import com.github.nenidan.ne_ne_challenge.domain.challenge.application.command.d
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.command.dto.UpdateChallengeInfoCommand;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.command.service.ChallengeCommandService;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.ChallengeQueryService;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.ChallengeResponse;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.response.ChallengeResponse;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus;
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
 import com.github.nenidan.ne_ne_challenge.global.security.auth.Auth;

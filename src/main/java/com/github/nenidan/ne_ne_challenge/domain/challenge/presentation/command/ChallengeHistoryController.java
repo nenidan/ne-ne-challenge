@@ -2,7 +2,7 @@ package com.github.nenidan.ne_ne_challenge.domain.challenge.presentation.command
 
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.command.dto.CreateHistoryCommand;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.ChallengeQueryService;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.ChallengeHistoryResponse;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.response.ChallengeHistoryResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
