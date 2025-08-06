@@ -1,10 +1,13 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.order.application;
 
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.CreateOrderCommand;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.FindCursorOrderCommand;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.OrderResult;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.OrderStatisticsResult;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.service.OrderCompensationService;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.service.OrderService;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.exception.OrderErrorCode;
@@ -82,11 +85,15 @@ public class OrderFacade {
         // 유저 검증
         userClient.getUserById(findCursorOrderCommand.getUserId().getValue());
 
-        return orderService.findAllOrder(
+        return orderService.findAllOrders(
             findCursorOrderCommand.getUserId(),
             findCursorOrderCommand.getCursor(),
             findCursorOrderCommand.getSize(),
             findCursorOrderCommand.getKeyword()
         );
+    }
+
+    public List<OrderStatisticsResult> findAllOrders() {
+        return orderService.findAllOrders();
     }
 }
