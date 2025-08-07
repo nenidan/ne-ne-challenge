@@ -1,5 +1,6 @@
 package com.github.nenidan.ne_ne_challenge.domain.payment.application;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientResponseException;
 
@@ -13,6 +14,8 @@ import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.respons
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.TossCancelResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.TossConfirmResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.mapper.PaymentApplicationMapper;
+import com.github.nenidan.ne_ne_challenge.global.event.PaymentCompletedEvent;
+import com.github.nenidan.ne_ne_challenge.domain.payment.domain.event.PointChargeRequested;
 import com.github.nenidan.ne_ne_challenge.domain.payment.domain.model.Payment;
 import com.github.nenidan.ne_ne_challenge.domain.payment.exception.PaymentErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.payment.exception.PaymentException;
@@ -30,8 +33,9 @@ public class PaymentFacade {
 
     private final PaymentService paymentService;
     private final UserClient userClient;
-    private final PointClient pointClient;
     private final TossClient tossClient;
+    private final ApplicationEventPublisher eventPublisher;
+    private final PointClient pointClient;
 
     public PaymentConfirmResult confirmAndChargePoint(Long userId, PaymentConfirmCommand command) {
 
@@ -57,34 +61,29 @@ public class PaymentFacade {
             // 토스 결제를 완료하고, 금액 검증을 통과하였으면 토스에서 응답받은 값을 이용하여 payment 객체 생성
             payment = paymentService.createPaymentFromConfirm(userId, tossConfirmResult);
 
-            // 포인트 충전
-            pointClient.chargePoint(
-                userId,
-                command.getAmount(),
+            // 결제 완료 이벤트 발행
+            eventPublisher.publishEvent(new PaymentCompletedEvent(
+                payment.getUserId(),
+                payment.getOrderId(),
+                payment.getAmount(),
+                payment.getPaymentMethod(),
+                payment.getApprovedAt()
+            ));
+
+            // 포인트 충전 이벤트 발행
+            eventPublisher.publishEvent(new PointChargeRequested(
+                payment.getUserId(),
+                payment.getAmount(),
                 "CHARGE",
-                tossConfirmResult.getOrderId()
-            );
+                payment.getOrderId()
+            ));
 
             return PaymentApplicationMapper.toPaymentConfirmResult(payment);
 
-        } catch (RestClientResponseException e) {
-            if (tossConfirmResult == null) {
-                // Toss 오류 로그로 남김 (code + message)
-                log.warn("Toss 결제 실패 - status: {}, body: {}", e.getRawStatusCode(), e.getResponseBodyAsString());
-                throw new PaymentException(PaymentErrorCode.TOSS_ERROR);
-            } else {
-                try {
-                    tossCancelResult = tossClient.cancelPayment(command.getPaymentKey(), "시스템 오류로 인한 결제 취소");
-                    log.info("result = {}", tossCancelResult);
-                    paymentService.failPayment(tossCancelResult);
-                } catch (Exception cancelEx) {
-                    log.error("토스 취소 실패 - 긴급 수동 처리 필요: paymentKey={}", command.getPaymentKey(), cancelEx);
-                    throw new PaymentException(PaymentErrorCode.TOSS_ERROR);
-                }
-            }
-
-            throw new PaymentException(PaymentErrorCode.TOSS_ERROR, e);
-
+        } catch (RestClientResponseException e) { // tossClient 에서 오류가 발생하였을 때,
+            // Toss 오류 로그로 남김 (code + message)
+            log.warn("Toss 결제 실패 - status: {}, body: {}", e.getRawStatusCode(), e.getResponseBodyAsString());
+            throw new PaymentException(PaymentErrorCode.TOSS_ERROR);
         } catch (Exception e) {
             try {
                 tossCancelResult = tossClient.cancelPayment(command.getPaymentKey(), "시스템 오류로 인한 결제 취소");
