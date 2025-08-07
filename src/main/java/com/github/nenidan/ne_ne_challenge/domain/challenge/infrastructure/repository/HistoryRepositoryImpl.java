@@ -1,18 +1,19 @@
 package com.github.nenidan.ne_ne_challenge.domain.challenge.infrastructure.repository;
 
-import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity.History;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.repository.HistoryReposiroty;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.repository.HistoryRepository;
 
 import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor
-public class HistoryRepositoryImpl implements HistoryReposiroty {
+public class HistoryRepositoryImpl implements HistoryRepository {
 
     private final JpaHistoryRepository jpaHistoryRepository;
 
@@ -22,23 +23,16 @@ public class HistoryRepositoryImpl implements HistoryReposiroty {
     }
 
     @Override
-    public List<History> getHistoryListByChallengeId(Long challengeId) {
-        return jpaHistoryRepository.findByChallenge_Id(challengeId);
-    }
+    public Map<Long, Integer> countHistory(List<Long> userIdList, Long challengeId) {
+        List<Object[]> results = jpaHistoryRepository.countUserHistory(userIdList, challengeId);
 
-    @Override
-    public Long countTodayHistory(Long userId, Long challengeId, LocalDateTime startOfDay, LocalDateTime endOfDay) {
-        return jpaHistoryRepository.countTodayHistory(userId, challengeId, startOfDay, endOfDay);
-    }
+        Map<Long, Integer> countMap = new HashMap<>();
+        for (Object[] result : results) {
+            Long userId = (Long) result[0];
+            Long count = (Long) result[1];
+            countMap.put(userId, count.intValue());
+        }
 
-    @Override
-    public List<History> getHistoryList(Long challengeId, Long userId, LocalDateTime cursor, int lim) {
-        return jpaHistoryRepository.getChallengeHistoryList(challengeId, userId, cursor, lim+1);
+        return countMap;
     }
-
-    @Override
-    public int countOfSuccess(Long challengeId, Long userId) {
-        return jpaHistoryRepository.countByChallenge_IdAndUserIdAndIsSuccessTrue(challengeId, userId);
-    }
-
 }

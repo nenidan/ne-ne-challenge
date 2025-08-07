@@ -53,7 +53,11 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/health", "/error").permitAll()
 
-                .requestMatchers(HttpMethod.POST, "/api/accounts", "/api/accounts/login").permitAll()
+                .requestMatchers(HttpMethod.POST,
+                        "/api/accounts",
+                        "/api/accounts/login",
+                        "/api/accounts/refresh"
+                ).permitAll()
 
                 // review
                 .requestMatchers(HttpMethod.POST, "/api/products/*/reviews").hasRole(USER.name())
@@ -71,11 +75,13 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/products").permitAll()
                 .requestMatchers(HttpMethod.PATCH, "/api/products/*").hasRole(ADMIN.name())
                 .requestMatchers(HttpMethod.DELETE, "/api/products/*").hasRole(ADMIN.name())
+                .requestMatchers(HttpMethod.GET, "/internal/statistics/products").permitAll()
 
                 // order
                 .requestMatchers(HttpMethod.POST, "/api/orders").hasRole(USER.name())
                 .requestMatchers(HttpMethod.PATCH, "/api/orders/**").hasRole(USER.name())
                 .requestMatchers(HttpMethod.GET, "/api/orders/**").hasRole(USER.name())
+                .requestMatchers(HttpMethod.GET, "/internal/statistics/orders").permitAll()
 
                 // prometheus
                 .requestMatchers(HttpMethod.GET, "/api/orders/**").hasRole(USER.name())

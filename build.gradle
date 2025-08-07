@@ -55,24 +55,21 @@ dependencies {
 	implementation 'org.mapstruct:mapstruct:1.6.3'
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
 
+	// logs
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+	// querydsl
+	implementation 'io.github.openfeign.querydsl:querydsl-jpa:6.10.1'
+	annotationProcessor 'io.github.openfeign.querydsl:querydsl-apt:6.10.1:jpa'
+	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+
 	testImplementation 'org.mockito:mockito-core:5.18.0'
 
 	// https://mvnrepository.com/artifact/com.google.firebase/firebase-admin
 	implementation 'com.google.firebase:firebase-admin:8.1.0'
 
 	testImplementation 'com.h2database:h2'
-
-	// queryDSL
-	implementation 'com.querydsl:querydsl-jpa:5.1.0:jakarta'
-	annotationProcessor "com.querydsl:querydsl-apt:5.1.0:jakarta"
-	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
-	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
-
-	// actuator 서버 상태 체크
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-
-	// prometheus
-	implementation 'io.micrometer:micrometer-registry-prometheus'
 
 }
 

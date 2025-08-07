@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class ProductRepositoryImpl implements ProductRepository {
 
     private final ProductJpaRepository productJpaRepository;
+    private final ProductQueryDslRepository  productQueryDslRepository;
 
     @Override
     public Product save(Product product) {
@@ -35,10 +36,18 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public List<Product> findAllByCursor(Long cursor, int size, String keyword) {
-        return productJpaRepository.findAllByKeywordAndCursor(cursor, keyword, size)
+    public List<Product> findAllByCursor(Long cursor, int limit, String keyword) {
+        return productQueryDslRepository.findAllProductsBy(cursor, keyword, limit)
                     .stream()
                     .map(ProductMapper::toDomain)
                     .toList();
+    }
+
+    @Override
+    public List<Product> findAll() {
+        return productJpaRepository.findAll()
+            .stream()
+            .map(ProductMapper::toDomain)
+            .toList();
     }
 }

@@ -1,10 +1,13 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.order.application;
 
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.CreateOrderCommand;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.FindCursorOrderCommand;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.OrderResult;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.OrderStatisticsResult;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.service.OrderCompensationService;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.service.OrderService;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.exception.OrderErrorCode;
@@ -37,12 +40,6 @@ public class OrderFacade {
         UserResponse user = userClient.getUserById(createOrderRequest.getUserId().getValue());
         // 상품 검증 및 상품 정보 호출
         ProductResponse product = productRestClient.getProduct(createOrderRequest.getProductId());
-        // 포인트 결제 호출
-        pointClient.decreasePoint(
-            user.getId(),
-            createOrderRequest.getQuantity() * product.getPrice(),
-            "PRODUCT_PURCHASE"
-        );
 
         OrderDetail orderDetail = new OrderDetail(
             null,
@@ -52,7 +49,16 @@ public class OrderFacade {
             product.getPrice(),
             createOrderRequest.getQuantity()
         );
-        return orderService.createOrder(new UserId(user.getId()), orderDetail);
+        OrderResult order = orderService.createOrder(new UserId(user.getId()), orderDetail);
+
+        // 포인트 결제 호출
+        pointClient.decreasePoint(
+            user.getId(),
+            createOrderRequest.getQuantity() * product.getPrice(),
+            "PRODUCT_PURCHASE"
+        );
+
+        return order;
     }
 
     public void cancelOrder (Long userId, Long orderId) {
@@ -79,11 +85,15 @@ public class OrderFacade {
         // 유저 검증
         userClient.getUserById(findCursorOrderCommand.getUserId().getValue());
 
-        return orderService.findAllOrder(
+        return orderService.findAllOrders(
             findCursorOrderCommand.getUserId(),
             findCursorOrderCommand.getCursor(),
             findCursorOrderCommand.getSize(),
             findCursorOrderCommand.getKeyword()
         );
+    }
+
+    public List<OrderStatisticsResult> findAllOrders() {
+        return orderService.findAllOrders();
     }
 }
