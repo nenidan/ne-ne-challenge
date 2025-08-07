@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,8 +21,10 @@ import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.Cha
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.response.ChallengeResponse;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus;
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
+import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 import com.github.nenidan.ne_ne_challenge.global.security.auth.Auth;
 
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -103,6 +106,18 @@ public class ChallengeController {
         return ApiResponse.success(HttpStatus.OK,
             "챌린지를 나왔습니다.",
             null
+        );
+    }
+    @GetMapping("/challenges/{id}/participants")
+    public ResponseEntity<ApiResponse<CursorResponse<Long, Long>>> searchParticipants(
+        @PathVariable Long id,
+        @RequestParam(defaultValue = "0") Long cursor,
+        @RequestParam(defaultValue = "5") @Min(1) int size
+    ){
+        return ApiResponse.success(
+            HttpStatus.OK,
+            "챌린지 참가자 목록을 조회했습니다.",
+            queryService.findParticipants(id, cursor, size)
         );
     }
 }
