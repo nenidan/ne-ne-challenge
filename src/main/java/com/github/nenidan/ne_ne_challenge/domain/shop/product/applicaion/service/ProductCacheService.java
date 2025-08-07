@@ -2,9 +2,11 @@ package com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.servic
 
 import java.util.List;
 
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.domain.model.Product;
@@ -29,8 +31,20 @@ public class ProductCacheService {
     }
 
     public static String PRODUCT_CACHE_NAME = "product_first_page";
-    public static String PRODUCT_CACHE_KEY = "product_list";
+    public static String PRODUCT_CACHE_KEY = "default";
     public static int PRODUCT_CACHE_SIZE = 30;
+
+    // 애플리케이션 시작 시, 캐시 미리 적재 (Warm-up)
+    @EventListener(ApplicationReadyEvent.class)
+    public void warmUpCache() {
+        List<Product> productList = productRepository.findAllByCursor(null, PRODUCT_CACHE_SIZE, null);
+        Cache cache = cacheManager.getCache(PRODUCT_CACHE_NAME);
+        if (cache != null) {
+            cache.put(PRODUCT_CACHE_KEY, productList);
+        } else {
+            log.warn("캐시가 적재되지 않았습니다.");
+        }
+    }
 
     /**
      * 상품 첫 페이지 데이터를 캐시로 갱신합니다.
@@ -50,7 +64,7 @@ public class ProductCacheService {
         }
     }
 
-    @Cacheable(condition = "#cursor == null && #keyword == null", cacheNames = "product_first_page", key = "'main_page'")
+    @Cacheable(condition = "#cursor == null && #keyword == null", cacheNames = "product_first_page", key = "'default'")
     public List<Product> getMainPageCache(Long cursor, int size, String keyword) {
         return productRepository.findAllByCursor(cursor, size, keyword);
     }
