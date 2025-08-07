@@ -211,6 +211,48 @@ public class Challenge extends BaseEntity {
         currentParticipantCount--;
     }
 
+    public void ready() {
+        if(status != WAITING) {
+            throw new ChallengeException(INVALID_STATUS_TRANSITION);
+        }
+
+        if(currentParticipantCount < minParticipants) {
+            throw new ChallengeException(NOT_ENOUGH_PARTICIPANTS);
+        }
+
+        status = READY;
+    }
+
+    public void start() {
+        if(status != WAITING && status != READY) {
+            throw new ChallengeException(INVALID_STATUS_TRANSITION);
+        }
+
+        LocalDate today = LocalDate.now();
+        if(startAt.isAfter(today)) {
+            throw new ChallengeException(ChallengeErrorCode.START_DATE_NOT_REACHED);
+        }
+
+        if(currentParticipantCount < minParticipants) {
+            throw new ChallengeException(NOT_ENOUGH_PARTICIPANTS);
+        }
+
+        this.status = ONGOING;
+    }
+
+    public void finish() {
+        if(status != ONGOING) {
+            throw new ChallengeException(INVALID_STATUS_TRANSITION);
+        }
+
+        LocalDate today = LocalDate.now();
+        if(dueAt.isAfter(today) || dueAt.isEqual(today)) {
+            throw new ChallengeException(ChallengeErrorCode.STILL_ONGOING);
+        }
+
+        this.status = FINISHED;
+    }
+
     public void checkParticipation(Long requesterId) {
         participants.stream()
             .filter(p -> p.getUserId().equals(requesterId))
@@ -219,8 +261,9 @@ public class Challenge extends BaseEntity {
     }
 
     public void checkCanWrite() {
-        if(status != ONGOING) {
-            throw new ChallengeException(NOT_ONGOING);
+        LocalDate today = LocalDate.now();
+        if(status != ONGOING || today.isAfter(dueAt) || (today.isEqual(startAt) || today.isBefore(startAt))) {
+            throw new ChallengeException(ChallengeErrorCode.NOT_WRITABLE);
         }
     }
 
@@ -305,5 +348,4 @@ public class Challenge extends BaseEntity {
     public LocalDate getDueAt() {
         return dueAt;
     }
-
 }

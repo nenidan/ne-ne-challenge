@@ -18,8 +18,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
+
+import static com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +34,8 @@ public class ChallengeCommandService {
     private final HistoryRepository historyRepository;
 
     private static final ChallengeMapper challengeMapper = ChallengeMapper.INSTANCE;
+
+    private final SelectWinnerService selectWinnerService;
 
     public Long createChallenge(Long requesterId, CreateChallengeCommand command) {
         verifyUserExists(requesterId);
@@ -78,8 +81,23 @@ public class ChallengeCommandService {
         }
     }
 
-    public void updateChallengeStatus(Long userId, Long challengeId, ChallengeStatus status) {
-        // Todo
+    public void updateChallengeStatus(Long userId, Long challengeId, ChallengeStatus newStatus) {
+        verifyUserExists(userId);
+        Challenge challenge = getChallengeOrThrow(challengeId);
+
+        if(newStatus == READY) {
+            challenge.ready();
+        }
+        else if(newStatus == ONGOING) {
+            challenge.start();
+        } else if(newStatus == FINISHED) {
+            challenge.finish();
+            // Todo 비동기 처리로 변환 가능
+            List<Long> winners = selectWinnerService.getWinners(challenge);
+            if(!winners.isEmpty()) {
+                pointClient.refundPoints(winners, challenge.getTotalFee() / winners.size());
+            }
+        }
     }
 
     public Long createHistory(Long requesterId, Long challengeId, CreateHistoryCommand command) {

@@ -27,7 +27,10 @@ public enum ChallengeErrorCode implements ErrorCode {
     NOT_ONGOING("진행 중인 챌린지가 아닙니다.", HttpStatus.CONFLICT),
     CHALLENGE_FULL("챌린지 참가자가 가득 찼습니다.", HttpStatus.CONFLICT),
     NOT_QUITABLE("챌린지를 나갈 수 없는 상태입니다.", HttpStatus.CONFLICT),
-    HOST_CANNOT_QUIT("방장은 나갈 수 없습니다.", HttpStatus.CONFLICT);
+    HOST_CANNOT_QUIT("방장은 나갈 수 없습니다.", HttpStatus.CONFLICT),
+    START_DATE_NOT_REACHED("아직 시작일 이전입니다.", HttpStatus.CONFLICT),
+    NOT_WRITABLE("기록을 남길 수 없는 상태입니다.", HttpStatus.CONFLICT),
+    STILL_ONGOING("아직 진행중인 챌린지입니다.", HttpStatus.CONFLICT);
 
     private final String message;
     private final HttpStatus httpStatus; // Todo: 도메인에서 Http 의존성 제거 필요
