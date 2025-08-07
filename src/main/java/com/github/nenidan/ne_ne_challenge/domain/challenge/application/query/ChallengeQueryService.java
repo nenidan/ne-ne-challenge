@@ -9,11 +9,14 @@ import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.rep
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.repository.ChallengeQueryRepository;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.exception.ChallengeErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.exception.ChallengeException;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +44,23 @@ public class ChallengeQueryService {
     }
 
     public ChallengeSuccessRateResponse getSuccessRate(Long userId, Long challengeId) {
-        return null; // Todo
+        ChallengeResponse challengeResponse = challengeRepository.findChallengeById(challengeId)
+            .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND));
+
+        if(challengeResponse.getStatus() != ChallengeStatus.ONGOING) {
+            throw new ChallengeException(ChallengeErrorCode.NOT_ONGOING);
+        }
+
+        int successfulDays = historyRepository.countByChallengeIdAndUserId(challengeId, userId).intValue();
+
+        LocalDate today = LocalDate.now();
+        LocalDate startDate = challengeResponse.getStartAt();
+        LocalDate dueDate = challengeResponse.getDueAt();
+        LocalDate endDate = today.isAfter(dueDate) ? dueDate : today;
+
+        long daysFromStart = ChronoUnit.DAYS.between(startDate, endDate);
+        long totalPeriod = daysFromStart + 1; // 오늘 포함
+
+        return new ChallengeSuccessRateResponse((int) ((successfulDays * 100) / totalPeriod));
     }
 }

@@ -46,6 +46,17 @@ public class QueryDslHistoryRepository implements ChallengeHistoryQueryRepositor
             .fetch();
     }
 
+    @Override
+    public Long countByChallengeIdAndUserId(Long challengeId, Long userId) {
+        return queryFactory.select(history.count())
+            .from(history)
+            .where(history.challengeId.eq(challengeId)
+                .and(history.userId.eq(userId))
+                .and(history.isSuccess.isTrue())
+                .and(notSoftDeleted()))
+            .fetchOne();
+    }
+
     private JPAQuery<ChallengeHistoryResponse> projectToChallengeHistoryResponse() {
         return queryFactory
             .select(Projections.constructor(ChallengeHistoryResponse.class,

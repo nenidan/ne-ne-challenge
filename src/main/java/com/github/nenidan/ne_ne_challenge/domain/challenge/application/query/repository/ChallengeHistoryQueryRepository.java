@@ -11,4 +11,6 @@ public interface ChallengeHistoryQueryRepository {
     Optional<ChallengeHistoryResponse> findHistoryById(Long historyId);
 
     List<ChallengeHistoryResponse> findHistory(Long challengeId, HistorySearchCond cond);
+
+    Long countByChallengeIdAndUserId(Long challengeId, Long userId);
 }
