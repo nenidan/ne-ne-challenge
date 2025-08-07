@@ -55,7 +55,7 @@ public class ProductCacheService {
      * <p>
      *
      */
-    public void refreshFirstPageCache() {
+    public void putMainPageCache() {
         List<Product> productList = productRepository.findAllByCursor(null, PRODUCT_CACHE_SIZE, null);
         Cache cache = cacheManager.getCache(PRODUCT_CACHE_NAME);
         if (cache != null) {

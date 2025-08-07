@@ -10,7 +10,7 @@ import lombok.Getter;
 
 @Getter
 public class Product {
-    private ProductId productId;
+    private final ProductId productId;
     private String productName;
     private String productDescription;
     private Integer productPrice;

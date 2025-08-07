@@ -21,7 +21,9 @@ import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ProductFacade {
@@ -35,7 +37,7 @@ public class ProductFacade {
         ProductResult saveProduct = productService.createProduct(createProductCommand);
 
         // 상품 캐시 업데이트
-        productCacheService.refreshFirstPageCache();
+        productCacheService.putMainPageCache();
 
         // 재고 등록 이벤트 발행
         applicationEventPublisher.publishEvent(new StockRegisteredEvent(saveProduct.getId()));
@@ -59,12 +61,22 @@ public class ProductFacade {
 
         // 첫 메인 페이지인 경우
         if (cursor == null && keyword == null) {
-            Object allByCursor = productCacheService.getMainPageCache(null, size, null);
-            List<Product> productList = objectMapper.convertValue(allByCursor, new TypeReference<>() {});
-            productResultList = productList
-                .stream()
-                .map(ProductResult::fromEntity)
-                .toList();
+            // 캐시 조회 시, 장애 발생 -> callback 처리
+            try {
+                Object allByCursor = productCacheService.getMainPageCache(null, size, null);
+                List<Product> productList = objectMapper.convertValue(allByCursor, new TypeReference<>() {});
+                productResultList = productList
+                    .stream()
+                    .map(ProductResult::fromEntity)
+                    .toList();
+            } catch (Exception e) {
+                log.warn("캐시 조회 중 예외 발생, DB 에서 직접 조회: {}", e.getMessage());
+                productResultList = productService.findAllProducts(null, size, null);
+
+                // 캐시 다시 저장
+                productCacheService.putMainPageCache();
+            }
+
         } else { // 첫 페이지가 아닌 경우
             productResultList = productService.findAllProducts(cursor,size+1, keyword);
         }
