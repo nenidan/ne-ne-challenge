@@ -16,21 +16,15 @@ public class Product {
     private Integer productPrice;
     private LocalDateTime deletedAt;
 
-    public Product(ProductId productId, String productName, String productDescription, Integer productPrice) {
+    private Product(ProductId productId, String productName, String productDescription, Integer productPrice) {
         this.productId = productId;
         this.productName = productName;
         this.productDescription = productDescription;
         this.productPrice = productPrice;
     }
 
-    public Product(String productName, String productDescription, Integer productPrice) {
-        this.productName = productName;
-        this.productDescription = productDescription;
-        this.productPrice = productPrice;
-    }
-
-    public static Product create(String productName, String productDescription, Integer productPrice) {
-        return new Product(productName, productDescription, productPrice);
+    public static Product create(ProductId productId, String productName, String productDescription, Integer productPrice) {
+        return new Product(productId, productName, productDescription, productPrice);
     }
 
     public void update(String productName, String productDescription, Integer productPrice) {
