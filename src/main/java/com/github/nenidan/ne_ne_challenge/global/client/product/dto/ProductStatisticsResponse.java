@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class ProductResponse {
+public class ProductStatisticsResponse {
 
     private final Long id;
     private final String name;
