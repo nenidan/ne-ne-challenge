@@ -16,7 +16,6 @@ public interface LogTransactionRepository extends JpaRepository<AopLog, Long> {
 
     @Query("SELECT a " +
             "FROM AopLog a WHERE a.type = :type " +
-            "AND (:#{#cond.userId} IS NULL OR a.userId = :#{#cond.userId}) " +
             "AND (:#{#cond.cursor} IS NULL OR a.createdAt < :#{#cond.cursor}) " +
             "ORDER BY a.createdAt DESC")
     List<AopLog> findLogs(@Param("type") DomainType type, @Param("cond") LogSearchCond cond);

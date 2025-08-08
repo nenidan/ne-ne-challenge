@@ -19,7 +19,6 @@ import com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.request.
 import com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.response.PointBalanceResponse;
 import com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.response.PointHistoryResponse;
 import com.github.nenidan.ne_ne_challenge.domain.point.presentation.mapper.PointPresentationMapper;
-import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -87,16 +86,12 @@ public class PointInternalController {
     }
 
     @GetMapping("/statistics/pointTransactions")
-    public ResponseEntity<ApiResponse<List<PointHistoryResponse>>> getAllPointTransactions() {
+    public List<PointHistoryResponse> getAllPointTransactions() {
 
         List<PointHistoryResponse> pointHistoryResponseList = pointFacade.getAllPointTransactions().stream()
             .map(PointPresentationMapper::toPointHistoryResponse)
             .toList();
 
-        return ApiResponse.success(
-            HttpStatus.OK,
-            "포인트 사용 이력을 조회하였습니다.",
-            pointHistoryResponseList
-        );
+        return pointHistoryResponseList;
     }
 }

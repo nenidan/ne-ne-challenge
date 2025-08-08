@@ -6,8 +6,12 @@ import org.springframework.stereotype.Repository;
 
 import com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.request.LogSearchCond;
 import com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.response.logs.PaymentHistoryResponse;
+import com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.response.logs.PointHistoryResponse;
+import com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.response.logs.UserHistoryResponse;
 import com.github.nenidan.ne_ne_challenge.domain.admin.domain.repository.SavedHistoryRepositoryCustom;
 import com.github.nenidan.ne_ne_challenge.domain.payment.domain.model.QPayment;
+import com.github.nenidan.ne_ne_challenge.domain.point.domain.QPointTransaction;
+import com.github.nenidan.ne_ne_challenge.domain.point.domain.QPointWallet;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -45,5 +49,36 @@ public class SavedHistoryRepositoryImpl implements SavedHistoryRepositoryCustom 
                 .orderBy(payment.createdAt.desc())
                 .limit(cond.getSize() + 1L)
                 .fetch();
+    }
+
+    @Override
+    public List<PointHistoryResponse> findPointHistories(LogSearchCond cond) {
+        QPointTransaction transaction = QPointTransaction.pointTransaction;
+        QPointWallet wallet = QPointWallet.pointWallet;
+
+        return queryFactory
+                .select(Projections.constructor(PointHistoryResponse.class,
+                        Expressions.constant("POINT"),                     // type
+                        transaction.createdAt,                             // createdAt
+                        transaction.id,                                     // Id
+                        wallet.userId,                                      // userId
+                        transaction.amount,                                 // amount
+                        transaction.reason.stringValue(),                   // reason
+                        transaction.description                             // description
+                ))
+                .from(transaction)
+                .join(transaction.pointWallet, wallet)
+                .where(
+                        cond.getUserId() != null ? wallet.userId.eq(cond.getUserId()) : null,
+                        cond.getCursor() != null ? transaction.createdAt.lt(cond.getCursor()) : null
+                )
+                .orderBy(transaction.createdAt.desc())
+                .limit(cond.getSize() + 1L)
+                .fetch();
+    }
+
+    @Override
+    public List<UserHistoryResponse> findUserHistories(LogSearchCond cond) {
+        return List.of();
     }
 }

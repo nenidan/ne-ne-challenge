@@ -11,9 +11,11 @@ import lombok.Getter;
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.PROPERTY,
-        property = "type"  // optional: 직렬화 시 type 필드 포함됨
+        property = "type" // 직렬화 시 포함될 필드명
 )
 @JsonSubTypes({
+        @JsonSubTypes.Type(value = PaymentStatisticsResponse.class, name = "payment"),
+        @JsonSubTypes.Type(value = PointStatisticsResponse.class, name = "point"),
         @JsonSubTypes.Type(value = ChallengeStatisticsResponse.class, name = "challenge")
 })
 @AllArgsConstructor

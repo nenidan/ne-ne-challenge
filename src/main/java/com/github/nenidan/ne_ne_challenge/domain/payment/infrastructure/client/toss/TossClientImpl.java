@@ -3,6 +3,7 @@ package com.github.nenidan.ne_ne_challenge.domain.payment.infrastructure.client.
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
@@ -24,7 +25,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TossClientImpl implements TossClient {
 
-    private final RestClient restClient = RestClient.builder().build();
+    @Qualifier("tossRestClient")
+    private final RestClient tossRestClient;
     private final TossPaymentsConfig tossPaymentsConfig;
 
     @Override
@@ -38,7 +40,7 @@ public class TossClientImpl implements TossClient {
 
         log.info("토스페이먼츠 confirm API 호출 - paymentKey: {}, orderId: {}", paymentKey, orderId);
 
-        TossConfirmResponse response = restClient.post()
+        TossConfirmResponse response = tossRestClient.post()
             .uri(tossPaymentsConfig.getBaseUrl() + "/payments/confirm")
             .body(tossConfirmRequest)
             .header("Authorization", createAuthorizationHeader())
@@ -65,7 +67,7 @@ public class TossClientImpl implements TossClient {
 
         log.info("토스페이먼츠 cancel API 호출 - paymentKey: {}, orderId: {}", paymentKey, cancelReason);
 
-        TossCancelResponse tossCancelResponse = restClient.post()
+        TossCancelResponse tossCancelResponse = tossRestClient.post()
             .uri(tossPaymentsConfig.getBaseUrl() + "/payments/{paymentKey}/cancel", paymentKey)
             .body(tossCancelRequest)
             .header("Authorization", createAuthorizationHeader())
