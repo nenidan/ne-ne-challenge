@@ -5,30 +5,27 @@ import java.util.List;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.domain.model.Product;
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.domain.repository.ProductRepository;
-import com.github.nenidan.ne_ne_challenge.domain.shop.product.infrastructure.repository.ProductRepositoryImpl;
+import com.github.nenidan.ne_ne_challenge.global.util.CacheHelper;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class ProductCacheService {
 
     private final CacheManager cacheManager;
+    private final CacheHelper cacheHelper;
     private final ProductRepository productRepository;
-
-    public ProductCacheService(
-        CacheManager cacheManager,
-        ProductRepository productRepository
-    ) {
-        this.cacheManager = cacheManager;
-        this.productRepository = productRepository;
-    }
+    private final ObjectMapper objectMapper;
 
     public static String PRODUCT_CACHE_NAME = "product_first_page";
     public static String PRODUCT_CACHE_KEY = "default";
@@ -46,15 +43,6 @@ public class ProductCacheService {
         }
     }
 
-    /**
-     * 상품 첫 페이지 데이터를 캐시로 갱신합니다.
-     * <p>
-     * 이 메서드는 {@link ProductRepositoryImpl#findAllByCursor(Long, int, String)} 메서드를 호출하여,
-     * 첫 페이지에 해당하는 상품 목록을 조회하고, 해당 결과를 캐시 이름 {@code PRODUCT_CACHE_NAME}의
-     * {@code PRODUCT_CACHE_KEY}에 저장합니다.
-     * <p>
-     *
-     */
     public void putMainPageCache() {
         List<Product> productList = productRepository.findAllByCursor(null, PRODUCT_CACHE_SIZE, null);
         Cache cache = cacheManager.getCache(PRODUCT_CACHE_NAME);
@@ -64,8 +52,16 @@ public class ProductCacheService {
         }
     }
 
-    @Cacheable(condition = "#cursor == null && #keyword == null", cacheNames = "product_first_page", key = "'default'")
-    public List<Product> getMainPageCache(Long cursor, int size, String keyword) {
-        return productRepository.findAllByCursor(cursor, size, keyword);
+    public List<Product> getMainPageWithFallback() {
+        Object orLoad = cacheHelper.getOrLoad(
+            PRODUCT_CACHE_NAME,
+            PRODUCT_CACHE_KEY,
+            () -> {
+                log.info("cache miss -> DB 에서 첫 페이지 상품 조회");
+                return productRepository.findAllByCursor(null, PRODUCT_CACHE_SIZE, null);
+            }
+        );
+
+        return objectMapper.convertValue(orLoad, new TypeReference<>() {});
     }
 }

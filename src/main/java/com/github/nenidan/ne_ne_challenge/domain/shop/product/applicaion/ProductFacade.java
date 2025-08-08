@@ -31,7 +31,6 @@ public class ProductFacade {
     private final ProductService productService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final ProductCacheService productCacheService;
-    private final ObjectMapper objectMapper;
 
     public ProductResult createProduct(CreateProductCommand createProductCommand) {
         ProductResult saveProduct = productService.createProduct(createProductCommand);
@@ -59,25 +58,16 @@ public class ProductFacade {
     ) {
         List<ProductResult> productResultList;
 
-        // 첫 메인 페이지인 경우
+        // 첫번째 메인 페이지인 경우
         if (cursor == null && keyword == null) {
-            // 캐시 조회 시, 장애 발생 -> callback 처리
-            try {
-                Object allByCursor = productCacheService.getMainPageCache(null, size, null);
-                List<Product> productList = objectMapper.convertValue(allByCursor, new TypeReference<>() {});
-                productResultList = productList
-                    .stream()
-                    .map(ProductResult::fromEntity)
-                    .toList();
-            } catch (Exception e) {
-                log.warn("캐시 조회 중 예외 발생, DB 에서 직접 조회: {}", e.getMessage());
-                productResultList = productService.findAllProducts(null, size, null);
+            // 캐시 기반 조회
+            List<Product> productList = productCacheService.getMainPageWithFallback();
 
-                // 캐시 다시 저장
-                productCacheService.putMainPageCache();
-            }
-
-        } else { // 첫 페이지가 아닌 경우
+            productResultList = productList.stream()
+                .map(ProductResult::fromEntity)
+                .toList();
+        } else {
+            // 첫 페이지가 아닌 경우 -> DB 직접 조회
             productResultList = productService.findAllProducts(cursor,size+1, keyword);
         }
 
