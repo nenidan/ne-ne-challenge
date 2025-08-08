@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.nenidan.ne_ne_challenge.domain.user.application.UserFacade;
+import com.github.nenidan.ne_ne_challenge.domain.user.application.dto.UserResult;
 import com.github.nenidan.ne_ne_challenge.domain.user.presentation.dto.response.UserResponse;
 import com.github.nenidan.ne_ne_challenge.domain.user.presentation.mapper.UserMapper;
 
@@ -30,9 +31,7 @@ public class InternalProfileController {
     }
 
     @GetMapping("/profiles")
-    public ResponseEntity<List<UserResponse>> getProfiles() {
-        return ResponseEntity.ok().body(
-                userFacade.getProfiles().stream().map(userMapper::toResponse).toList()
-        );
+    public List<UserResult> getProfiles() {
+        return userFacade.getProfileAll();
     }
 }

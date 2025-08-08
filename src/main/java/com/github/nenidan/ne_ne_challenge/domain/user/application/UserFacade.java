@@ -6,6 +6,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.nenidan.ne_ne_challenge.domain.user.application.client.oauth.OAuthClient;
 import com.github.nenidan.ne_ne_challenge.domain.user.application.client.oauth.OAuthClientFactory;
 import com.github.nenidan.ne_ne_challenge.domain.user.application.client.oauth.dto.OAuthUserInfo;
@@ -16,6 +18,7 @@ import com.github.nenidan.ne_ne_challenge.domain.user.application.dto.UpdateProf
 import com.github.nenidan.ne_ne_challenge.domain.user.application.dto.UserResult;
 import com.github.nenidan.ne_ne_challenge.domain.user.application.dto.UserWithTokenResult;
 import com.github.nenidan.ne_ne_challenge.domain.user.application.mapper.UserMapper;
+import com.github.nenidan.ne_ne_challenge.domain.user.application.service.CachedUserService;
 import com.github.nenidan.ne_ne_challenge.domain.user.application.service.JwtTokenProvider;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.model.User;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.service.UserService;
@@ -28,8 +31,9 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class UserFacade {
-
+    private final ObjectMapper objectMapper;
     private final UserService userService;
+    private final CachedUserService cachedUserService;
     private final JwtTokenProvider jwtTokenProvider;
     private final PointClient pointClient;
     private final OAuthClientFactory oauthClientFactory;
@@ -62,16 +66,25 @@ public class UserFacade {
         return UserMapper.toDto(userService.getProfile(id));
     }
 
-    public List<UserResult> getProfiles() {
-        return userService.getProfiles().stream().map(UserMapper::toDto).toList();
+    public List<UserResult> getProfileAll() {
+        return cachedUserService.getProfileAll();
     }
 
     public CursorResponse<UserResult, String> searchProfiles(String cursor, int size, String keyword) {
-        CursorResponse<User, String> userList = userService.searchProfiles(cursor, size, keyword);
-        List<UserResult> content = userList.getContent().stream()
-                .map(UserMapper::toDto)
-                .toList();
-        return new CursorResponse<>(content, userList.getNextCursor(), userList.isHasNext());
+
+        List<UserResult> userResultList;
+
+        if(isDefaultSearchRequest(cursor, size, keyword)) {
+            Object cached = cachedUserService.searchProfiles();
+            userResultList = objectMapper.convertValue(
+                    cached, new TypeReference<>() {}
+            );
+        } else {
+            userResultList = userService.searchProfiles(cursor, size, keyword)
+                    .stream().map(UserMapper::toDto).toList();
+        }
+
+        return CursorResponse.of(userResultList, UserResult::getNickname, size);
     }
 
     public UserResult updateProfile(Long id, UpdateProfileCommand dto) {
@@ -133,5 +146,13 @@ public class UserFacade {
         User user = userService.getProfile(id);
 
         return jwtTokenProvider.updateAuthHeaders(user, refreshToken);
+    }
+
+    private boolean isDefaultSearchRequest(String cursor, int size, String keyword) {
+        boolean isDefaultCursor = (cursor == null || cursor.isBlank());
+        boolean isDefaultSize = (size == 10);
+        boolean isDefaultKeyword = (keyword == null || keyword.isBlank());
+
+        return isDefaultCursor && isDefaultKeyword && isDefaultSize;
     }
 }

@@ -15,7 +15,6 @@ import com.github.nenidan.ne_ne_challenge.domain.user.domain.model.User;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.model.vo.SocialAccount;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.repository.UserRepository;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.type.Role;
-import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -64,16 +63,8 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public CursorResponse<User, String> searchProfiles(String cursor, int size, String keyword) {
-        List<User> userList = userRepository.findByKeyword(cursor, keyword, size + 1);
-
-        boolean hasNext = userList.size() > size;
-
-        List<User> content = hasNext ? userList.subList(0, size) : userList;
-
-        String nextCursor = hasNext ? userList.get(userList.size() - 1).getProfile().getNickname() : null;
-
-        return new CursorResponse<>(content, nextCursor, userList.size() > size);
+    public List<User> searchProfiles(String cursor, int size, String keyword) {
+        return userRepository.findByKeyword(cursor, keyword, size + 1);
     }
 
     public User updateProfile(Long id, Profile profile) {

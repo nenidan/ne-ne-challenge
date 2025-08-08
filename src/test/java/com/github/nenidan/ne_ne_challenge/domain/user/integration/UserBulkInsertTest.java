@@ -3,6 +3,7 @@ package com.github.nenidan.ne_ne_challenge.domain.user.integration;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,6 +19,7 @@ public class UserBulkInsertTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Disabled
     @Test
     @Transactional
     @Rollback(false)
@@ -26,7 +28,7 @@ public class UserBulkInsertTest {
         List<Object[]> params1 = new ArrayList<>();
         List<Object[]> params2 = new ArrayList<>();
 
-        for (int i = 0; i < 100_000; i++) {
+        for (int i = 0; i < 500_000; i++) {
             params1.add(new Object[]{
                     i + 1L,
                     "gajicoding"+i + "@gmail.com",

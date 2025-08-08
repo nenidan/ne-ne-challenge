@@ -11,12 +11,18 @@ public class AopLogResponse extends LogsResponse {
     private String method;
     private String params;
     private String result;
+    private Boolean success;
+    private Long targetId;
 
-    public AopLogResponse(String type, LocalDateTime createdAt, String method, String params, String result) {
+    private Long id;
+
+    public AopLogResponse(String type, LocalDateTime createdAt, String method, String params, String result, Boolean success, Long targetId) {
         super(type, createdAt);
         this.method = method;
         this.params = params;
         this.result = result;
+        this.success = success;
+        this.targetId = targetId;
     }
 
     public static AopLogResponse fromModel(AopLogModel model) {
@@ -25,7 +31,9 @@ public class AopLogResponse extends LogsResponse {
                 model.getCreatedAt().atStartOfDay(),
                 model.getMethod(),
                 model.getParams(),
-                model.getResult()
+                model.getResult(),
+                model.getSuccess(),
+                model.getTargetId()
         );
     }
 
