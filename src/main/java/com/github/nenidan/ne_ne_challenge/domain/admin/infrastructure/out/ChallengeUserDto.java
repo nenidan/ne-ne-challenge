@@ -1,10 +1,9 @@
 package com.github.nenidan.ne_ne_challenge.domain.admin.infrastructure.out;
 
-import com.github.nenidan.ne_ne_challenge.global.dto.InnerResponseBase;
+import java.time.LocalDateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @Getter

@@ -1,13 +1,21 @@
 package com.github.nenidan.ne_ne_challenge.domain.admin.infrastructure.entity;
 
+import java.time.LocalDate;
+
 import com.github.nenidan.ne_ne_challenge.domain.admin.domain.type.DomainType;
 import com.github.nenidan.ne_ne_challenge.global.entity.BaseEntity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import jakarta.persistence.*;
-
-import java.time.LocalDate;
 
 @Entity
 @Table(name = "statistics_Data")

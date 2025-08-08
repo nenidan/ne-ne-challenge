@@ -1,14 +1,8 @@
 package com.github.nenidan.ne_ne_challenge.global.aop;
 
-import com.github.nenidan.ne_ne_challenge.domain.admin.infrastructure.entity.AopLog;
-import com.github.nenidan.ne_ne_challenge.domain.admin.infrastructure.respository.LogTransactionRepository;
-import com.github.nenidan.ne_ne_challenge.domain.admin.domain.type.DomainType;
-import com.github.nenidan.ne_ne_challenge.domain.payment.domain.model.Payment;
-import com.github.nenidan.ne_ne_challenge.global.aop.event.AdminActionLoggedEvent;
-import com.github.nenidan.ne_ne_challenge.global.entity.BaseEntity;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Arrays;
+import java.util.Set;
+
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -19,8 +13,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import java.util.Arrays;
-import java.util.Set;
+import com.github.nenidan.ne_ne_challenge.domain.admin.domain.type.DomainType;
+import com.github.nenidan.ne_ne_challenge.global.aop.event.AdminActionLoggedEvent;
+
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Aspect
@@ -28,11 +26,10 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class AdminLogAspect {
 
-    private final ApplicationEventPublisher applicationEventPublisher;
-
     private static final Set<String> CLEAR_TRIGGER_METHODS = Set.of(
             "PaymentFacade.confirmAndChargePoint()"
     );//체인의 종료메서드 명시
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Pointcut("execution(* com..github.nenidan.ne_ne_challenge.domain.payment.application..*(..))")
     private void paymentMethods() {}

@@ -55,7 +55,7 @@ public class SecurityConfig {
 
                 .requestMatchers(HttpMethod.POST,
                         "/api/accounts",
-                        "/api/accounts/login",
+                        "/api/accounts/login/**",
                         "/api/accounts/refresh"
                 ).permitAll()
 
@@ -77,13 +77,19 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, "/api/products/*").hasRole(ADMIN.name())
                 .requestMatchers(HttpMethod.GET, "/internal/statistics/products").permitAll()
 
+                // challenge
+                .requestMatchers("api/challenges/**").authenticated()
+
                 // order
                 .requestMatchers(HttpMethod.POST, "/api/orders").hasRole(USER.name())
                 .requestMatchers(HttpMethod.PATCH, "/api/orders/**").hasRole(USER.name())
                 .requestMatchers(HttpMethod.GET, "/api/orders/**").hasRole(USER.name())
                 .requestMatchers(HttpMethod.GET, "/internal/statistics/orders").permitAll()
 
-                .requestMatchers("/api/**").authenticated()
+                // prometheus
+                .requestMatchers(HttpMethod.GET, "/api/orders/**").hasRole(USER.name())
+
+                .requestMatchers("/actuator/**").permitAll()
 
                 .anyRequest().denyAll()
             )

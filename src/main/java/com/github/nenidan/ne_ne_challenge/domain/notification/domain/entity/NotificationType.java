@@ -18,4 +18,8 @@ public enum NotificationType {
 	// 시스템 관련
 	SYSTEM_ALERT,            // 서버 장애, 점검 등 시스템 경고
 	ADMIN_MESSAGE,           // 관리자 공지사항 등 수동 메시지
+
+	PAYMENT_FAILED,
+	PAYMENT_SUCCESS,
+	PAYMENT_REMINDER
 }

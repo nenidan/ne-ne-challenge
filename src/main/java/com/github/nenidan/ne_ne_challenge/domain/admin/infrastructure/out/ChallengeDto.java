@@ -1,14 +1,13 @@
 package com.github.nenidan.ne_ne_challenge.domain.admin.infrastructure.out;
 
-import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeCategory;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus;
-import com.github.nenidan.ne_ne_challenge.global.dto.InnerResponseBase;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeCategory;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @AllArgsConstructor
 @Getter

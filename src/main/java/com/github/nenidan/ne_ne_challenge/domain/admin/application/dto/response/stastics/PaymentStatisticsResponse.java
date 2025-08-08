@@ -1,8 +1,8 @@
 package com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.response.stastics;
 
-import lombok.Getter;
-
 import java.time.LocalDateTime;
+
+import lombok.Getter;
 
 @Getter
 public class PaymentStatisticsResponse extends StatisticsResponse{

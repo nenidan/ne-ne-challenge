@@ -1,6 +1,7 @@
 package com.github.nenidan.ne_ne_challenge.global.listener;
 
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.github.nenidan.ne_ne_challenge.domain.notification.application.dto.request.SendNotificationRequest;
@@ -19,6 +20,7 @@ public class NotificationEventListener {
 	private final NotificationService notificationService;
 	private final UserClient userClient;
 
+	@Async
 	@EventListener
 	/*
     리스너 설명 및 주요 옵션
@@ -44,8 +46,6 @@ public class NotificationEventListener {
 	*/
 	public void handle(ChallengeClearedEvent event) {
 		UserResponse userResponse = userClient.getUserById(event.getUserId());
-
-		//TODO challengeName = challengeService.getTitle(event.getChallengeId()); 첼린지 MVP 완료 후 작성
 
 		String title = " 챌린지 완료!";
 		String content = userResponse.getNickname() + "님이 첼린지를 완료했습니다.";

@@ -1,10 +1,8 @@
 package com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.response.logs;
 
-import com.github.nenidan.ne_ne_challenge.domain.point.domain.type.PointReason;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 import java.time.LocalDateTime;
+
+import lombok.Getter;
 
 
 @Getter

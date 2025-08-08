@@ -1,7 +1,5 @@
 package com.github.nenidan.ne_ne_challenge.global.aop;
 
-import java.util.Set;
-
 public class LoggingContext {
     private static final ThreadLocal<Long> extractTargetId = new ThreadLocal<>();
 

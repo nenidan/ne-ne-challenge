@@ -1,9 +1,10 @@
 package com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.response.logs;
 
-import com.github.nenidan.ne_ne_challenge.domain.admin.domain.model.AopLogModel;
-import lombok.Getter;
-
 import java.time.LocalDateTime;
+
+import com.github.nenidan.ne_ne_challenge.domain.admin.domain.model.AopLogModel;
+
+import lombok.Getter;
 
 @Getter
 public class AopLogResponse extends LogsResponse {

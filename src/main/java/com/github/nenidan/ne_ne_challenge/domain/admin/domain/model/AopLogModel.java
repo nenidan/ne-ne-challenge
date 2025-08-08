@@ -1,10 +1,11 @@
 package com.github.nenidan.ne_ne_challenge.domain.admin.domain.model;
 
+import java.time.LocalDate;
+
 import com.github.nenidan.ne_ne_challenge.domain.admin.domain.type.DomainType;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.time.LocalDate;
 
 @Getter
 @AllArgsConstructor

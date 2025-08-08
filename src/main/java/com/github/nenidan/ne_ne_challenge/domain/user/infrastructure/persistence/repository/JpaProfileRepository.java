@@ -3,13 +3,14 @@ package com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistenc
 import java.util.List;
 import java.util.Optional;
 
-import lombok.NonNull;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.ProfileEntity;
+
+import lombok.NonNull;
 
 public interface JpaProfileRepository extends JpaRepository<ProfileEntity, Long> {
 

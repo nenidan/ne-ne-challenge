@@ -16,11 +16,9 @@ import jakarta.annotation.PostConstruct;
 @Component
 public class OrderRestClientImpl implements OrderRestClient {
 
+    private final static String ALL_ORDERS_ENDPOINT = "/internal/statistics/orders";
     @Value("${external.base-url}")
     private String baseUrl;
-
-    private final static String ALL_ORDERS_ENDPOINT = "/internal/statistics/orders";
-
     private RestClient restClient;
 
     @PostConstruct

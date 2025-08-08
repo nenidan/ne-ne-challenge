@@ -14,7 +14,6 @@ import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.respons
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.TossCancelResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.TossConfirmResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.mapper.PaymentApplicationMapper;
-import com.github.nenidan.ne_ne_challenge.global.event.PaymentCompletedEvent;
 import com.github.nenidan.ne_ne_challenge.domain.payment.domain.event.PointChargeRequested;
 import com.github.nenidan.ne_ne_challenge.domain.payment.domain.model.Payment;
 import com.github.nenidan.ne_ne_challenge.domain.payment.exception.PaymentErrorCode;
@@ -62,13 +61,13 @@ public class PaymentFacade {
             payment = paymentService.createPaymentFromConfirm(userId, tossConfirmResult);
 
             // 결제 완료 이벤트 발행
-            eventPublisher.publishEvent(new PaymentCompletedEvent(
-                payment.getUserId(),
-                payment.getOrderId(),
-                payment.getAmount(),
-                payment.getPaymentMethod(),
-                payment.getApprovedAt()
-            ));
+//            eventPublisher.publishEvent(new PaymentCompletedEvent(
+//                payment.getUserId(),
+//                payment.getOrderId(),
+//                payment.getAmount(),
+//                payment.getPaymentMethod(),
+//                payment.getApprovedAt()
+//            ));
 
             // 포인트 충전 이벤트 발행
             eventPublisher.publishEvent(new PointChargeRequested(
