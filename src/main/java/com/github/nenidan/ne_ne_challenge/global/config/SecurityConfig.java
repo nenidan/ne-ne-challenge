@@ -90,6 +90,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/orders/**").hasRole(USER.name())
 
                 .requestMatchers("/actuator/**").permitAll()
+                .requestMatchers("/api/**").authenticated()
 
                 .anyRequest().denyAll()
             )
