@@ -44,13 +44,10 @@ public class PaymentController {
         @RequestBody PaymentConfirmRequest request,
         @AuthenticationPrincipal Auth auth) {
 
-        long startTime = System.currentTimeMillis();
         PaymentConfirmResult paymentConfirmResult = paymentFacade.confirmAndChargePoint(
             auth.getId(),
             PaymentPresentationMapper.toPaymentConfirmCommand(request)
         );
-        long duration = System.currentTimeMillis() - startTime;
-        log.info("CONFIRM API TIME : {}ms", duration);
 
         return ApiResponse.success(
             HttpStatus.OK,
