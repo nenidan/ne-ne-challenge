@@ -129,7 +129,7 @@ public class PointService {
         pointRepository.save(pointWallet);
 
         // 포인트 트랜잭션 생성
-        PointTransaction pointTransaction = PointTransaction.createUsageTransaction(
+        PointTransaction pointTransaction = PointTransaction.createChargeTransaction(
             pointWallet,
             pointAmountCommand.getAmount(),
             pointReason,
@@ -191,7 +191,7 @@ public class PointService {
         // 포인트 트랜잭션 생성
         PointTransaction pointTransaction = PointTransaction.createUsageTransaction(
             pointWallet,
-            -pointAmountCommand.getAmount(),
+            pointAmountCommand.getAmount(),
             pointReason,
             pointReason.getDescription()
         );
