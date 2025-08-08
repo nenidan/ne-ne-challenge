@@ -16,6 +16,10 @@ public class User {
         this.profile = profile;
     }
 
+    public String getNickname() {
+        return this.profile.getNickname();
+    }
+
     public void updatePassword(String password) {
         account.updatePassword(password);
     }

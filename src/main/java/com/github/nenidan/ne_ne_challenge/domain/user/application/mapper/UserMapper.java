@@ -39,7 +39,7 @@ public class UserMapper {
                 user.getAccount().getEmail(),
                 user.getAccount().getRole().name(),
                 user.getProfile().getNickname(),
-                user.getProfile().getBirth(),
+                user.getProfile().getBirth().toString(),
                 user.getProfile().getBio(),
                 user.getAccount().getAuditInfo().getCreatedAt(),
                 user.getAccount().getAuditInfo().getUpdatedAt(),
