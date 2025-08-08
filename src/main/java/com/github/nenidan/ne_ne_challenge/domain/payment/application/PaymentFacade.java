@@ -38,35 +38,27 @@ public class PaymentFacade {
 
     public PaymentConfirmResult confirmAndChargePoint(Long userId, PaymentConfirmCommand command) {
 
-        log.info("유저 전 터지냐?");
         // 유저 검증
         userClient.getUserById(userId);
-        log.info("유저 후 터지냐?");
 
         Payment payment = null;
         TossConfirmResult tossConfirmResult = null;
         TossCancelResult tossCancelResult = null;
 
         try {
-            log.info("토스 승인 전 터지냐?");
             // 토스 페이먼츠의 /payments/confirm API 호출 (결제 승인)
             tossConfirmResult = tossClient.confirmPayment(
                 command.getPaymentKey(),
                 command.getOrderId(),
                 command.getAmount()
             );
-            log.info("토스 승인 후 터지냐?");
 
             // 프론트에서 결제 요청한 금액과, 토스에서 실제로 결제한 금액이 일치하는지 확인
             // 일치하지 않는다면 예외를 터트려서 토스 결제 취소
-            log.info("금액 검증 전 터지냐?");
             paymentService.validatePaymentAmount(tossConfirmResult.getTotalAmount(), command.getAmount());
-            log.info("금액 검증 후 터지냐?");
 
-            log.info("결제 내역 저장 전 터지냐?");
             // 토스 결제를 완료하고, 금액 검증을 통과하였으면 토스에서 응답받은 값을 이용하여 payment 객체 생성
             payment = paymentService.createPaymentFromConfirm(userId, tossConfirmResult);
-            log.info("결제 내역 저장 후 터지냐?");
 
             // 결제 완료 이벤트 발행
 //            eventPublisher.publishEvent(new PaymentCompletedEvent(
@@ -93,9 +85,7 @@ public class PaymentFacade {
             throw new PaymentException(PaymentErrorCode.TOSS_ERROR);
         } catch (Exception e) {
             try {
-                log.info("토스 결제 취소까지 오냐? 터지냐?");
                 tossCancelResult = tossClient.cancelPayment(command.getPaymentKey(), "시스템 오류로 인한 결제 취소");
-                log.info("토스 결제 취소 터지냐?");
 
                 if (payment != null) {
                     paymentService.failPayment(tossCancelResult);

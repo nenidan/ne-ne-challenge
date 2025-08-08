@@ -44,7 +44,6 @@ public class PaymentController {
         @RequestBody PaymentConfirmRequest request,
         @AuthenticationPrincipal Auth auth) {
 
-        log.info("이거 API 호출 하냐?");
         PaymentConfirmResult paymentConfirmResult = paymentFacade.confirmAndChargePoint(
             auth.getId(),
             PaymentPresentationMapper.toPaymentConfirmCommand(request)
