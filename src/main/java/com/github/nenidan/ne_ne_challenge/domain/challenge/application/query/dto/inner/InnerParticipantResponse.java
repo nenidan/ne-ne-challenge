@@ -2,19 +2,18 @@ package com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dt
 
 import java.time.LocalDateTime;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-@Setter
+@AllArgsConstructor
 public class InnerParticipantResponse {
     private Long id;
 
     private Long userId;
 
     private Long challengeId;
-
-    private boolean isHost;
 
     private LocalDateTime createdAt;
 

@@ -55,7 +55,7 @@ public class SecurityConfig {
 
                 .requestMatchers(HttpMethod.POST,
                         "/api/accounts",
-                        "/api/accounts/login",
+                        "/api/accounts/login/**",
                         "/api/accounts/refresh"
                 ).permitAll()
 
@@ -76,6 +76,9 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PATCH, "/api/products/*").hasRole(ADMIN.name())
                 .requestMatchers(HttpMethod.DELETE, "/api/products/*").hasRole(ADMIN.name())
                 .requestMatchers(HttpMethod.GET, "/internal/statistics/products").permitAll()
+
+                // challenge
+                .requestMatchers("api/challenges/**").authenticated()
 
                 // order
                 .requestMatchers(HttpMethod.POST, "/api/orders").hasRole(USER.name())

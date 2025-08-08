@@ -1,12 +1,13 @@
 package com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.inner;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import lombok.Getter;
-import lombok.Setter;
-
 @Getter
-@Setter
+@AllArgsConstructor
 public class InnerHistoryResponse {
 
     private Long id;
@@ -18,6 +19,8 @@ public class InnerHistoryResponse {
     private String content;
 
     private boolean isSuccess;
+
+    private LocalDate date;
 
     private LocalDateTime createdAt;
 

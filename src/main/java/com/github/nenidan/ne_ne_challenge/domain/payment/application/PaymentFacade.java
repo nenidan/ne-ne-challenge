@@ -21,7 +21,6 @@ import com.github.nenidan.ne_ne_challenge.domain.payment.exception.PaymentExcept
 import com.github.nenidan.ne_ne_challenge.global.client.point.PointClient;
 import com.github.nenidan.ne_ne_challenge.global.client.user.UserClient;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
-import com.github.nenidan.ne_ne_challenge.global.event.PaymentCompletedEvent;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -62,13 +61,13 @@ public class PaymentFacade {
             payment = paymentService.createPaymentFromConfirm(userId, tossConfirmResult);
 
             // 결제 완료 이벤트 발행
-            eventPublisher.publishEvent(new PaymentCompletedEvent(
-                payment.getUserId(),
-                payment.getOrderId(),
-                payment.getAmount(),
-                payment.getPaymentMethod(),
-                payment.getApprovedAt()
-            ));
+//            eventPublisher.publishEvent(new PaymentCompletedEvent(
+//                payment.getUserId(),
+//                payment.getOrderId(),
+//                payment.getAmount(),
+//                payment.getPaymentMethod(),
+//                payment.getApprovedAt()
+//            ));
 
             // 포인트 충전 이벤트 발행
             eventPublisher.publishEvent(new PointChargeRequested(
