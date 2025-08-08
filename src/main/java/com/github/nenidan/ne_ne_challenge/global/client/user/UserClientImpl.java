@@ -1,5 +1,7 @@
 package com.github.nenidan.ne_ne_challenge.global.client.user;
 
+import java.util.List;
+
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
@@ -7,8 +9,6 @@ import org.springframework.web.client.RestClient;
 import com.github.nenidan.ne_ne_challenge.global.client.user.dto.UserResponse;
 
 import lombok.RequiredArgsConstructor;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @Component

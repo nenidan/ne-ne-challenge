@@ -1,21 +1,24 @@
 package com.github.nenidan.ne_ne_challenge.domain.admin.infrastructure.out;
 
-import com.github.nenidan.ne_ne_challenge.global.dto.InnerResponseBase;
-import lombok.Getter;
-
 import java.time.LocalDateTime;
 
-@Getter
-public class ChallengeUserDto extends InnerResponseBase {
-    private Long id;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-    private Long challengeId;
+@AllArgsConstructor
+@Getter
+public class ChallengeUserDto {
+    private Long id;
 
     private Long userId;
 
+    private Long challengeId;
+
     private boolean isHost;
 
-    public ChallengeUserDto(LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
-        super(createdAt, updatedAt, deletedAt);
-    }
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
+
+    private LocalDateTime deletedAt;
 }

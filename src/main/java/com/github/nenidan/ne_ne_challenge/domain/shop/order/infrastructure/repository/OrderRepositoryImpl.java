@@ -13,14 +13,14 @@ import com.github.nenidan.ne_ne_challenge.domain.shop.order.infrastructure.mappe
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.OrderId;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.UserId;
 
+import lombok.RequiredArgsConstructor;
+
 @Repository
+@RequiredArgsConstructor
 public class OrderRepositoryImpl implements OrderRepository {
 
     private final OrderJpaRepository orderJpaRepository;
-
-    public OrderRepositoryImpl(OrderJpaRepository orderJpaRepository) {
-        this.orderJpaRepository = orderJpaRepository;
-    }
+    private final OrderQueryDslRepository orderQueryDslRepository;
 
     @Override
     public Order save(Order order) {
@@ -38,9 +38,9 @@ public class OrderRepositoryImpl implements OrderRepository {
 
     @Override
     public List<Order> findAllOrders(UserId userId, Long cursor, String keyword, int size) {
-        return orderJpaRepository.findByKeyword(userId.getValue(), cursor, keyword, size)
+        return orderQueryDslRepository.findAllOrdersBy(userId.getValue(), cursor, keyword, size)
             .stream()
-            .map(OrderMapper::toProjection)
+            .map(OrderMapper::toDomain)
             .toList();
     }
 
