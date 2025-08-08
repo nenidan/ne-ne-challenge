@@ -10,14 +10,15 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class AopLogModel {
     private final Long id;
+    private final Long targetId;
     private final DomainType type;
-    private final String userId;
+    private final Boolean success;
     private final String method;
     private final String params;
     private final String result;
     private final LocalDate createdAt;
 
-    public static AopLogModel of(Long id, DomainType type,  String userId, String method, String params, String result, LocalDate createdAt) {
-        return new AopLogModel(id, type, userId, method, params, result, createdAt);
+    public static AopLogModel of(Long id,  Long targetId, DomainType type, boolean success, String method, String params, String result, LocalDate createdAt) {
+        return new AopLogModel(id, targetId, type, success, method, params, result, createdAt);
     }
 }

@@ -1,5 +1,6 @@
 package com.github.nenidan.ne_ne_challenge.domain.admin.application.service;
 
+import com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.response.logs.PointHistoryResponse;
 import com.github.nenidan.ne_ne_challenge.domain.admin.domain.repository.AopLogRepository;
 import com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.request.LogSearchCond;
 import com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.response.logs.AopLogResponse;
@@ -13,9 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,13 +27,26 @@ public class LogQueryService {
     private final SavedHistoryRepositoryImpl savedHistoryRepository;
 
 
-    private List<LogsResponse> mergeAndSort(List<? extends LogsResponse> aopLogs,
+    private List<LogsResponse> mergeAndSort(List<AopLogResponse> aopLogs,
                                             List<? extends LogsResponse> histories,
                                             int limit) {
         List<LogsResponse> merged = new ArrayList<>();
-        merged.addAll(aopLogs);
-        merged.addAll(histories);
+
+        Map<Long, List<AopLogResponse>> logsGroupedByTargetId = aopLogs.stream()
+                .map(log -> log)
+                .collect(Collectors.groupingBy(AopLogResponse::getTargetId, LinkedHashMap::new, Collectors.toList()));
+
+        for (LogsResponse history : histories) {
+            // 로그 주입
+            List<AopLogResponse> relatedLogs = logsGroupedByTargetId.getOrDefault(history.getId(), List.of());
+            history.insertLogs(relatedLogs);
+
+            merged.add(history);
+        }
+
+        // 전체 정렬
         merged.sort(Comparator.comparing(LogsResponse::getCreatedAt).reversed());
+
         return merged;
     }
 
@@ -72,11 +84,13 @@ public class LogQueryService {
 
         return CursorResponse.of(content, nextCursor, hasNext);
     }
-/*
+
     public CursorResponse<LogsResponse, LocalDateTime> getPointLogs(LogSearchCond cond) {
         int size = cond.getSize();
 
-        List<AopLogResponse> aopLogs = aopLogRepository.findLogs(LogType.POINT, cond);
+        List<AopLogResponse> aopLogs = aopLogRepository.findLogs(DomainType.POINT, cond).stream().map(AopLogResponse::fromModel)
+                .collect(Collectors.toList());
+
         List<PointHistoryResponse> histories = savedHistoryRepository.findPointHistories(cond);
 
         List<LogsResponse> merged = mergeAndSort(aopLogs, histories, cond.getSize());
@@ -88,7 +102,7 @@ public class LogQueryService {
 
         return CursorResponse.of(content, nextCursor, hasNext);
     }
-
+/*
     public CursorResponse<LogsResponse, LocalDateTime> getUserLogs(LogSearchCond cond) {
         int size = cond.getSize();
 

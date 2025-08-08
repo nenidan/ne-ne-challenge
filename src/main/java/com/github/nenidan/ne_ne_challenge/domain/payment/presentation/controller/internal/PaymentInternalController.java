@@ -23,16 +23,12 @@ public class PaymentInternalController {
     private final PaymentService paymentService;
 
     @GetMapping("/statistics/payments")
-    public ResponseEntity<ApiResponse<List<PaymentStatisticsResponse>>> getAllPayments() {
+    public List<PaymentStatisticsResponse> getAllPayments() {
 
         List<PaymentStatisticsResponse> paymentStatisticsResponseList = paymentService.getAllPayments().stream()
             .map(PaymentPresentationMapper::toPaymentStatisticsResponse)
             .toList();
 
-        return ApiResponse.success(
-            HttpStatus.OK,
-            "전체 결제 내역",
-            paymentStatisticsResponseList
-        );
+        return paymentStatisticsResponseList;
     }
 }

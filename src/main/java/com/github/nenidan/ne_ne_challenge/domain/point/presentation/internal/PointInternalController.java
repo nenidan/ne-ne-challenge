@@ -87,16 +87,12 @@ public class PointInternalController {
     }
 
     @GetMapping("/statistics/pointTransactions")
-    public ResponseEntity<ApiResponse<List<PointHistoryResponse>>> getAllPointTransactions() {
+    public List<PointHistoryResponse> getAllPointTransactions() {
 
         List<PointHistoryResponse> pointHistoryResponseList = pointFacade.getAllPointTransactions().stream()
             .map(PointPresentationMapper::toPointHistoryResponse)
             .toList();
 
-        return ApiResponse.success(
-            HttpStatus.OK,
-            "포인트 사용 이력을 조회하였습니다.",
-            pointHistoryResponseList
-        );
+        return pointHistoryResponseList;
     }
 }

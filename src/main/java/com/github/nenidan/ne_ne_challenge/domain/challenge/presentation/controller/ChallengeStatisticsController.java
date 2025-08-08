@@ -16,27 +16,19 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/internal")
 public class ChallengeStatisticsController {
 
     private final ChallengeStatisticsService challengeStatisticsService;
 
     @GetMapping("/statistics/challenges")
-    public ResponseEntity<ApiResponse<List<InnerChallengeResponse>>> getAllChallenges() {
-        return ApiResponse.success(
-            HttpStatus.OK,
-            "전체 챌린지 목록",
-            challengeStatisticsService.getAllChallenge()
-        );
+    public List<InnerChallengeResponse> getAllChallenges() {
+        return challengeStatisticsService.getAllChallenge();
     }
 
     @GetMapping("/statistics/participants")
-    public ResponseEntity<ApiResponse<List<InnerParticipantResponse>>> getAllParticipants() {
-        return ApiResponse.success(
-            HttpStatus.OK,
-            "전체 참가자 목록",
-            challengeStatisticsService.getAllParticipant()
-        );
+    public List<InnerParticipantResponse> getAllParticipants() {
+        return challengeStatisticsService.getAllParticipant();
     }
 
     @GetMapping("/statistics/history")
