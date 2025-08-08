@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.OrderResult;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.OrderStatisticsResult;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.model.Order;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.repository.OrderRepository;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.type.OrderStatus;
@@ -107,7 +108,7 @@ public class OrderService {
      * @author kimyongjun0129
      */
     @Transactional(readOnly = true)
-    public CursorResponse<OrderResult, Long> findAllOrder(UserId userId, Long cursor, int size, String keyword) {
+    public CursorResponse<OrderResult, Long> findAllOrders(UserId userId, Long cursor, int size, String keyword) {
 
         List<OrderResult> orderList = orderRepository.findAllOrders(userId, cursor, keyword, size+1)
             .stream()
@@ -120,6 +121,14 @@ public class OrderService {
 
         Long nextCursor = hasNext ? orderList.get(orderList.size() - 1).getOrderId() : null;
 
-        return new CursorResponse<>(content, nextCursor, orderList.size() > size);
+        return CursorResponse.of(content, nextCursor, orderList.size() > size);
+    }
+
+    @Transactional(readOnly = true)
+    public List<OrderStatisticsResult> findAllOrders() {
+        return orderRepository.findAllOrders()
+            .stream()
+            .map(OrderStatisticsResult::fromEntity)
+            .toList();
     }
 }

@@ -2,6 +2,8 @@ package com.github.nenidan.ne_ne_challenge.domain.notification.application.servi
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.springframework.stereotype.Service;
 
@@ -27,31 +29,44 @@ public class NotificationRetryService {
 	public void retry() {
 		long now = System.currentTimeMillis();
 		List<RetryNotificationRequest> retryList = redisNotificationRepository.getNotifications(now);
+		ExecutorService executor = Executors.newFixedThreadPool(5);
 
 		for (RetryNotificationRequest dto : retryList) {
-			try {
-				boolean success = sender.send(dto.getReceiverId(), dto.getPlatform(), dto.getTitle(), dto.getContent());
+			final RetryNotificationRequest task = dto;
+			executor.submit(() -> {
+				try {
+					boolean success = sender.send(
+						task.getReceiverId(),
+						task.getPlatform(),
+						task.getTitle(),
+						task.getContent()
+					);
 
-				Optional<NotificationLog> logOpt = logRepository.findById(dto.getNotificationLogId());
-				if (logOpt.isEmpty()) continue;
-				NotificationLog log = logOpt.get();
+					Optional<NotificationLog> logOpt = logRepository.findById(task.getNotificationLogId());
+					if (logOpt.isEmpty()) return;
 
-				if (success) {
-					log.setStatus(NotificationStatus.SUCCESS);
-				} else {
-					log.increaseRetryCount();
-					if (log.getRetryCount() >= 3) {
-						log.setStatus(NotificationStatus.FAILED);
+					NotificationLog log = logOpt.get();
+
+					if (success) {
+						log.setStatus(NotificationStatus.SUCCESS);
 					} else {
-						log.setStatus(NotificationStatus.WAITING);
-						redisNotificationRepository.push(log, 10); // 재등록
+						log.increaseRetryCount();
+						if (log.getRetryCount() >= 3) {
+							log.setStatus(NotificationStatus.FAILED);
+						} else {
+							log.setStatus(NotificationStatus.WAITING);
+							redisNotificationRepository.push(log, 10);
+						}
 					}
-				}
-				logRepository.save(log);
 
-			} catch (Exception e) {
-				log.error("알림 재전송 실패", e);
-			}
+					logRepository.save(log);
+
+				} catch (Exception e) {
+					log.error("알림 재전송 실패", e);
+				}
+			});
 		}
+
+		executor.shutdown();
 	}
 }

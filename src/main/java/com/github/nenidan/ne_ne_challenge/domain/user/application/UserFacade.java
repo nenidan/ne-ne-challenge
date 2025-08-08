@@ -2,6 +2,7 @@ package com.github.nenidan.ne_ne_challenge.domain.user.application;
 
 import java.util.List;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 
 import lombok.RequiredArgsConstructor;
 
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class UserFacade {
@@ -32,7 +34,6 @@ public class UserFacade {
     private final PointClient pointClient;
     private final OAuthClientFactory oauthClientFactory;
 
-    @Transactional
     public UserWithTokenResult join(JoinCommand joinCommand) {
 
         User user = UserMapper.toDomain(joinCommand);
@@ -47,7 +48,6 @@ public class UserFacade {
         );
     }
 
-    @Transactional
     public UserWithTokenResult login(LoginCommand loginCommand) {
 
         User user = userService.login(loginCommand.getEmail(), loginCommand.getPassword());
@@ -58,12 +58,14 @@ public class UserFacade {
         );
     }
 
-    @Transactional
     public UserResult getProfile(Long id) {
         return UserMapper.toDto(userService.getProfile(id));
     }
 
-    @Transactional
+    public List<UserResult> getProfiles() {
+        return userService.getProfiles().stream().map(UserMapper::toDto).toList();
+    }
+
     public CursorResponse<UserResult, String> searchProfiles(String cursor, int size, String keyword) {
         CursorResponse<User, String> userList = userService.searchProfiles(cursor, size, keyword);
         List<UserResult> content = userList.getContent().stream()
@@ -72,13 +74,11 @@ public class UserFacade {
         return new CursorResponse<>(content, userList.getNextCursor(), userList.isHasNext());
     }
 
-    @Transactional
     public UserResult updateProfile(Long id, UpdateProfileCommand dto) {
         User user = userService.updateProfile(id, UserMapper.toDomain(dto));
         return UserMapper.toDto(user);
     }
 
-    @Transactional
     public UserWithTokenResult oauthLogin(OAuthLoginCommand dto) {
 
         OAuthClient oauthClient = oauthClientFactory.create(dto.getProvider());
@@ -87,7 +87,7 @@ public class UserFacade {
 
         User savedUser = userService.oauthJoin(userInfo);
 
-        // Todo: 포인트 지갑 추가
+        pointClient.createPointWallet(savedUser.getId().getValue());
 
         return new UserWithTokenResult(
                 UserMapper.toDto(savedUser),
@@ -95,12 +95,11 @@ public class UserFacade {
         );
     }
 
-    @Transactional
-    public void logout(String bearerToken) {
+    public void logout(String bearerToken, Long id) {
         jwtTokenProvider.addToBlacklist(bearerToken);
+        jwtTokenProvider.removeRefreshToken(id);
     }
 
-    @Transactional
     public void verifyPassword(Long id, String password, String bearerToken) {
 
         userService.verifyPassword(id, password);
@@ -108,14 +107,12 @@ public class UserFacade {
         jwtTokenProvider.addToWhitelist(bearerToken);
     }
 
-    @Transactional
     public void updatePassword(Long id, String newPassword, String bearerToken) {
         jwtTokenProvider.checkWhitelisted(bearerToken);
 
         userService.updatePassword(id, newPassword);
     }
 
-    @Transactional
     public void delete(Long id, String bearerToken) {
 
         jwtTokenProvider.checkWhitelisted(bearerToken);
@@ -123,10 +120,18 @@ public class UserFacade {
         userService.delete(id);
 
         jwtTokenProvider.addToBlacklist(bearerToken);
+        jwtTokenProvider.removeRefreshToken(id);
     }
 
-    @Transactional
     public UserResult updateRole(Long id, String role) {
         return UserMapper.toDto(userService.updateRole(id, role));
+    }
+
+    public HttpHeaders refresh(String refreshToken) {
+        Long id = jwtTokenProvider.getUserIdFromRefreshToken(refreshToken);
+
+        User user = userService.getProfile(id);
+
+        return jwtTokenProvider.updateAuthHeaders(user, refreshToken);
     }
 }

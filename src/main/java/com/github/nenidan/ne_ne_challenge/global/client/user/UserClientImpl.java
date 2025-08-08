@@ -1,5 +1,8 @@
 package com.github.nenidan.ne_ne_challenge.global.client.user;
 
+import java.util.List;
+
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
@@ -19,5 +22,13 @@ public class UserClientImpl implements UserClient {
                 .uri("/internal/profiles/" + userId)
                 .retrieve()
                 .body(UserResponse.class);
+    }
+
+    @Override
+    public List<UserResponse> getUserAll() {
+        return restClient.get()
+                .uri("/internal/profiles")
+                .retrieve()
+                .body(new ParameterizedTypeReference<List<UserResponse>>() {});
     }
 }

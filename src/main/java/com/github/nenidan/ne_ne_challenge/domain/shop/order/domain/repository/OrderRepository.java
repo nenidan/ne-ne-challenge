@@ -10,4 +10,5 @@ public interface OrderRepository {
     Order save(Order order);
     Order findByUserIdAndOrderId(UserId userId, OrderId orderId);
     List<Order> findAllOrders(UserId userId, Long cursor, String keyword, int size);
+    List<Order> findAllOrders();
 }

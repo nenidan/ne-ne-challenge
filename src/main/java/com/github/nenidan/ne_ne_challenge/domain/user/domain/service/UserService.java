@@ -60,6 +60,10 @@ public class UserService {
         );
     }
 
+    public List<User> getProfiles() {
+        return userRepository.findAll();
+    }
+
     public CursorResponse<User, String> searchProfiles(String cursor, int size, String keyword) {
         List<User> userList = userRepository.findByKeyword(cursor, keyword, size + 1);
 

@@ -1,6 +1,7 @@
 package com.github.nenidan.ne_ne_challenge.domain.point.application;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -67,5 +68,9 @@ public class PointFacade {
 
     public void refundPoints(PointRefundCommand pointRefundCommand) {
         pointService.refundPoints(pointRefundCommand);
+    }
+
+    public List<PointHistoryResult> getAllPointTransactions() {
+        return pointService.getAllPointTransactions();
     }
 }
