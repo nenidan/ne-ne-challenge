@@ -3,7 +3,10 @@ package com.github.nenidan.ne_ne_challenge.domain.challenge.application.command.
 import static com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus.*;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,8 +35,10 @@ public class ChallengeCommandService {
     private static final ChallengeMapper challengeMapper = ChallengeMapper.INSTANCE;
     private final UserClient userClient;
     private final PointClient pointClient;
+    private final RedissonClient redissonClient;
     private final ChallengeRepository challengeRepository;
     private final HistoryRepository historyRepository;
+
     private final SelectWinnerService selectWinnerService;
 
     public Long createChallenge(Long requesterId, CreateChallengeCommand command) {
@@ -63,12 +68,26 @@ public class ChallengeCommandService {
     }
 
     public void joinChallenge(Long requesterId, Long challengeId) {
-        verifyUserExists(requesterId);
-        int userPoint = pointClient.getMyBalance(requesterId).getBalance();
-        Challenge challenge = getChallengeOrThrow(challengeId);
+        try {
+            RLock lock = redissonClient.getLock("challenge:" + challengeId);
+            boolean isLocked = lock.tryLock(200, 500, TimeUnit.MILLISECONDS);
 
-        challenge.join(requesterId, userPoint);
-        pointClient.decreasePoint(requesterId, challenge.getParticipationFee(), "CHALLENGE_ENTRY");
+            if (isLocked) {
+                try {
+                    verifyUserExists(requesterId);
+                    int userPoint = pointClient.getMyBalance(requesterId).getBalance();
+                    Challenge challenge = getChallengeOrThrow(challengeId);
+
+                    challenge.join(requesterId, userPoint);
+                    pointClient.decreasePoint(requesterId, challenge.getParticipationFee(), "CHALLENGE_ENTRY");
+                } finally {
+                    lock.unlock();
+                }
+            }
+        }catch (InterruptedException e){
+            System.out.println("e.getMessage() = " + e.getMessage());
+            throw new ChallengeException(ChallengeErrorCode.SERVER_ERROR);
+        }
     }
 
     public void quitChallenge(Long requesterId, Long challengeId) {
