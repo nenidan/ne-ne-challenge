@@ -97,7 +97,9 @@ public class AdminLogAspect {
 //                    break;
 //                }
 //            }
-            if(success){
+            if (success && result instanceof BaseEntity entity) {
+                targetId = entity.getId();
+
                 LoggingContext.updateId(targetId);
             }
 
