@@ -1,15 +1,29 @@
 package com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.response.logs;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
-@AllArgsConstructor
-public abstract class LogsResponse {
+public abstract class LogsResponse implements CommonId {
+
+    public LogsResponse(String type, LocalDateTime createdAt) {
+    }
+
     private String type;
     private LocalDateTime createdAt;
+
+    @Setter
+    private List<AopLogResponse> logs = new ArrayList<>();
+
+    @Override
+    public abstract Long getId();
+
+    public void insertLogs (List<AopLogResponse> aopLogs){
+        this.logs = aopLogs;
+    }
 
 }

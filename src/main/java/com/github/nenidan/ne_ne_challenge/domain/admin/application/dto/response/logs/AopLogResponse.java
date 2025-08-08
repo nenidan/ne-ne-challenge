@@ -11,7 +11,9 @@ public class AopLogResponse extends LogsResponse {
     private String params;
     private String result;
     private Boolean success;
-    private long targetId;
+    private Long targetId;
+
+    private Long id;
 
     public AopLogResponse(String type, LocalDateTime createdAt, String method, String params, String result, Boolean success, Long targetId) {
         super(type, createdAt);

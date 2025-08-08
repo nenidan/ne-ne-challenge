@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
@@ -33,16 +34,36 @@ public class AdminLogAspect {
             "PaymentFacade.confirmAndChargePoint()"
     );//체인의 종료메서드 명시
 
-    //결제 테스트 1순위 진행, 추후 도메인별 어드바이스 생성 리팩토링 예정
-    @Around("execution(* com..github.nenidan.ne_ne_challenge.domain.payment.application..*(..))")
+    @Pointcut("execution(* com..github.nenidan.ne_ne_challenge.domain.payment.application..*(..))")
+    private void paymentMethods() {}
+
+    @Pointcut("execution(* com..github.nenidan.ne_ne_challenge.domain.point.application..*(..))")
+    private void pointMethods() {}
+
+    @Pointcut("execution(* com..github.nenidan.ne_ne_challenge.domain.order.application..*(..))")
+    private void orderMethods() {}
+
+    /*@Pointcut("execution(* com..github.nenidan.ne_ne_challenge.domain.challenge..*(..))")
+    private void challengeMethods() {}*/
+
+    @Pointcut("paymentMethods() || pointMethods() || orderMethods()")
+    private void adminDomainMethods() {}
+
+    @Around("adminDomainMethods()")
     public Object logAdminAction(ProceedingJoinPoint joinPoint) throws Throwable {
         long start = System.currentTimeMillis();
 
         // 요청 정보
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        String packageName = signature.getDeclaringType().getPackageName();
         String className = signature.getDeclaringType().getSimpleName();
         String methodName = signature.getName();
         String fullMethodName = className + "." + methodName + "()";
+
+        //로그의 도메인 타입
+        String[] parts = packageName.split("\\.");
+        String domainName = parts[5];
+        DomainType type = DomainType.valueOf(domainName.toUpperCase());
 
         // 파라미터 정보
         Object[] args = joinPoint.getArgs();
@@ -59,6 +80,7 @@ public class AdminLogAspect {
         boolean success = true;
 
         try {
+            //proceed = return에서 추출, args = method 인자에서 추출
             result = joinPoint.proceed();
             return result;
         } catch (Throwable ex) {
@@ -66,17 +88,16 @@ public class AdminLogAspect {
             fullMethodName = ex.getMessage() + "(" + fullMethodName + ")"; //에러메시지 커스텀
             targetId = LoggingContext.getId();
 
-            System.out.println("error: "+targetId);
-
             LoggingContext.clear();
             throw ex;
         } finally {
-            System.out.println("result: " + result);
-            if (success && result instanceof BaseEntity entity) {
-                targetId = entity.getId();
-
-                System.out.println("targetId: " + targetId);
-
+//            for (Object arg : args) {
+//                if (arg instanceof BaseEntity entity) {
+//                    targetId = entity.getId();
+//                    break;
+//                }
+//            }
+            if(success){
                 LoggingContext.updateId(targetId);
             }
 
@@ -90,11 +111,10 @@ public class AdminLogAspect {
                 System.out.println("끝");
                 LoggingContext.clear();
             }
-        if(targetId!=null) {
+
             applicationEventPublisher.publishEvent(
-                    new AdminActionLoggedEvent(DomainType.PAYMENT, targetId, fullMethodName, params, result != null ? result.toString() : null, success)
+                    new AdminActionLoggedEvent(type, targetId, fullMethodName, params, result != null ? result.toString() : null, success)
             );
-        }
 
 
         }

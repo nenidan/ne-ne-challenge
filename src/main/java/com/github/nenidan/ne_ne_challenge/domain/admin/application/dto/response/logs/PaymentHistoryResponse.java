@@ -8,24 +8,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Setter
 public class PaymentHistoryResponse extends LogsResponse {
 
-    private Long Id;
+    private Long id;
     private Long userId;
     private Integer amount;
     private String status; //.name() 필요
     private LocalDateTime requestedAt = null;
     private LocalDateTime canceledAt = null;
     private LocalDateTime failedAt = null;
-    private List<AopLogResponse> logs = new ArrayList<>();
 
     public PaymentHistoryResponse(String type, LocalDateTime createdAt,
-                                  Long Id, Long userId, Integer amount,
+                                  Long id, Long userId, Integer amount,
                                   String status, LocalDateTime requestedAt,
                                   LocalDateTime canceledAt, LocalDateTime failedAt) {
         super(type, createdAt);
-        this.Id = Id;
+        this.id = id;
         this.userId = userId;
         this.amount = amount;
         this.status = status;

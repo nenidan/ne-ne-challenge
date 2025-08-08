@@ -17,7 +17,6 @@ public class AopLog  extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private Long targetId;
 
     @Enumerated(EnumType.STRING)

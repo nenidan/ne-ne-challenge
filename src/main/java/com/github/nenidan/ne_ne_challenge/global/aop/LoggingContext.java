@@ -10,7 +10,9 @@ public class LoggingContext {
     }
 
     public static void updateId(Long id) {
-        extractTargetId.set(id);
+        if (id != null) {
+            extractTargetId.set(id);
+        }
     }
 
     public static void clear() {
