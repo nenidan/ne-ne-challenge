@@ -28,7 +28,6 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class PaymentService {
 
     private final PaymentRepository paymentRepository;
@@ -76,11 +75,45 @@ public class PaymentService {
         return paymentRepository.save(failPayment);
     }
 
+    // ============================= 결제 취소 관련 =============================
+
+    /**
+     * 취소 가능한 결제 내역인지 검증합니다.(7일 이내의 사용하지 않은 포인트)
+     */
+    public Payment validatePaymentForCancel(Long userId, String orderId) {
+        // payment 조회
+        Payment payment = getPaymentByOrderId(orderId);
+
+        if (!payment.getUserId().equals(userId)) {
+            throw new PaymentException(PaymentErrorCode.PAYMENT_ACCESS_DENIED);
+        }
+
+        // 취소가 가능한 결제 내역인지 확인, 만약 취소가 안된다면 예외가 터진다.
+        payment.validateCancelable();
+
+        return payment;
+    }
+
+    /**
+     * 토스 결제 취소 내역을 바탕으로 결제 취소를 업데이트합니다.
+     */
+    @Transactional
+    public PaymentCancelResult updatePaymentCancel(Payment payment, TossCancelResult tossCancelResult,
+        PaymentCancelCommand command) {
+
+        payment.cancel(command.getCancelReason(), tossCancelResult.getCanceledAt().toLocalDateTime(), tossCancelResult.getStatus());
+
+        paymentRepository.save(payment);
+
+        return PaymentApplicationMapper.toPaymentCancelResult(payment);
+    }
+
     // ============================= 결제 조회 관련 =============================
 
     /**
      * 자신의 결제 내역을 커서 기반으로 조회합니다.
      */
+    @Transactional(readOnly = true)
     public CursorResponse<PaymentSearchResult, Long> searchMyPayments(Long userId, PaymentSearchCommand command) {
 
         LocalDateTime startDate = convertToStartDateTime(command.getStartDate());
@@ -102,40 +135,18 @@ public class PaymentService {
         return CursorResponse.of(paymentSearchResultList, PaymentSearchResult::getPaymentId, command.getSize());
     }
 
-    // ============================= 결제 취소 관련 =============================
-
-    public Payment validatePaymentForCancel(Long userId, String orderId) {
-        // payment 조회
-        Payment payment = getPaymentByOrderId(orderId);
-
-        if (!payment.getUserId().equals(userId)) {
-            throw new PaymentException(PaymentErrorCode.PAYMENT_ACCESS_DENIED);
-        }
-
-        // 취소가 가능한 결제 내역인지 확인, 만약 취소가 안된다면 예외가 터진다.
-        payment.validateCancelable();
-
-        return payment;
-    }
-
-    @Transactional
-    public PaymentCancelResult updatePaymentCancel(Payment payment, TossCancelResult tossCancelResult,
-        PaymentCancelCommand command) {
-
-        payment.cancel(command.getCancelReason(), tossCancelResult.getCanceledAt().toLocalDateTime(), tossCancelResult.getStatus());
-
-        paymentRepository.save(payment);
-
-        return PaymentApplicationMapper.toPaymentCancelResult(payment);
-    }
-
+    /**
+     * 사용자 결제 내역 통계를 위한 메서드
+     */
+    @Transactional(readOnly = true)
     public List<PaymentStatisticsResult> getAllPayments() {
         return paymentRepository.findAll().stream()
             .map(PaymentApplicationMapper::toPaymentStatisticsResult)
             .toList();
     }
 
-    // ================= 유틸성 메서드 =================
+    // ============================== private 헬퍼 메서드 ==============================
+
     private Payment getPaymentByOrderId(String orderId) {
         return paymentRepository.findByOrderId(orderId)
             .orElseThrow(() -> new PaymentException(PaymentErrorCode.PAYMENT_NOT_FOUND));

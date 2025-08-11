@@ -96,8 +96,13 @@ public class PaymentFacade {
         }
     }
 
+    /**
+     * 결제 취소 처리
+     * 1. 사용자 검증 -> 2. 결제 취소 가능 여부 확인 -> 3. 토스 결제 취소 -> 4. 결제 정보 업데이트 -> 5. 포인트 차감
+     */
     public PaymentCancelResult cancelPayment(Long userId, String orderId, PaymentCancelCommand command) {
 
+        // 사용자 검증
         userClient.getUserById(userId);
 
         // 결제 정보 조회 및 기본 검증 (통과 한다면 취소가 가능한 결제 내역이다.)
@@ -107,10 +112,7 @@ public class PaymentFacade {
         TossCancelResult tossCancelResult = tossClient.cancelPayment(payment.getPaymentKey(),
             command.getCancelReason());
 
-        log.info("토스 취소 응답: canceledAt={}, status={}",
-            tossCancelResult.getCanceledAt(),
-            tossCancelResult.getStatus());
-
+        // 토스 결제 취소에 성공한다면, 결제의 상태를 CANCELED로 업데이트
         PaymentCancelResult result = paymentService.updatePaymentCancel(payment, tossCancelResult, command);
 
         // 토스에서 취소가 완료가 되었으면 이제 point 쪽에 취소(포인트를 다시 차감)하라고 요청을 보낸다.
@@ -119,6 +121,9 @@ public class PaymentFacade {
         return result;
     }
 
+    /**
+     * 자신의 결제 내역 확인
+     */
     public CursorResponse<PaymentSearchResult, Long> searchMyPayments(Long userId, PaymentSearchCommand command) {
 
         userClient.getUserById(userId);
@@ -127,6 +132,7 @@ public class PaymentFacade {
     }
 
     // ============================== private 헬퍼 메서드 ==============================
+
     private void publishPointChargeEvent(Payment payment) {
         try {
             eventPublisher.publishEvent(new PointChargeRequested(
@@ -140,7 +146,8 @@ public class PaymentFacade {
         }
     }
 
-    private void handleRestClientError(RestClientResponseException e, boolean userVerified, boolean tossPaymentSucceeded) {
+    private void handleRestClientError(RestClientResponseException e, boolean userVerified,
+        boolean tossPaymentSucceeded) {
         if (!userVerified) {
             // 유저 검증 단계에서 실패 하였을 때
             throw new PaymentException(PaymentErrorCode.USER_NOT_FOUND, e);

@@ -61,6 +61,14 @@ public class PaymentController {
             PaymentPresentationMapper.toPaymentConfirmResponse(paymentConfirmResult));
     }
 
+    /**
+     * 결제 취소 API
+     * 사용자는 자신이 결제한 포인트 중에서, 7일 이내의 사용되지 않은 포인트는 환불이 가능하다.
+     * @param auth 인증된 사용자 정보
+     * @param orderId 결제할 때 사용한 orderId
+     * @param request 환불 사유(예: 단순 변심)
+     * @return 결제 취소 결과
+     */
     @PostMapping("/payments/{orderId}/cancel")
     public ResponseEntity<ApiResponse<PaymentCancelResponse>> cancelPayment(
         @AuthenticationPrincipal Auth auth,
@@ -77,6 +85,12 @@ public class PaymentController {
         );
     }
 
+    /**
+     * 나의 결제 내역 조회 API
+     * @param auth 인증된 사용자 정보
+     * @param request 결제 내역 검색 조건(cursor, size, status, startDate, endDate)
+     * @return 커서 기반의 자신의 결제 내역
+     */
     @GetMapping("/payments")
     public ResponseEntity<ApiResponse<CursorResponse<PaymentSearchResponse, Long>>> searchMyPayments(
         @AuthenticationPrincipal Auth auth,
