@@ -19,7 +19,6 @@ import com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.request.
 import com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.response.PointBalanceResponse;
 import com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.response.PointHistoryResponse;
 import com.github.nenidan.ne_ne_challenge.domain.point.presentation.mapper.PointPresentationMapper;
-import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
 

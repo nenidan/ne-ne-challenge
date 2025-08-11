@@ -1,11 +1,11 @@
 package com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.response.stastics;
 
-import lombok.Getter;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.Map;
+
+import lombok.Getter;
 
 @Getter
 public class ChallengeStatisticsResponse extends StatisticsResponse{

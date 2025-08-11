@@ -1,11 +1,8 @@
 package com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.response.logs;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+
+import lombok.Getter;
 
 @Getter
 public class PaymentHistoryResponse extends LogsResponse {

@@ -1,15 +1,17 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.application.service;
 
-import com.github.nenidan.ne_ne_challenge.domain.user.application.dto.UserResult;
-import com.github.nenidan.ne_ne_challenge.domain.user.application.mapper.UserMapper;
-import com.github.nenidan.ne_ne_challenge.domain.user.domain.service.UserService;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import com.github.nenidan.ne_ne_challenge.domain.user.application.dto.UserResult;
+import com.github.nenidan.ne_ne_challenge.domain.user.application.mapper.UserMapper;
+import com.github.nenidan.ne_ne_challenge.domain.user.domain.service.UserService;
+
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor

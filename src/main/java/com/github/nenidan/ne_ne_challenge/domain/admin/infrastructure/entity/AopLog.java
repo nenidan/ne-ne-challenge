@@ -2,6 +2,7 @@ package com.github.nenidan.ne_ne_challenge.domain.admin.infrastructure.entity;
 
 import com.github.nenidan.ne_ne_challenge.domain.admin.domain.type.DomainType;
 import com.github.nenidan.ne_ne_challenge.global.entity.BaseEntity;
+
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

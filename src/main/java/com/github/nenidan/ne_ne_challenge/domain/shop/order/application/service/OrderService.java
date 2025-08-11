@@ -12,7 +12,6 @@ import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.model.Order;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.repository.OrderRepository;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.type.OrderStatus;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.OrderDetail;
-import com.github.nenidan.ne_ne_challenge.domain.shop.order.presentation.dto.OrderStatisticsResponse;
 import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.event.StockRestoreEvent;
 import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.event.StockUpdateEvent;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.OrderId;
