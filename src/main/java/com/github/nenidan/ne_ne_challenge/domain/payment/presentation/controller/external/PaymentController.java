@@ -39,9 +39,15 @@ public class PaymentController {
 
     private final PaymentFacade paymentFacade;
 
+    /**
+     * 토스페이 결제 승인 및 포인트 충전 API
+     * @param request 토스페이먼츠에서 제공한 결제 정보 (paymentKey, orderId, amount)
+     * @param auth 인증된 사용자 정보
+     * @return 결제 승인 결과 (orderId, amount, method, status, approvedAt)
+     */
     @PostMapping("/payments/confirm")
     public ResponseEntity<ApiResponse<PaymentConfirmResponse>> confirmAndChargePoint(
-        @RequestBody PaymentConfirmRequest request,
+        @Valid @RequestBody PaymentConfirmRequest request,
         @AuthenticationPrincipal Auth auth) {
 
         PaymentConfirmResult paymentConfirmResult = paymentFacade.confirmAndChargePoint(
@@ -51,7 +57,7 @@ public class PaymentController {
 
         return ApiResponse.success(
             HttpStatus.OK,
-            "포인트 충전이 완료되었습니다.",
+            "결제가 완료되었습니다. 포인트는 1~2분 이내로 충전될 예정입니다.",
             PaymentPresentationMapper.toPaymentConfirmResponse(paymentConfirmResult));
     }
 

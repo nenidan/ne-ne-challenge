@@ -73,7 +73,19 @@ public class Payment extends BaseEntity {
         this.amount = totalAmount;
     }
 
-    public static Payment createPaymentFromConfirm(
+    private Payment(Long userId, String paymentKey, String orderId, String method, PaymentStatus paymentStatus,
+        LocalDateTime requestedAt, int totalAmount) {
+        this.userId = userId;
+        this.paymentKey = paymentKey;
+        this.orderId = orderId;
+        this.paymentMethod = method;
+        this.status = paymentStatus;
+        this.requestedAt = requestedAt;
+        this.failedAt = LocalDateTime.now();
+        this.amount = totalAmount;
+    }
+
+    public static Payment createPaymentFromToss(
         Long userId,
         String paymentKey,
         String orderId,
@@ -91,6 +103,25 @@ public class Payment extends BaseEntity {
             method,
             requestedAt,
             approvedAt,
+            totalAmount
+        );
+    }
+
+    public static Payment createFailPayment(
+        Long userId,
+        String paymentKey,
+        String orderId,
+        String method,
+        LocalDateTime requestedAt,
+        int totalAmount
+    ) {
+        return new Payment(
+            userId,
+            paymentKey,
+            orderId,
+            method,
+            PaymentStatus.FAIL,
+            requestedAt,
             totalAmount
         );
     }

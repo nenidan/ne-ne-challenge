@@ -36,74 +36,64 @@ public class PaymentFacade {
     private final ApplicationEventPublisher eventPublisher;
     private final PointClient pointClient;
 
+    /**
+     * 결제 승인 및 포인트 충전 요청 처리
+     * 1. 사용자 검증 -> 2. 토스 결제 승인 -> 3. 결제 정보 저장 -> 4. 포인트 충전 이벤트 발행
+     */
     public PaymentConfirmResult confirmAndChargePoint(Long userId, PaymentConfirmCommand command) {
 
-        // 유저 검증
-        userClient.getUserById(userId);
-
-        Payment payment = null;
+        boolean userVerified = false;
+        boolean tossPaymentSucceeded = false;
         TossConfirmResult tossConfirmResult = null;
-        TossCancelResult tossCancelResult = null;
+        Payment payment;
 
         try {
+            // 유저 검증
+            userClient.getUserById(userId);
+            userVerified = true;
+
             // 토스 페이먼츠의 /payments/confirm API 호출 (결제 승인)
             tossConfirmResult = tossClient.confirmPayment(
                 command.getPaymentKey(),
                 command.getOrderId(),
                 command.getAmount()
             );
+            tossPaymentSucceeded = true;
 
-            // 프론트에서 결제 요청한 금액과, 토스에서 실제로 결제한 금액이 일치하는지 확인
-            // 일치하지 않는다면 예외를 터트려서 토스 결제 취소
-            paymentService.validatePaymentAmount(tossConfirmResult.getTotalAmount(), command.getAmount());
-
-            // 토스 결제를 완료하고, 금액 검증을 통과하였으면 토스에서 응답받은 값을 이용하여 payment 객체 생성
-            payment = paymentService.createPaymentFromConfirm(userId, tossConfirmResult);
+            // 프론트에서 요청한 결제 금액과 토스에서 실제로 결제한 금액이 일치하는지 확인
+            // 일치하지 않는다면 예외를 터트린다.
+            // 일치한다면, 토스에서 응답받은 값을 이용하여 payment 객체 생성
+            payment = paymentService.createPaymentWithValidation(
+                userId,
+                tossConfirmResult,
+                command.getAmount()
+            );
 
             // 결제 완료 이벤트 발행
-//            eventPublisher.publishEvent(new PaymentCompletedEvent(
-//                payment.getUserId(),
-//                payment.getOrderId(),
-//                payment.getAmount(),
-//                payment.getPaymentMethod(),
-//                payment.getApprovedAt()
-//            ));
+            //            eventPublisher.publishEvent(new PaymentCompletedEvent(
+            //                payment.getUserId(),
+            //                payment.getOrderId(),
+            //                payment.getAmount(),
+            //                payment.getPaymentMethod(),
+            //                payment.getApprovedAt()
+            //            ));
 
             // 포인트 충전 이벤트 발행
-            eventPublisher.publishEvent(new PointChargeRequested(
-                payment.getUserId(),
-                payment.getAmount(),
-                "CHARGE",
-                payment.getOrderId()
-            ));
+            publishPointChargeEvent(payment);
 
             return PaymentApplicationMapper.toPaymentConfirmResult(payment);
 
-        } catch (RestClientResponseException e) { // tossClient 에서 오류가 발생하였을 때,
-            // Toss 오류 로그로 남김 (code + message)
-            log.warn("Toss 결제 실패 - status: {}, body: {}", e.getRawStatusCode(), e.getResponseBodyAsString());
-            throw new PaymentException(PaymentErrorCode.TOSS_ERROR);
-        } catch (Exception e) {
-            try {
-                tossCancelResult = tossClient.cancelPayment(command.getPaymentKey(), "시스템 오류로 인한 결제 취소");
-
-                if (payment != null) {
-                    paymentService.failPayment(tossCancelResult);
-                } else {
-                    throw new PaymentException(PaymentErrorCode.PAYMENT_PROCESSING_FAILED);
-                }
-            } catch (Exception cancelEx) {
-                log.error("토스 취소 실패 - 수동 처리 필요: paymentKey={}", command.getPaymentKey(), cancelEx);
+        } catch (RestClientResponseException e) {
+            // userClient, tossClient 에서 오류가 발생하였을 때,
+            handleRestClientError(e, userVerified, tossPaymentSucceeded);
+            return null;
+        } catch (PaymentException e) {
+            // 결제 검증 실패 시
+            if (tossConfirmResult != null) {
+                handlePaymentError(userId, tossConfirmResult);
             }
-            throw new PaymentException(PaymentErrorCode.PAYMENT_PROCESSING_FAILED, e);
+            throw e;
         }
-    }
-
-    public CursorResponse<PaymentSearchResult, Long> searchMyPayments(Long userId, PaymentSearchCommand command) {
-
-        userClient.getUserById(userId);
-
-        return paymentService.searchMyPayments(userId, command);
     }
 
     public PaymentCancelResult cancelPayment(Long userId, String orderId, PaymentCancelCommand command) {
@@ -127,5 +117,49 @@ public class PaymentFacade {
         pointClient.cancelPoint(orderId);
 
         return result;
+    }
+
+    public CursorResponse<PaymentSearchResult, Long> searchMyPayments(Long userId, PaymentSearchCommand command) {
+
+        userClient.getUserById(userId);
+
+        return paymentService.searchMyPayments(userId, command);
+    }
+
+    // ============================== private 헬퍼 메서드 ==============================
+    private void publishPointChargeEvent(Payment payment) {
+        try {
+            eventPublisher.publishEvent(new PointChargeRequested(
+                payment.getUserId(),
+                payment.getAmount(),
+                "CHARGE",
+                payment.getOrderId()
+            ));
+        } catch (Exception e) {
+            log.info("포인트 충전 이벤트 발행에 실패하였습니다.");
+        }
+    }
+
+    private void handleRestClientError(RestClientResponseException e, boolean userVerified, boolean tossPaymentSucceeded) {
+        if (!userVerified) {
+            // 유저 검증 단계에서 실패 하였을 때
+            throw new PaymentException(PaymentErrorCode.USER_NOT_FOUND, e);
+        } else if (!tossPaymentSucceeded) {
+            // 토스 결제 단계에서 실패 하였을 때
+            throw new PaymentException(PaymentErrorCode.TOSS_ERROR, e);
+        }
+    }
+
+    private void handlePaymentError(Long userId, TossConfirmResult tossConfirmResult) {
+        try {
+            Payment failPayment = paymentService.createFailPayment(userId, tossConfirmResult);
+
+            TossCancelResult tossCancelResult = tossClient.cancelPayment(failPayment.getPaymentKey(),
+                "시스템 오류로 인한 결제 취소");
+        } catch (Exception ex) {
+            // 토스 결제 취소마저 실패를 하였을 경우
+            log.error("토스 결제 취소 실패 - 수동 처리 필요.");
+            throw new PaymentException(PaymentErrorCode.PAYMENT_PROCESSING_FAILED, ex);
+        }
     }
 }

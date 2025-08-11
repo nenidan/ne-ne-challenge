@@ -25,7 +25,7 @@ public class PaymentApplicationMapper {
             payment.getOrderId(),
             payment.getAmount(),
             payment.getPaymentMethod(),
-            payment.getPaymentKey(),
+            payment.getStatus().name(),
             payment.getApprovedAt()
         );
     }

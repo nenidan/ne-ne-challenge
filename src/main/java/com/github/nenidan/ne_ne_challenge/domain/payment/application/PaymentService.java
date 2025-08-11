@@ -33,6 +33,54 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
 
+    // ============================= 결제 생성 관련 =============================
+
+    /**
+     * 요청 금액 검증 및 성공 결제 기록을 생성 후 저장합니다.
+     */
+    @Transactional
+    public Payment createPaymentWithValidation(Long userId, TossConfirmResult result, int amount) {
+
+        // 토스에서 결제한 금액과, 프론트에서 요청한 금액이 맞는지 검증
+        validatePaymentAmount(result.getTotalAmount(), amount);
+
+        // 토스 결제 내역을 기반으로 payment 객체 생성
+        Payment payment = Payment.createPaymentFromToss(
+            userId,
+            result.getPaymentKey(),
+            result.getOrderId(),
+            result.getStatus(),
+            result.getMethod(),
+            result.getRequestedAt().toLocalDateTime(),
+            result.getApprovedAt().toLocalDateTime(),
+            result.getTotalAmount()
+        );
+
+        return paymentRepository.save(payment);
+    }
+
+    /**
+     * 결제 검증 실패 시 실패 기록을 생성 및 저장합니다.
+     */
+    @Transactional
+    public Payment createFailPayment(Long userId, TossConfirmResult result) {
+        Payment failPayment = Payment.createFailPayment(
+            userId,
+            result.getPaymentKey(),
+            result.getOrderId(),
+            result.getMethod(),
+            result.getRequestedAt().toLocalDateTime(),
+            result.getTotalAmount()
+        );
+
+        return paymentRepository.save(failPayment);
+    }
+
+    // ============================= 결제 조회 관련 =============================
+
+    /**
+     * 자신의 결제 내역을 커서 기반으로 조회합니다.
+     */
     public CursorResponse<PaymentSearchResult, Long> searchMyPayments(Long userId, PaymentSearchCommand command) {
 
         LocalDateTime startDate = convertToStartDateTime(command.getStartDate());
@@ -51,50 +99,10 @@ public class PaymentService {
             .map(PaymentApplicationMapper::toPaymentResult)
             .toList();
 
-        boolean hasNext = paymentSearchResultList.size() > command.getSize();
-
-        List<PaymentSearchResult> content = hasNext ? paymentSearchResultList.subList(0, command.getSize()) : paymentSearchResultList;
-
-        Long nextCursor = hasNext ? paymentSearchResultList.get(paymentSearchResultList.size() - 1).getPaymentId() : null;
-
-        return new CursorResponse<>(content, nextCursor, hasNext);
+        return CursorResponse.of(paymentSearchResultList, PaymentSearchResult::getPaymentId, command.getSize());
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void failPayment(TossCancelResult result) {
-
-        Payment payment = getPaymentByOrderId(result.getOrderId());
-
-        payment.fail(
-            result.getStatus(),
-            result.getCanceledAt().toLocalDateTime()
-        );
-        paymentRepository.save(payment);
-    }
-
-    @Transactional
-    public Payment createPaymentFromConfirm(Long userId, TossConfirmResult result) {
-
-        Payment payment = Payment.createPaymentFromConfirm(
-            userId,
-            result.getPaymentKey(),
-            result.getOrderId(),
-            result.getStatus(),
-            result.getMethod(),
-            result.getRequestedAt().toLocalDateTime(),
-            result.getApprovedAt().toLocalDateTime(),
-            result.getTotalAmount()
-        );
-
-        return paymentRepository.save(payment);
-    }
-
-    // 프론트에서 요청한 금액과, 토스에서 승인된 금액이 같은지 확인하는 메서드
-    public void validatePaymentAmount(int totalAmount, int amount) {
-        if (totalAmount != amount) {
-            throw new PaymentException(PaymentErrorCode.AMOUNT_MISMATCH);
-        }
-    }
+    // ============================= 결제 취소 관련 =============================
 
     public Payment validatePaymentForCancel(Long userId, String orderId) {
         // payment 조회
@@ -153,6 +161,13 @@ public class PaymentService {
         PaymentStatus paymentStatus = PaymentStatus.of(status);
 
         return paymentStatus.name();
+    }
+
+    // 프론트에서 요청한 금액과, 토스에서 승인된 금액이 같은지 확인하는 메서드
+    private void validatePaymentAmount(int totalAmount, int amount) {
+        if (totalAmount != amount) {
+            throw new PaymentException(PaymentErrorCode.AMOUNT_MISMATCH);
+        }
     }
 }
 
