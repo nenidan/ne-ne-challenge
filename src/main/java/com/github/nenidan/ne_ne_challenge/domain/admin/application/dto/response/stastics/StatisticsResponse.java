@@ -15,7 +15,8 @@ import java.time.LocalDateTime;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = PaymentStatisticsResponse.class, name = "payment"),
         @JsonSubTypes.Type(value = PointStatisticsResponse.class, name = "point"),
-        @JsonSubTypes.Type(value = ChallengeStatisticsResponse.class, name = "challenge")
+        @JsonSubTypes.Type(value = ChallengeStatisticsResponse.class, name = "challenge"),
+        @JsonSubTypes.Type(value = UserStatisticsResponse.class, name = "user")
 })
 @AllArgsConstructor
 @Getter

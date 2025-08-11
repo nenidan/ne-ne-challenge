@@ -74,7 +74,7 @@ public class DashBoardController {
             case CHALLENGE -> response = statisticsService.getChallengeStatistics(monthPeriod);
             case PAYMENT -> response = statisticsService.getPaymentStatistics(monthPeriod);
             case POINT -> response = statisticsService.getPointStatistics(monthPeriod);
-            //case User -> response = statisticsService.getUserStatistics(monthPeriod);
+            case USER  -> response = statisticsService.getUserStatistics(monthPeriod);
             default -> throw new DashboardException(DashboardErrorCode.INVALID_LOG_TYPE);
         }
 
