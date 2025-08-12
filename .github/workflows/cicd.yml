@@ -2,7 +2,7 @@ name: CI/CD Docker to EC2
 
 on:
   push:
-    branches: [ "dev" ]
+    branches: [ "dev", "main" ]
 
 jobs:
   build-and-deploy:
@@ -56,37 +56,20 @@ jobs:
               APP_PORT=8081
             fi
 
-            echo "PROJECT_NAME=$PROJECT_NAME" > .env
-            echo "APP_PORT=$APP_PORT" >> .env
-            echo "SPRING_PROFILES_ACTIVE=prod" >> .env
-            echo "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" >> .env
-            echo "DB_NAME=mydb" >> .env
-            echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
-            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-            echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
-            echo "SPRING_REDIS_HOST=redis" >> .env
-            echo "SPRING_REDIS_PORT=6379" >> .env
-            echo "TOSS_SECRET_KEY=${{ secrets.TOSS_SECRET_KEY }}" >> .env
-            echo "TOSS_CLIENT_KEY=${{ secrets.TOSS_CLIENT_KEY }}" >> .env
-            echo "TOSS_BASE_URL=${{ secrets.TOSS_BASE_URL }}" >> .env
-            echo "KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}" >> .env
-            echo "KAKAO_REDIRECT_URI=${{ secrets.KAKAO_REDIRECT_URI }}" >> .env
-            echo "NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }}" >> .env
-            echo "NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }}" >> .env
-
-            docker ps -a -q --filter "name=${PROJECT_NAME}-app" | grep -q . && docker rm -f ${PROJECT_NAME}-app || true
-            docker ps -q --filter "name=mysql" | grep -q . && docker stop mysql && docker rm mysql || true
-            docker ps -q --filter "name=redis" | grep -q . && docker stop redis && docker rm redis || true
+            echo "PROJECT_NAME=$PROJECT_NAME" > .env.override
+            echo "APP_PORT=$APP_PORT" >> .env.override
+            cat .env >> .env.override
+            mv .env.override .env
 
             docker-compose -p ${PROJECT_NAME} pull app
             docker-compose -p ${PROJECT_NAME} up -d app
 
+            echo "Waiting for ${PROJECT_NAME} to be healthy..."
             for i in {1..30}; do
-              if curl -fsS http://127.0.0.1:${APP_PORT}/actuator/health | grep -q '"status":"UP"'; then
-                echo "${PROJECT_NAME} is UP"
+              if docker inspect --format='{{json .State.Health.Status}}' ${PROJECT_NAME}-app | grep -q "healthy"; then
+                echo "${PROJECT_NAME} is healthy!"
                 break
               fi
-              echo "Waiting for ${PROJECT_NAME}..."
               sleep 3
             done
 

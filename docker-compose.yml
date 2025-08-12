@@ -19,9 +19,15 @@ services:
       SECRET_KEY: ${SECRET_KEY}
       SPRING_REDIS_HOST: redis
       SPRING_REDIS_PORT: 6379
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
   mysql:
     image: mysql:8
+    container_name: shared-mysql
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
@@ -32,6 +38,7 @@ services:
 
   redis:
     image: redis
+    container_name: shared-redis
     ports:
       - "6379:6379"
     volumes:
