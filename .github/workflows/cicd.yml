@@ -48,28 +48,39 @@ jobs:
           script: |
             cd /home/ubuntu/my-app
 
-            if [ -z "$PROJECT_NAME" ] || [ -z "$APP_PORT" ]; then
-              echo "PROJECT_NAME 또는 APP_PORT가 설정되지 않았습니다."
-              exit 1
+            if [ "${GITHUB_REF_NAME}" = "main" ]; then
+              PROJECT_NAME=app-blue
+              APP_PORT=8080
+            else
+              PROJECT_NAME=app-green
+              APP_PORT=8081
             fi
 
-            sed -i "/^PROJECT_NAME=/d" .env
-            sed -i "/^APP_PORT=/d" .env
-            echo "PROJECT_NAME=$PROJECT_NAME" >> .env
+            echo "PROJECT_NAME=$PROJECT_NAME" > .env
             echo "APP_PORT=$APP_PORT" >> .env
-
-            if docker ps --format '{{.Names}}' | grep -q "^mysql$"; then
-              echo "MySQL 컨테이너가 이미 실행 중입니다. 중지하지 않습니다."
-            fi
-            if docker ps --format '{{.Names}}' | grep -q "^redis$"; then
-              echo "Redis 컨테이너가 이미 실행 중입니다. 중지하지 않습니다."
-            fi
+            echo "SPRING_PROFILES_ACTIVE=prod" >> .env
+            echo "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" >> .env
+            echo "DB_NAME=mydb" >> .env
+            echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+            echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
+            echo "SPRING_REDIS_HOST=redis" >> .env
+            echo "SPRING_REDIS_PORT=6379" >> .env
+            echo "TOSS_SECRET_KEY=${{ secrets.TOSS_SECRET_KEY }}" >> .env
+            echo "TOSS_CLIENT_KEY=${{ secrets.TOSS_CLIENT_KEY }}" >> .env
+            echo "TOSS_BASE_URL=${{ secrets.TOSS_BASE_URL }}" >> .env
+            echo "KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}" >> .env
+            echo "KAKAO_REDIRECT_URI=${{ secrets.KAKAO_REDIRECT_URI }}" >> .env
+            echo "NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }}" >> .env
+            echo "NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }}" >> .env
 
             docker ps -a -q --filter "name=${PROJECT_NAME}-app" | grep -q . && docker rm -f ${PROJECT_NAME}-app || true
+            docker ps -q --filter "name=mysql" | grep -q . && docker stop mysql && docker rm mysql || true
+            docker ps -q --filter "name=redis" | grep -q . && docker stop redis && docker rm redis || true
 
             docker-compose -p ${PROJECT_NAME} pull app
             docker-compose -p ${PROJECT_NAME} up -d app
-            
+
             for i in {1..30}; do
               if curl -fsS http://127.0.0.1:${APP_PORT}/actuator/health | grep -q '"status":"UP"'; then
                 echo "${PROJECT_NAME} is UP"
