@@ -5,9 +5,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: dev-app
+    container_name: ${PROJECT_NAME}-app
     ports:
-      - "8080:8080"
+      - "${APP_PORT}:8080"
     depends_on:
       mysql:
         condition: service_healthy
@@ -78,7 +78,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin  # 기본 Grafana 비밀번호 설정
+      - GF_SECURITY_ADMIN_PASSWORD=admin
     volumes:
       - grafana_data:/var/lib/grafana
     networks:
