@@ -56,12 +56,11 @@ jobs:
               APP_PORT=8081
             fi
 
-            # .env 파일 생성 및 시크릿 주입
             echo "PROJECT_NAME=$PROJECT_NAME" > .env
             echo "APP_PORT=$APP_PORT" >> .env
             echo "SPRING_PROFILES_ACTIVE=prod" >> .env
             echo "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" >> .env
-            echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+            echo "DB_NAME=mydb" >> .env
             echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
             echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
             echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
