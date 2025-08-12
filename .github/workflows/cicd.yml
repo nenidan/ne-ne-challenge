@@ -39,7 +39,7 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/my-spring-app:latest
 
-      - name: Deploy Green to EC2
+      - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -48,8 +48,16 @@ jobs:
           script: |
             cd /home/ubuntu/my-app
 
-            echo "PROJECT_NAME=app-green" > .env
-            echo "APP_PORT=8081" >> .env
+            if [ "${GITHUB_REF_NAME}" = "main" ]; then
+              PROJECT_NAME=app-blue
+              APP_PORT=8080
+            else
+              PROJECT_NAME=app-green
+              APP_PORT=8081
+            fi
+
+            echo "PROJECT_NAME=$PROJECT_NAME" > .env
+            echo "APP_PORT=$APP_PORT" >> .env
             echo "SPRING_PROFILES_ACTIVE=prod" >> .env
             echo "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" >> .env
             echo "DB_NAME=mydb" >> .env
@@ -66,24 +74,27 @@ jobs:
             echo "NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }}" >> .env
             echo "NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }}" >> .env
 
-            docker ps -a -q --filter "name=app-green-app" | grep -q . && docker rm -f app-green-app || true
+            docker ps -a -q --filter "name=${PROJECT_NAME}-app" | grep -q . && docker rm -f ${PROJECT_NAME}-app || true
             docker ps -q --filter "name=mysql" | grep -q . && docker stop mysql && docker rm mysql || true
             docker ps -q --filter "name=redis" | grep -q . && docker stop redis && docker rm redis || true
-            
-            docker-compose -p app-green pull app
-            docker-compose -p app-green up -d app
-            
+
+            docker-compose -p ${PROJECT_NAME} pull app
+            docker-compose -p ${PROJECT_NAME} up -d app
+
             for i in {1..30}; do
-            if curl -fsS http://127.0.0.1:8081/actuator/health | grep -q '"status":"UP"'; then
-            echo "Green is UP"
-            break
-            fi
-            echo "Waiting for Green..."
-            sleep 3
+              if curl -fsS http://127.0.0.1:${APP_PORT}/actuator/health | grep -q '"status":"UP"'; then
+                echo "${PROJECT_NAME} is UP"
+                break
+              fi
+              echo "Waiting for ${PROJECT_NAME}..."
+              sleep 3
             done
-            
-            echo "server 127.0.0.1:8081;" | sudo tee /etc/nginx/routes/active_upstream.include
+
+            echo "server 127.0.0.1:${APP_PORT};" | sudo tee /etc/nginx/routes/active_upstream.include
             sudo nginx -t && sudo nginx -s reload
-            
-            docker-compose -p app-blue down || true
-          
+
+            if [ "${PROJECT_NAME}" = "app-green" ]; then
+              docker-compose -p app-blue down || true
+            else
+              docker-compose -p app-green down || true
+            fi
