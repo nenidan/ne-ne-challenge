@@ -55,7 +55,6 @@ jobs:
             echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
             echo "SPRING_REDIS_HOST=redis" >> .env
             echo "SPRING_REDIS_PORT=6379" >> .env
-            
             echo "TOSS_SECRET_KEY=test_sk_GjLJoQ1aVZb7KAb62P2gVw6KYe2R" >> .env
             echo "TOSS_CLIENT_KEY=test_ck_KNbdOvk5rkOOXMabGXRqrn07xlzm" >> .env
             echo "TOSS_BASE_URL=https://api.tosspayments.com/v1" >> .env
@@ -64,10 +63,21 @@ jobs:
             echo "NAVER_CLIENT_ID=PkWF00P7EtlCjh_wO57B" >> .env
             echo "NAVER_CLIENT_SECRET=6G76rrm2do" >> .env
 
-            docker rm -f my-app || true
-            docker rm -f redis || true
-            docker rm -f mysql || true
+            /usr/local/bin/docker-compose pull app-green
+            /usr/local/bin/docker-compose up -d app-green
 
-            /usr/local/bin/docker-compose pull
-            /usr/local/bin/docker-compose down
-            /usr/local/bin/docker-compose up -d --remove-orphans
+            for i in {1..30}; do
+              if curl -fsS http://127.0.0.1:8081/actuator/health | grep -q '"status":"UP"'; then
+                echo "Green is UP"
+                break
+              fi
+              echo "Waiting for Green..."
+              sleep 3
+            done
+
+            echo "server 127.0.0.1:8081;" | sudo tee /etc/nginx/routes/active_upstream.include
+            sudo nginx -t && sudo nginx -s reload
+
+            sleep 5
+
+            docker rm -f my-app || true
