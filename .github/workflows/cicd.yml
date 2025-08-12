@@ -66,8 +66,11 @@ jobs:
             echo "NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }}" >> .env
             echo "NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }}" >> .env
 
-            docker-compose -p app-green pull app
-            docker-compose -p app-green up -d app
+            docker ps -q --filter "name=mysql" | grep -q . && docker stop mysql && docker rm mysql || true
+            docker ps -q --filter "name=redis" | grep -q . && docker stop redis && docker rm redis || true
+
+            docker-compose -p app-green pull
+            docker-compose -p app-green up -d
 
             for i in {1..30}; do
               if curl -fsS http://127.0.0.1:8081/actuator/health | grep -q '"status":"UP"'; then
@@ -82,3 +85,4 @@ jobs:
             sudo nginx -t && sudo nginx -s reload
 
             docker-compose -p app-blue down || true
+      
