@@ -39,7 +39,7 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/my-spring-app:latest
 
-      - name: Deploy to EC2
+      - name: Deploy Green to EC2
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -48,26 +48,37 @@ jobs:
           script: |
             cd /home/ubuntu/my-app
 
-            echo "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" > .env
-            echo "DB_URL=${{ secrets.DB_URL }}" >> .env
+            echo "PROJECT_NAME=app-green" > .env
+            echo "APP_PORT=8081" >> .env
+            echo "SPRING_PROFILES_ACTIVE=prod" >> .env
+            echo "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" >> .env
+            echo "DB_NAME=mydb" >> .env
             echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
             echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
             echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
             echo "SPRING_REDIS_HOST=redis" >> .env
             echo "SPRING_REDIS_PORT=6379" >> .env
-            
-            echo "TOSS_SECRET_KEY=test_sk_GjLJoQ1aVZb7KAb62P2gVw6KYe2R" >> .env
-            echo "TOSS_CLIENT_KEY=test_ck_KNbdOvk5rkOOXMabGXRqrn07xlzm" >> .env
-            echo "TOSS_BASE_URL=https://api.tosspayments.com/v1" >> .env
-            echo "KAKAO_CLIENT_ID=585cf792801bafd0a0aede460b1f250c" >> .env
-            echo "KAKAO_REDIRECT_URI=localhost:8080/oauth/kakao" >> .env
-            echo "NAVER_CLIENT_ID=PkWF00P7EtlCjh_wO57B" >> .env
-            echo "NAVER_CLIENT_SECRET=6G76rrm2do" >> .env
+            echo "TOSS_SECRET_KEY=${{ secrets.TOSS_SECRET_KEY }}" >> .env
+            echo "TOSS_CLIENT_KEY=${{ secrets.TOSS_CLIENT_KEY }}" >> .env
+            echo "TOSS_BASE_URL=${{ secrets.TOSS_BASE_URL }}" >> .env
+            echo "KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}" >> .env
+            echo "KAKAO_REDIRECT_URI=${{ secrets.KAKAO_REDIRECT_URI }}" >> .env
+            echo "NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }}" >> .env
+            echo "NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }}" >> .env
 
-            docker rm -f my-app || true
-            docker rm -f redis || true
-            docker rm -f mysql || true
+            docker-compose -p app-green pull app
+            docker-compose -p app-green up -d app
 
-            /usr/local/bin/docker-compose pull
-            /usr/local/bin/docker-compose down
-            /usr/local/bin/docker-compose up -d --remove-orphans
+            for i in {1..30}; do
+              if curl -fsS http://127.0.0.1:8081/actuator/health | grep -q '"status":"UP"'; then
+                echo "Green is UP"
+                break
+              fi
+              echo "Waiting for Green..."
+              sleep 3
+            done
+
+            echo "server 127.0.0.1:8081;" | sudo tee /etc/nginx/routes/active_upstream.include
+            sudo nginx -t && sudo nginx -s reload
+
+            docker-compose -p app-blue down || true
