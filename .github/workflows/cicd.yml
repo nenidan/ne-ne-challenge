@@ -100,7 +100,7 @@ jobs:
               sleep 3
               done
               
-              # ↓↓↓ 수동 전환할 때만 실행 ↓↓↓
+              # ↓↓↓ 수동 전환할 때만 실행 ↓↓
               # echo "server 127.0.0.1:${APP_PORT};" | sudo tee /etc/nginx/routes/active_upstream.include
               # sudo nginx -t && sudo nginx -s reload
               
