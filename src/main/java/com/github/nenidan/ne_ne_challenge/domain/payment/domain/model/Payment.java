@@ -3,6 +3,9 @@ package com.github.nenidan.ne_ne_challenge.domain.payment.domain.model;
 import java.time.LocalDateTime;
 
 import com.github.nenidan.ne_ne_challenge.domain.payment.domain.model.vo.Money;
+import com.github.nenidan.ne_ne_challenge.domain.payment.domain.model.vo.OrderId;
+import com.github.nenidan.ne_ne_challenge.domain.payment.domain.model.vo.OrderName;
+import com.github.nenidan.ne_ne_challenge.domain.payment.domain.model.vo.PaymentKey;
 import com.github.nenidan.ne_ne_challenge.domain.payment.domain.type.PaymentStatus;
 import com.github.nenidan.ne_ne_challenge.domain.payment.exception.PaymentErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.payment.exception.PaymentException;
@@ -16,11 +19,19 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Table(
+    uniqueConstraints = {
+        @UniqueConstraint(name = "uk_payment_order_id", columnNames = "order_id"),
+        @UniqueConstraint(name = "uk_payment_payment_key", columnNames = "payment_key")
+    }
+)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Payment extends BaseEntity {
@@ -38,11 +49,14 @@ public class Payment extends BaseEntity {
     @Column(name = "payment_method")
     private String paymentMethod;
 
-    @Column(name = "payment_key", unique = true)
-    private String paymentKey;
+    @Embedded
+    private PaymentKey paymentKey;
 
-    @Column(name = "order_id", nullable = false, unique = true)
-    private String orderId;
+    @Embedded
+    private OrderId orderId;
+
+    @Embedded
+    private OrderName orderName;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -63,18 +77,21 @@ public class Payment extends BaseEntity {
     @Column(name = "canceled_at")
     private LocalDateTime canceledAt;
 
-    private Payment(Long userId, String orderId, Money amount) {
+    private Payment(Long userId, OrderId orderId, Money amount, OrderName orderName) {
         this.userId = userId;
         this.orderId = orderId;
         this.amount = amount;
+        this.orderName = orderName;
         this.status = PaymentStatus.PENDING;
         this.requestedAt = LocalDateTime.now();
     }
 
     // ====================== 결제 준비 관련 ======================
 
-    public static Payment createPreparePayment(Long userId, String orderId, Money amount) {
-        return new Payment(userId, orderId, amount);
+    public static Payment createPreparePayment(Long userId, Money amount) {
+        OrderId orderId = OrderId.generate();
+        OrderName orderName = OrderName.forPointCharge(amount);
+        return new Payment(userId, orderId, amount, orderName);
     }
 
     // ====================== 결제 승인 관련 ======================
@@ -87,14 +104,14 @@ public class Payment extends BaseEntity {
 
         PaymentStatus paymentStatus = PaymentStatus.of(status);
 
-        this.paymentKey = paymentKey;
+        this.paymentKey = PaymentKey.of(paymentKey);
         this.status = paymentStatus;
         this.paymentMethod = method;
         this.approvedAt = approvedAt;
     }
 
     public void markAsFailed(String paymentKey) {
-        this.paymentKey = paymentKey;
+        this.paymentKey = PaymentKey.of(paymentKey);
         this.failedAt = LocalDateTime.now();
         this.status = PaymentStatus.FAIL;
     }

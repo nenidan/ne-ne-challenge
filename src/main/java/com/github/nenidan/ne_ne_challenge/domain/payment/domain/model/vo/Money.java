@@ -6,15 +6,17 @@ import com.github.nenidan.ne_ne_challenge.domain.payment.exception.PaymentExcept
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Embeddable
+@EqualsAndHashCode
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Money {
 
-    @Column(name = "amount")
+    @Column(name = "amount", nullable = false)
     private int value;
 
     private Money(int value) {

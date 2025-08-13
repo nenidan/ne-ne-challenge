@@ -3,7 +3,6 @@ package com.github.nenidan.ne_ne_challenge.domain.payment.application;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +18,7 @@ import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.respons
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.mapper.PaymentApplicationMapper;
 import com.github.nenidan.ne_ne_challenge.domain.payment.domain.model.Payment;
 import com.github.nenidan.ne_ne_challenge.domain.payment.domain.model.vo.Money;
+import com.github.nenidan.ne_ne_challenge.domain.payment.domain.model.vo.OrderId;
 import com.github.nenidan.ne_ne_challenge.domain.payment.domain.repository.PaymentRepository;
 import com.github.nenidan.ne_ne_challenge.domain.payment.domain.type.PaymentStatus;
 import com.github.nenidan.ne_ne_challenge.domain.payment.exception.PaymentErrorCode;
@@ -42,17 +42,11 @@ public class PaymentService {
 
         Money amount = Money.ofPayment(requestAmount);
 
-        // orderId 생성
-        String orderId = generateOrderId();
-
-        // orderName 생성
-        String orderName = generateOrderName(amount);
-
-        Payment preparePayment = Payment.createPreparePayment(userId, orderId, amount);
+        Payment preparePayment = Payment.createPreparePayment(userId, amount);
 
         Payment savedPreparePayment = paymentRepository.save(preparePayment);
 
-        return PaymentApplicationMapper.toPaymentPrepareResult(savedPreparePayment, orderName);
+        return PaymentApplicationMapper.toPaymentPrepareResult(savedPreparePayment);
     }
 
     // ============================= 결제 생성 관련 =============================
@@ -60,10 +54,10 @@ public class PaymentService {
     @Transactional
     public Payment markAsSuccess(TossConfirmResult tossConfirmResult, int requestAmount) {
 
-        Payment payment = getPaymentByOrderId(tossConfirmResult.getOrderId());
+        Payment payment = getPaymentByOrderId(OrderId.of(tossConfirmResult.getOrderId()));
         Money money = Money.of(requestAmount);
 
-        if (payment.getAmount().equals(money)) {
+        if (!payment.getAmount().equals(money)) {
             throw new PaymentException(PaymentErrorCode.AMOUNT_MISMATCH);
         }
 
@@ -80,7 +74,7 @@ public class PaymentService {
     @Transactional
     public void markAsFailed(String orderId, String paymentKey) {
 
-        Payment failedPayment = getPaymentByOrderId(orderId);
+        Payment failedPayment = getPaymentByOrderId(OrderId.of(orderId));
 
         failedPayment.markAsFailed(paymentKey);
 
@@ -92,7 +86,7 @@ public class PaymentService {
     @Transactional
     public PaymentCancelResult cancelPayment(Long userId, String orderId, PaymentCancelCommand command) {
 
-        Payment payment = getPaymentByOrderId(orderId);
+        Payment payment = getPaymentByOrderId(OrderId.of(orderId));
 
         if (!payment.getUserId().equals(userId)) {
             throw new PaymentException(PaymentErrorCode.PAYMENT_ACCESS_DENIED);
@@ -107,7 +101,7 @@ public class PaymentService {
 
     @Transactional
     public void rollbackCancel(String orderId) {
-        Payment payment = getPaymentByOrderId(orderId);
+        Payment payment = getPaymentByOrderId(OrderId.of(orderId));
 
         payment.rollbackCancel();
 
@@ -153,8 +147,8 @@ public class PaymentService {
 
     // ============================== private 헬퍼 메서드 ==============================
 
-    private Payment getPaymentByOrderId(String orderId) {
-        return paymentRepository.findByOrderId(orderId)
+    private Payment getPaymentByOrderId(OrderId orderId) {
+        return paymentRepository.findByOrderId(orderId.getValue())
             .orElseThrow(() -> new PaymentException(PaymentErrorCode.PAYMENT_NOT_FOUND));
     }
 
@@ -178,16 +172,6 @@ public class PaymentService {
         PaymentStatus paymentStatus = PaymentStatus.of(status);
 
         return paymentStatus.name();
-    }
-
-    // orderId 생성
-    private String generateOrderId() {
-        return "order-" + UUID.randomUUID();
-    }
-
-    // orderName 생성
-    private String generateOrderName(int amount) {
-        return "포인트 " + amount + "원 충전";
     }
 }
 

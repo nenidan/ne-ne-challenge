@@ -47,7 +47,7 @@ public class PaymentFacade {
 
     /**
      * 결제 승인 및 포인트 충전 요청 처리
-     * 1. 사용자 검증 -> 2. 토스 결제 승인 -> 3. 토스 결제 성공 후, Payment 객체를 DONE 으로 변경 -> 4. 포인트 충전 이벤트 발행
+     * 1. 사용자 검증 -> 2. 토스 결제 승인 -> 3. Payment 객체를 DONE 으로 변경 -> 4. 포인트 충전, 알림 이벤트 발행
      */
     public PaymentConfirmResult confirmAndChargePoint(Long userId, PaymentConfirmCommand command) {
 
@@ -172,9 +172,9 @@ public class PaymentFacade {
         try {
             eventPublisher.publishEvent(new PaymentCompletedEvent(
                 payment.getUserId(),
-                payment.getAmount(),
+                payment.getAmount().getValue(),
                 "CHARGE",
-                payment.getOrderId()
+                payment.getOrderId().getValue()
             ));
         } catch (Exception e) {
             log.info("포인트 충전 이벤트 발행 실패 - 수동 처리 필요: orderId = {}", payment.getOrderId());
