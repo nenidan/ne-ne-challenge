@@ -41,11 +41,11 @@ jwt:
 external:
   base-url: http://127.0.0.1:8080
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "prometheus"
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: "prometheus"
 logging:
   level:
     org.springframework.cache: DEBUG
