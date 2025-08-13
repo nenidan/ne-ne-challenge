@@ -76,7 +76,7 @@ dependencies {
 	testImplementation 'com.h2database:h2'
 
 	//prometheus
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+//	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 //	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 }
 
