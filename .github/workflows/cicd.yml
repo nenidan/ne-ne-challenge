@@ -90,7 +90,7 @@ jobs:
             
             echo "Waiting for ${PROJECT_NAME} (${APP_PORT}) to be healthy..."
             for i in {1..30}; do
-            if docker inspect --format='{{json .State.Health.Status}}' ${PROJECT_NAME}-${APP_PORT}-app | grep -q "healthy"; then
+            if docker inspect --format='{{json .State.Health.Status}}' ${PROJECT_NAME}-app | grep -q "healthy"; then
             echo "${PROJECT_NAME} (${APP_PORT}) is healthy!"
             break
             fi
