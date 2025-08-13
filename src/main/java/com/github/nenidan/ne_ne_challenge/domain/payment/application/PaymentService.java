@@ -18,6 +18,7 @@ import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.respons
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.TossConfirmResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.mapper.PaymentApplicationMapper;
 import com.github.nenidan.ne_ne_challenge.domain.payment.domain.model.Payment;
+import com.github.nenidan.ne_ne_challenge.domain.payment.domain.model.vo.Money;
 import com.github.nenidan.ne_ne_challenge.domain.payment.domain.repository.PaymentRepository;
 import com.github.nenidan.ne_ne_challenge.domain.payment.domain.type.PaymentStatus;
 import com.github.nenidan.ne_ne_challenge.domain.payment.exception.PaymentErrorCode;
@@ -37,7 +38,9 @@ public class PaymentService {
      * 결제 요청 전 orderId와 amount를 DB에 저장합니다.
      */
     @Transactional
-    public PaymentPrepareResult preparePayment(Long userId, int amount) {
+    public PaymentPrepareResult preparePayment(Long userId, int requestAmount) {
+
+        Money amount = Money.ofPayment(requestAmount);
 
         // orderId 생성
         String orderId = generateOrderId();
@@ -55,11 +58,12 @@ public class PaymentService {
     // ============================= 결제 생성 관련 =============================
 
     @Transactional
-    public Payment markAsSuccess(TossConfirmResult tossConfirmResult, int amount) {
+    public Payment markAsSuccess(TossConfirmResult tossConfirmResult, int requestAmount) {
 
         Payment payment = getPaymentByOrderId(tossConfirmResult.getOrderId());
+        Money money = Money.of(requestAmount);
 
-        if (payment.getAmount() != amount) {
+        if (payment.getAmount().equals(money)) {
             throw new PaymentException(PaymentErrorCode.AMOUNT_MISMATCH);
         }
 

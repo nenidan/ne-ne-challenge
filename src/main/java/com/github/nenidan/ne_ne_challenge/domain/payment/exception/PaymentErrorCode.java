@@ -29,7 +29,8 @@ public enum PaymentErrorCode implements ErrorCode {
     CANNOT_CANCEL_EXPIRED("취소 가능 기간이 지났습니다.", HttpStatus.BAD_REQUEST),
     PAYMENT_ACCESS_DENIED("본인의 결제만 취소할 수 있습니다.", HttpStatus.FORBIDDEN),
     INVALID_PAYMENT_AMOUNT("유효하지 않은 요청 금액입니다.", HttpStatus.BAD_REQUEST),
-    PAYMENT_CANCEL_FAILED("결제 취소 중 오류가 발생하였습니다.", HttpStatus.BAD_REQUEST);
+    PAYMENT_CANCEL_FAILED("결제 취소 중 오류가 발생하였습니다.", HttpStatus.BAD_REQUEST),
+    INVALID_AMOUNT("금액은 0원 이상이어야 합니다.", HttpStatus.BAD_REQUEST);
 
     private final String message;
     private final HttpStatus status;

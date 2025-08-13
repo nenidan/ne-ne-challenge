@@ -2,12 +2,14 @@ package com.github.nenidan.ne_ne_challenge.domain.payment.domain.model;
 
 import java.time.LocalDateTime;
 
+import com.github.nenidan.ne_ne_challenge.domain.payment.domain.model.vo.Money;
 import com.github.nenidan.ne_ne_challenge.domain.payment.domain.type.PaymentStatus;
 import com.github.nenidan.ne_ne_challenge.domain.payment.exception.PaymentErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.payment.exception.PaymentException;
 import com.github.nenidan.ne_ne_challenge.global.entity.BaseEntity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -30,8 +32,8 @@ public class Payment extends BaseEntity {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(nullable = false)
-    private int amount;
+    @Embedded
+    private Money amount;
 
     @Column(name = "payment_method")
     private String paymentMethod;
@@ -61,7 +63,7 @@ public class Payment extends BaseEntity {
     @Column(name = "canceled_at")
     private LocalDateTime canceledAt;
 
-    private Payment(Long userId, String orderId, int amount) {
+    private Payment(Long userId, String orderId, Money amount) {
         this.userId = userId;
         this.orderId = orderId;
         this.amount = amount;
@@ -71,18 +73,8 @@ public class Payment extends BaseEntity {
 
     // ====================== 결제 준비 관련 ======================
 
-    public static Payment createPreparePayment(Long userId, String orderId, int amount) {
-
-        validateRequestAmount(amount);
-
+    public static Payment createPreparePayment(Long userId, String orderId, Money amount) {
         return new Payment(userId, orderId, amount);
-    }
-
-    // 프론트에서 요청한 금액이 10,000원 이상 100,000원 이하인지 검증
-    private static void validateRequestAmount(int amount) {
-        if (amount < 10000 || amount > 100000) {
-            throw new PaymentException(PaymentErrorCode.INVALID_PAYMENT_AMOUNT);
-        }
     }
 
     // ====================== 결제 승인 관련 ======================
