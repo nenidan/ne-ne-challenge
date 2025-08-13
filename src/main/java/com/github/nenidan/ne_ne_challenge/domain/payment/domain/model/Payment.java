@@ -61,85 +61,65 @@ public class Payment extends BaseEntity {
     @Column(name = "canceled_at")
     private LocalDateTime canceledAt;
 
-    private Payment(Long userId, String paymentKey, String orderId, String status, String method,
-        LocalDateTime requestedAt, LocalDateTime approvedAt, int totalAmount) {
+    private Payment(Long userId, String orderId, int amount) {
         this.userId = userId;
-        this.paymentKey = paymentKey;
         this.orderId = orderId;
-        this.status = PaymentStatus.of(status);
-        this.paymentMethod = method;
-        this.requestedAt = requestedAt;
-        this.approvedAt = approvedAt;
-        this.amount = totalAmount;
+        this.amount = amount;
+        this.status = PaymentStatus.PENDING;
+        this.requestedAt = LocalDateTime.now();
     }
 
-    private Payment(Long userId, String paymentKey, String orderId, String method, PaymentStatus paymentStatus,
-        LocalDateTime requestedAt, int totalAmount) {
-        this.userId = userId;
-        this.paymentKey = paymentKey;
-        this.orderId = orderId;
-        this.paymentMethod = method;
-        this.status = paymentStatus;
-        this.requestedAt = requestedAt;
-        this.failedAt = LocalDateTime.now();
-        this.amount = totalAmount;
+    // ====================== 결제 준비 관련 ======================
+
+    public static Payment createPreparePayment(Long userId, String orderId, int amount) {
+
+        validateRequestAmount(amount);
+
+        return new Payment(userId, orderId, amount);
     }
 
-    public static Payment createPaymentFromToss(
-        Long userId,
-        String paymentKey,
-        String orderId,
-        String status,
-        String method,
-        LocalDateTime requestedAt,
-        LocalDateTime approvedAt,
-        int totalAmount
-    ) {
-        return new Payment(
-            userId,
-            paymentKey,
-            orderId,
-            status,
-            method,
-            requestedAt,
-            approvedAt,
-            totalAmount
-        );
-    }
-
-    public static Payment createFailPayment(
-        Long userId,
-        String paymentKey,
-        String orderId,
-        String method,
-        LocalDateTime requestedAt,
-        int totalAmount
-    ) {
-        return new Payment(
-            userId,
-            paymentKey,
-            orderId,
-            method,
-            PaymentStatus.FAIL,
-            requestedAt,
-            totalAmount
-        );
-    }
-
-    // ================= 비즈니스 로직 =================
-
-    public void fail(String status, LocalDateTime canceledAt) {
-        PaymentStatus paymentStatus = PaymentStatus.of(status);
-        if (paymentStatus != PaymentStatus.CANCELED) {
-            throw new PaymentException(PaymentErrorCode.ALREADY_PROCESSED_PAYMENT);
+    // 프론트에서 요청한 금액이 10,000원 이상 100,000원 이하인지 검증
+    private static void validateRequestAmount(int amount) {
+        if (amount < 10000 || amount > 100000) {
+            throw new PaymentException(PaymentErrorCode.INVALID_PAYMENT_AMOUNT);
         }
-        this.status = PaymentStatus.FAIL;
-        this.failedAt = canceledAt;
     }
 
-    // ================= 조회 메서드 =================
+    // ====================== 결제 승인 관련 ======================
 
-    public void validateCancelable() {
+    public void markAsSuccess(String paymentKey, String status, String method, LocalDateTime approvedAt) {
+
+        if (this.status != PaymentStatus.PENDING) {
+            throw new PaymentException(PaymentErrorCode.INVALID_PAYMENT_STATUS);
+        }
+
+        PaymentStatus paymentStatus = PaymentStatus.of(status);
+
+        this.paymentKey = paymentKey;
+        this.status = paymentStatus;
+        this.paymentMethod = method;
+        this.approvedAt = approvedAt;
+    }
+
+    public void markAsFailed(String paymentKey) {
+        this.paymentKey = paymentKey;
+        this.failedAt = LocalDateTime.now();
+        this.status = PaymentStatus.FAIL;
+    }
+
+    // ====================== 결제 취소 관련 ======================
+
+    public void cancel(String cancelReason) {
+
+        // 취소 가능한 결제인지 확인합니다.
+        validateCancelable();
+
+        this.cancelReason = cancelReason;
+        this.canceledAt = LocalDateTime.now();
+        this.status = PaymentStatus.CANCELED;
+    }
+
+    private void validateCancelable() {
         // 상태 확인
         if (this.status != PaymentStatus.DONE) {
             throw new PaymentException(PaymentErrorCode.CANNOT_CANCEL_PAYMENT);
@@ -151,12 +131,13 @@ public class Payment extends BaseEntity {
         }
     }
 
-    // ================= 유틸리티 메서드 =================
+    public void rollbackCancel() {
+        if (this.status != PaymentStatus.CANCELED) {
+            throw new PaymentException(PaymentErrorCode.INVALID_PAYMENT_STATUS);
+        }
 
-    public void cancel(String cancelReason, LocalDateTime canceledAt, String status) {
-        this.cancelReason = cancelReason;
-        this.canceledAt = canceledAt;
-        this.status = PaymentStatus.of(status);
+        this.status = PaymentStatus.DONE;
+        this.cancelReason = null;
+        this.canceledAt = null;
     }
-
 }

@@ -2,11 +2,20 @@ package com.github.nenidan.ne_ne_challenge.domain.payment.application.mapper;
 
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentCancelResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentConfirmResult;
+import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentPrepareResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentSearchResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentStatisticsResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.domain.model.Payment;
 
 public class PaymentApplicationMapper {
+
+    public static PaymentPrepareResult toPaymentPrepareResult(Payment payment, String orderName) {
+        return new PaymentPrepareResult(
+            payment.getAmount(),
+            payment.getOrderId(),
+            orderName
+        );
+    }
 
     public static PaymentSearchResult toPaymentResult(Payment payment) {
         return new PaymentSearchResult(
@@ -34,6 +43,7 @@ public class PaymentApplicationMapper {
         return new PaymentCancelResult(
             payment.getOrderId(),
             payment.getStatus().name(),
+            payment.getPaymentKey(),
             payment.getAmount(),
             payment.getCancelReason(),
             payment.getCanceledAt()

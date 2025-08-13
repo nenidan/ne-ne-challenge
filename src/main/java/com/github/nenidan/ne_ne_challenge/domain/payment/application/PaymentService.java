@@ -3,18 +3,18 @@ package com.github.nenidan.ne_ne_challenge.domain.payment.application;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PaymentCancelCommand;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.request.PaymentSearchCommand;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentCancelResult;
+import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentPrepareResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentSearchResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentStatisticsResult;
-import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.TossCancelResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.TossConfirmResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.mapper.PaymentApplicationMapper;
 import com.github.nenidan.ne_ne_challenge.domain.payment.domain.model.Payment;
@@ -32,80 +32,82 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
 
-    // ============================= 결제 생성 관련 =============================
-
+    // ============================= 결제 준비 관련 =============================
     /**
-     * 요청 금액 검증 및 성공 결제 기록을 생성 후 저장합니다.
+     * 결제 요청 전 orderId와 amount를 DB에 저장합니다.
      */
     @Transactional
-    public Payment createPaymentWithValidation(Long userId, TossConfirmResult result, int amount) {
+    public PaymentPrepareResult preparePayment(Long userId, int amount) {
 
-        // 토스에서 결제한 금액과, 프론트에서 요청한 금액이 맞는지 검증
-        validatePaymentAmount(result.getTotalAmount(), amount);
+        // orderId 생성
+        String orderId = generateOrderId();
 
-        // 토스 결제 내역을 기반으로 payment 객체 생성
-        Payment payment = Payment.createPaymentFromToss(
-            userId,
-            result.getPaymentKey(),
-            result.getOrderId(),
-            result.getStatus(),
-            result.getMethod(),
-            result.getRequestedAt().toLocalDateTime(),
-            result.getApprovedAt().toLocalDateTime(),
-            result.getTotalAmount()
-        );
+        // orderName 생성
+        String orderName = generateOrderName(amount);
 
-        return paymentRepository.save(payment);
+        Payment preparePayment = Payment.createPreparePayment(userId, orderId, amount);
+
+        Payment savedPreparePayment = paymentRepository.save(preparePayment);
+
+        return PaymentApplicationMapper.toPaymentPrepareResult(savedPreparePayment, orderName);
     }
 
-    /**
-     * 결제 검증 실패 시 실패 기록을 생성 및 저장합니다.
-     */
+    // ============================= 결제 생성 관련 =============================
+
     @Transactional
-    public Payment createFailPayment(Long userId, TossConfirmResult result) {
-        Payment failPayment = Payment.createFailPayment(
-            userId,
-            result.getPaymentKey(),
-            result.getOrderId(),
-            result.getMethod(),
-            result.getRequestedAt().toLocalDateTime(),
-            result.getTotalAmount()
+    public Payment markAsSuccess(TossConfirmResult tossConfirmResult, int amount) {
+
+        Payment payment = getPaymentByOrderId(tossConfirmResult.getOrderId());
+
+        if (payment.getAmount() != amount) {
+            throw new PaymentException(PaymentErrorCode.AMOUNT_MISMATCH);
+        }
+
+        payment.markAsSuccess(
+            tossConfirmResult.getPaymentKey(),
+            tossConfirmResult.getStatus(),
+            tossConfirmResult.getMethod(),
+            tossConfirmResult.getApprovedAt().toLocalDateTime()
         );
 
-        return paymentRepository.save(failPayment);
+        return payment;
+    }
+
+    @Transactional
+    public void markAsFailed(String orderId, String paymentKey) {
+
+        Payment failedPayment = getPaymentByOrderId(orderId);
+
+        failedPayment.markAsFailed(paymentKey);
+
+        paymentRepository.save(failedPayment);
     }
 
     // ============================= 결제 취소 관련 =============================
 
-    /**
-     * 취소 가능한 결제 내역인지 검증합니다.(7일 이내의 사용하지 않은 포인트)
-     */
-    public Payment validatePaymentForCancel(Long userId, String orderId) {
-        // payment 조회
+    @Transactional
+    public PaymentCancelResult cancelPayment(Long userId, String orderId, PaymentCancelCommand command) {
+
         Payment payment = getPaymentByOrderId(orderId);
 
         if (!payment.getUserId().equals(userId)) {
             throw new PaymentException(PaymentErrorCode.PAYMENT_ACCESS_DENIED);
         }
 
-        // 취소가 가능한 결제 내역인지 확인, 만약 취소가 안된다면 예외가 터진다.
-        payment.validateCancelable();
+        payment.cancel(command.getCancelReason());
 
-        return payment;
+        Payment savedPayment = paymentRepository.save(payment);
+
+        return PaymentApplicationMapper.toPaymentCancelResult(savedPayment);
     }
 
-    /**
-     * 토스 결제 취소 내역을 바탕으로 결제 취소를 업데이트합니다.
-     */
     @Transactional
-    public PaymentCancelResult updatePaymentCancel(Payment payment, TossCancelResult tossCancelResult,
-        PaymentCancelCommand command) {
+    public void rollbackCancel(String orderId) {
+        Payment payment = getPaymentByOrderId(orderId);
 
-        payment.cancel(command.getCancelReason(), tossCancelResult.getCanceledAt().toLocalDateTime(), tossCancelResult.getStatus());
+        payment.rollbackCancel();
 
         paymentRepository.save(payment);
-
-        return PaymentApplicationMapper.toPaymentCancelResult(payment);
     }
 
     // ============================= 결제 조회 관련 =============================
@@ -174,11 +176,14 @@ public class PaymentService {
         return paymentStatus.name();
     }
 
-    // 프론트에서 요청한 금액과, 토스에서 승인된 금액이 같은지 확인하는 메서드
-    private void validatePaymentAmount(int totalAmount, int amount) {
-        if (totalAmount != amount) {
-            throw new PaymentException(PaymentErrorCode.AMOUNT_MISMATCH);
-        }
+    // orderId 생성
+    private String generateOrderId() {
+        return "order-" + UUID.randomUUID();
+    }
+
+    // orderName 생성
+    private String generateOrderName(int amount) {
+        return "포인트 " + amount + "원 충전";
     }
 }
 

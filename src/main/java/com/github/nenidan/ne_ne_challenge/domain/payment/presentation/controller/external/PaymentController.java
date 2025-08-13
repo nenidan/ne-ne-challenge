@@ -15,12 +15,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.PaymentFacade;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentCancelResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentConfirmResult;
+import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentPrepareResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentSearchResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.request.PaymentCancelRequest;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.request.PaymentConfirmRequest;
+import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.request.PaymentPrepareRequest;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.request.PaymentSearchRequest;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.response.PaymentCancelResponse;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.response.PaymentConfirmResponse;
+import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.response.PaymentPrepareResponse;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.response.PaymentSearchResponse;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.mapper.PaymentPresentationMapper;
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
@@ -38,6 +41,31 @@ import lombok.extern.slf4j.Slf4j;
 public class PaymentController {
 
     private final PaymentFacade paymentFacade;
+
+    /**
+     * 토스 결제 요청 전, orderId와 amount를 데이터베이스에 저장하기 위한 API
+     * @param auth 인증된 사용자 정보
+     * @param request amount(요청 가격)
+     * @return amount(요청 가격), orderId(UUID로 생성된 고유 ID), orderName(주문한 상품 이름 예: 포인트 10,000원)
+     *
+     * 토스에서는 결제 요청 전 orderId와 amount를 세션이나 데이터베이스에 저장하는 것을 적극 권장한다.
+     * @see <a href="https://docs.tosspayments.com/guides/v2/get-started/payment-flow#%EB%8D%94-%EC%95%8C%EC%95%84%EB%B3%B4%EA%B8%B0">토스페이먼츠 가이드</a>
+     */
+    @PostMapping("/payments/prepare")
+    public ResponseEntity<ApiResponse<PaymentPrepareResponse>> preparePayment(
+        @AuthenticationPrincipal Auth auth,
+        @Valid @RequestBody PaymentPrepareRequest request
+    ) {
+
+        PaymentPrepareResult result = paymentFacade.preparePayment(auth.getId(),
+            PaymentPresentationMapper.toPaymentPrepareCommand(request));
+
+        return ApiResponse.success(
+            HttpStatus.CREATED,
+            "결제 준비가 완료되었습니다.",
+            PaymentPresentationMapper.toPaymentPrepareResponse(result)
+        );
+    }
 
     /**
      * 토스페이 결제 승인 및 포인트 충전 API
