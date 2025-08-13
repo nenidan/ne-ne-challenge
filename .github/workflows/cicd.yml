@@ -48,43 +48,43 @@ jobs:
           script: |
             cd /home/ubuntu/my-app
 
-            echo "PROJECT_NAME=$PROJECT_NAME" > .env
-            echo "APP_PORT=$APP_PORT" >> .env
-            
-            echo "SPRING_PROFILES_ACTIVE=prod" >> .env
-            echo "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" >> .env
-            echo "DB_NAME=mydb" >> .env
-            echo "DB_URL=${{ secrets.DB_URL }}" >> .env
-            echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
-            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-            echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
-            echo "SPRING_REDIS_HOST=redis" >> .env
-            echo "SPRING_REDIS_PORT=6379" >> .env
-            echo "TOSS_SECRET_KEY=${{ secrets.TOSS_SECRET_KEY }}" >> .env
-            echo "TOSS_CLIENT_KEY=${{ secrets.TOSS_CLIENT_KEY }}" >> .env
-            echo "TOSS_BASE_URL=${{ secrets.TOSS_BASE_URL }}" >> .env
-            echo "KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}" >> .env
-            echo "KAKAO_REDIRECT_URI=${{ secrets.KAKAO_REDIRECT_URI }}" >> .env
-            echo "NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }}" >> .env
-            echo "NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }}" >> .env
+            # 환경변수 파일 생성
+            {
+              echo "PROJECT_NAME=$PROJECT_NAME"
+              echo "APP_PORT=$APP_PORT"
+              echo "SPRING_PROFILES_ACTIVE=prod"
+              echo "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}"
+              echo "DB_NAME=mydb"
+              echo "DB_URL=${{ secrets.DB_URL }}"
+              echo "DB_USERNAME=${{ secrets.DB_USERNAME }}"
+              echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}"
+              echo "SECRET_KEY=${{ secrets.SECRET_KEY }}"
+              echo "SPRING_REDIS_HOST=redis"
+              echo "SPRING_REDIS_PORT=6379"
+              echo "TOSS_SECRET_KEY=${{ secrets.TOSS_SECRET_KEY }}"
+              echo "TOSS_CLIENT_KEY=${{ secrets.TOSS_CLIENT_KEY }}"
+              echo "TOSS_BASE_URL=${{ secrets.TOSS_BASE_URL }}"
+              echo "KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}"
+              echo "KAKAO_REDIRECT_URI=${{ secrets.KAKAO_REDIRECT_URI }}"
+              echo "NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }}"
+              echo "NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }}"
+            } > .env
 
+            # 테스트 슬롯(8081) 또는 운영 슬롯(8080)에 배포
             docker-compose -p ${PROJECT_NAME} pull app
             docker-compose -p ${PROJECT_NAME} up -d app
 
+            # 헬스체크 (30초 대기)
             echo "Waiting for ${PROJECT_NAME} to be healthy..."
             for i in {1..30}; do
-              if docker inspect --format='{{json .State.Health.Status}}' ${PROJECT_NAME}-app | grep -q "healthy"; then
+              STATUS=$(docker inspect --format='{{json .State.Health.Status}}' ${PROJECT_NAME}-app || echo "")
+              if echo "$STATUS" | grep -q "healthy"; then
                 echo "${PROJECT_NAME} is healthy!"
                 break
               fi
               sleep 3
             done
 
-            echo "server 127.0.0.1:${APP_PORT};" | sudo tee /etc/nginx/routes/active_upstream.include
-            sudo nginx -t && sudo nginx -s reload
-
-            if [ "${PROJECT_NAME}" = "app-green" ]; then
-              docker-compose -p app-blue down || true
-            else
-              docker-compose -p app-green down || true
-            fi
+            echo "배포 완료: ${PROJECT_NAME} (Port: ${APP_PORT})"
+            echo "Nginx 전환은 수동으로 실행하세요."
+          
