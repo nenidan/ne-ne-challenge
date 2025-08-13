@@ -47,14 +47,14 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd /home/ubuntu/my-app
-
-            if [ "${GITHUB_REF_NAME}" = "main" ]; then
-              PROJECT_NAME=app-blue
-              APP_PORT=8080
-            else
-              PROJECT_NAME=app-green
-              APP_PORT=8081
-            fi
+#
+#            if [ "${GITHUB_REF_NAME}" = "main" ]; then
+#              PROJECT_NAME=app-blue
+#              APP_PORT=8080
+#            else
+#              PROJECT_NAME=app-green
+#              APP_PORT=8081
+#            fi
 
             echo "PROJECT_NAME=$PROJECT_NAME" > .env
             echo "APP_PORT=$APP_PORT" >> .env
