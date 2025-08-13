@@ -16,7 +16,7 @@ import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.respons
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.TossCancelResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.TossConfirmResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.mapper.PaymentApplicationMapper;
-import com.github.nenidan.ne_ne_challenge.domain.payment.domain.event.PointChargeRequested;
+import com.github.nenidan.ne_ne_challenge.domain.payment.domain.event.PaymentCompletedEvent;
 import com.github.nenidan.ne_ne_challenge.domain.payment.domain.model.Payment;
 import com.github.nenidan.ne_ne_challenge.domain.payment.exception.PaymentErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.payment.exception.PaymentException;
@@ -77,17 +77,8 @@ public class PaymentFacade {
                 command.getAmount()
             );
 
-            // 결제 완료 이벤트 발행
-            //            eventPublisher.publishEvent(new PaymentCompletedEvent(
-            //                payment.getUserId(),
-            //                payment.getOrderId(),
-            //                payment.getAmount(),
-            //                payment.getPaymentMethod(),
-            //                payment.getApprovedAt()
-            //            ));
-
-            // 포인트 충전 이벤트 발행
-            publishPointChargeEvent(payment);
+            // 포인트 충전 및 알림 전송 이벤트 발행
+            publishPaymentCompletedEvent(payment);
 
             return PaymentApplicationMapper.toPaymentConfirmResult(payment);
 
@@ -177,9 +168,9 @@ public class PaymentFacade {
     // ============================== private 헬퍼 메서드 ==============================
 
     // 포인트 충전이 결제에 장애를 전파하지 않기 위함
-    private void publishPointChargeEvent(Payment payment) {
+    private void publishPaymentCompletedEvent(Payment payment) {
         try {
-            eventPublisher.publishEvent(new PointChargeRequested(
+            eventPublisher.publishEvent(new PaymentCompletedEvent(
                 payment.getUserId(),
                 payment.getAmount(),
                 "CHARGE",

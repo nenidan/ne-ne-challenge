@@ -7,7 +7,7 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import com.github.nenidan.ne_ne_challenge.domain.payment.domain.event.PointChargeRequested;
+import com.github.nenidan.ne_ne_challenge.domain.payment.domain.event.PaymentCompletedEvent;
 import com.github.nenidan.ne_ne_challenge.global.client.point.PointClient;
 
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class PointChargeEventHandler {
+public class PaymentCompletedEventHandler {
 
     private final PointClient pointClient;
 
@@ -28,7 +28,7 @@ public class PointChargeEventHandler {
         maxAttempts = 3,
         backoff = @Backoff(delay = 1000) // 1초 기다리고 재시도
     )
-    public void handlePointCharge(PointChargeRequested event) {
+    public void handlePointCharge(PaymentCompletedEvent event) {
         log.info("포인트 충전 시도: orderId = {}", event.getOrderId());
         pointClient.chargePoint(
             event.getUserId(),
@@ -40,7 +40,7 @@ public class PointChargeEventHandler {
     }
 
     @Recover
-    public void recover(Exception e, PointChargeRequested event) {
+    public void recover(Exception e, PaymentCompletedEvent event) {
         log.error("포인트 충전 최종 실패 - 수동 처리 필요: orderId = {}", event.getOrderId(), e);
     }
 }
