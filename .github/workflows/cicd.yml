@@ -48,59 +48,62 @@ jobs:
           script: |
             cd /home/ubuntu/my-app
 
-            # 현재 활성 포트 읽기
-            ACTIVE_PORT=$(grep -oP 'server 127.0.0.1:\K[0-9]+' /etc/nginx/routes/active_upstream.include || echo "8080")
-
-            # 비활성 포트 결정
-            if [ "$ACTIVE_PORT" = "8080" ]; then
+            # 현재 운영 포트 확인 (없으면 8080으로 기본 설정)
+              ACTIVE_PORT=$(grep -oP 'server 127.0.0.1:\K[0-9]+' /etc/nginx/routes/active_upstream.include || echo "8080")
+              
+              # 비활성 포트 & compose 파일 결정
+              if [ "$ACTIVE_PORT" = "8080" ]; then
               APP_PORT=8081
+              PROJECT_NAME=app-green-app
               COMPOSE_FILE=docker-compose.green.yml
-            else
+              else
               APP_PORT=8080
+              PROJECT_NAME=app-blue-app
               COMPOSE_FILE=docker-compose.blue.yml
-            fi
+              fi
+            
+            echo "배포 대상: $PROJECT_NAME (포트 $APP_PORT)"
+            
+            # .env 파일 생성
+              cat > .env <<EOF
+              PROJECT_NAME=${PROJECT_NAME}
+              APP_PORT=${APP_PORT}
+              SPRING_PROFILES_ACTIVE=prod
+              DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
+              DB_NAME=mydb
+              DB_URL=${{ secrets.DB_URL }}
+              DB_USERNAME=${{ secrets.DB_USERNAME }}
+              DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+              SECRET_KEY=${{ secrets.SECRET_KEY }}
+              SPRING_REDIS_HOST=redis
+              SPRING_REDIS_PORT=6379
+              TOSS_SECRET_KEY=${{ secrets.TOSS_SECRET_KEY }}
+              TOSS_CLIENT_KEY=${{ secrets.TOSS_CLIENT_KEY }}
+              TOSS_BASE_URL=${{ secrets.TOSS_BASE_URL }}
+              KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}
+              KAKAO_REDIRECT_URI=${{ secrets.KAKAO_REDIRECT_URI }}
+              NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }}
+              NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }}
+              EOF
+              
+              # 비활성 슬롯 업데이트 (운영 슬롯은 건드리지 않음)
+              docker-compose -p ${PROJECT_NAME} -f $COMPOSE_FILE pull app
+              docker-compose -p ${PROJECT_NAME} -f $COMPOSE_FILE up -d app
+              
+              # Health check (최대 90초 대기)
+              echo "Waiting for $PROJECT_NAME ($APP_PORT) to be healthy..."
+              for i in {1..30}; do
+              if docker inspect --format='{{json .State.Health.Status}}' ${PROJECT_NAME}_app | grep -q "healthy"; then
+              echo "$PROJECT_NAME ($APP_PORT) is healthy!"
+              break
+              fi
+              sleep 3
+              done
+              
+              # ↓↓↓ 수동 전환할 때만 실행 ↓↓↓
+              # echo "server 127.0.0.1:${APP_PORT};" | sudo tee /etc/nginx/routes/active_upstream.include
+              # sudo nginx -t && sudo nginx -s reload
+              
+              # 현재 상태 확인
+              docker-compose ps
 
-            echo "배포 대상 포트: $APP_PORT"
-
-            # .env 생성
-            cat > .env <<EOF
-            PROJECT_NAME=${PROJECT_NAME}
-            APP_PORT=${APP_PORT}
-            SPRING_PROFILES_ACTIVE=prod
-            DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
-            DB_NAME=mydb
-            DB_URL=${{ secrets.DB_URL }}
-            DB_USERNAME=${{ secrets.DB_USERNAME }}
-            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            SECRET_KEY=${{ secrets.SECRET_KEY }}
-            SPRING_REDIS_HOST=redis
-            SPRING_REDIS_PORT=6379
-            TOSS_SECRET_KEY=${{ secrets.TOSS_SECRET_KEY }}
-            TOSS_CLIENT_KEY=${{ secrets.TOSS_CLIENT_KEY }}
-            TOSS_BASE_URL=${{ secrets.TOSS_BASE_URL }}
-            KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}
-            KAKAO_REDIRECT_URI=${{ secrets.KAKAO_REDIRECT_URI }}
-            NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }}
-            NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }}
-            EOF
-            
-            # 비활성 슬롯에만 pull & up
-            docker-compose -p ${PROJECT_NAME}-${APP_PORT} -f $COMPOSE_FILE pull app
-            docker-compose -p ${PROJECT_NAME}-${APP_PORT} -f $COMPOSE_FILE up -d app
-            
-            echo "Waiting for ${PROJECT_NAME} (${APP_PORT}) to be healthy..."
-            for i in {1..30}; do
-            if docker inspect --format='{{json .State.Health.Status}}' ${PROJECT_NAME}-app | grep -q "healthy"; then
-            echo "${PROJECT_NAME} (${APP_PORT}) is healthy!"
-            break
-            fi
-            sleep 3
-            done
-            
-            # Nginx 활성 포트 변경
-            echo "server 127.0.0.1:${APP_PORT};" | sudo tee /etc/nginx/routes/active_upstream.include
-            sudo nginx -t && sudo nginx -s reload
-            
-            # 이전 슬롯 유지 (원하면 수동 종료)
-            docker-compose ps
-            
