@@ -24,6 +24,8 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+    volumes:
+      - /home/ubuntu/my-app/firebase-key.json:/app/firebase/firebase-key.json
 
   mysql:
     image: mysql:8
