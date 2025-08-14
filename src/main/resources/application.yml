@@ -46,10 +46,16 @@ management:
     web:
       exposure:
         include: "prometheus"
-logging:
-  level:
-    org.springframework.cache: DEBUG
-    org.springframework.data.redis.cache: DEBUG
+#logging:
+#  level:
+#    org.springframework.cache: DEBUG
+#    org.springframework.data.redis.cache: DEBUG
+#
+#    org.springframework.data.elasticsearch.client.elc: DEBUG
+#    org.elasticsearch.client: DEBUG
+#    co.elastic.clients: DEBUG
+#    org.springframework.data.elasticsearch.core: DEBUG
+#    tracer: TRACE
 
 ---
 spring:
@@ -95,3 +101,6 @@ spring:
     redis:
       host: ${SPRING_REDIS_HOST}
       port: ${SPRING_REDIS_PORT}
+
+  elasticsearch:
+    uris: ${ELASTIC_SEARCH_URL}

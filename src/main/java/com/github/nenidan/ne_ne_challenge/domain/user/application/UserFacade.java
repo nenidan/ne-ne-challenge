@@ -2,11 +2,12 @@ package com.github.nenidan.ne_ne_challenge.domain.user.application;
 
 import java.util.List;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.github.nenidan.ne_ne_challenge.domain.user.application.service.UserSearchService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.nenidan.ne_ne_challenge.domain.user.application.client.oauth.OAuthClient;
 import com.github.nenidan.ne_ne_challenge.domain.user.application.client.oauth.OAuthClientFactory;
@@ -33,6 +34,7 @@ import lombok.RequiredArgsConstructor;
 public class UserFacade {
     private final ObjectMapper objectMapper;
     private final UserService userService;
+    private final UserSearchService userSearchService;
     private final CachedUserService cachedUserService;
     private final JwtTokenProvider jwtTokenProvider;
     private final PointClient pointClient;
@@ -83,6 +85,14 @@ public class UserFacade {
             userResultList = userService.searchProfiles(cursor, size, keyword)
                     .stream().map(UserMapper::toDto).toList();
         }
+
+        return CursorResponse.of(userResultList, UserResult::getNickname, size);
+    }
+
+    // 엘라스틱 서치 적용
+    public CursorResponse<UserResult, String> searchProfilesV2(String cursor, int size, String keyword) {
+
+        List<UserResult> userResultList = userSearchService.findByKeywordWithCursor(keyword, cursor, size + 1);
 
         return CursorResponse.of(userResultList, UserResult::getNickname, size);
     }
@@ -155,4 +165,5 @@ public class UserFacade {
 
         return isDefaultCursor && isDefaultKeyword && isDefaultSize;
     }
+
 }

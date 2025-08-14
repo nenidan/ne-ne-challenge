@@ -31,4 +31,12 @@ public class UserClientImpl implements UserClient {
                 .retrieve()
                 .body(new ParameterizedTypeReference<List<UserResponse>>() {});
     }
+
+    @Override
+    public List<UserResponse> getUserListByidList(List<Long> userIdList) {
+        return restClient.get()
+                .uri("/internal/profiles/bulk")
+                .retrieve()
+                .body(new ParameterizedTypeReference<List<UserResponse>>() {});
+    }
 }

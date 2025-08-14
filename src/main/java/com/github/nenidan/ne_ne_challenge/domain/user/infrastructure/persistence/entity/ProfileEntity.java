@@ -3,19 +3,12 @@ package com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistenc
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.type.Sex;
+import jakarta.persistence.*;
 import org.hibernate.annotations.SQLRestriction;
 
 import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.embedded.AuditInfo;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.MapsId;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,10 +35,12 @@ public class ProfileEntity extends AuditInfo {
 
     private LocalDate birth;
 
+    @Enumerated(EnumType.STRING)
+    private Sex sex;
+
     private String bio;
 
     private Long imageId;
-
 
     public static ProfileEntity of(AccountEntity account, String nickname, LocalDate birth, String bio) {
         return new ProfileEntity(
@@ -64,7 +59,7 @@ public class ProfileEntity extends AuditInfo {
         this.bio = profileEntity.getBio() != null ? profileEntity.getBio() : this.bio;
     }
 
-    public ProfileEntity(AccountEntity account, Long id, String nickname, LocalDate birth, String bio,
+    public ProfileEntity(AccountEntity account, Long id, String nickname, LocalDate birth, String sex, String bio,
         LocalDateTime createdAt, LocalDateTime updatedAt,
         LocalDateTime deletedAt) {
         super(createdAt, updatedAt, deletedAt);
@@ -73,6 +68,7 @@ public class ProfileEntity extends AuditInfo {
         this.id = id;
         this.nickname = nickname;
         this.birth = birth;
+        this.sex = Sex.of(sex);
         this.bio = bio;
     }
 

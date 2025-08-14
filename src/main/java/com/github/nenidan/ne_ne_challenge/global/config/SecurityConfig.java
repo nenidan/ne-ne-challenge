@@ -91,6 +91,8 @@ public class SecurityConfig {
 
                 .requestMatchers("/actuator/**").permitAll()
 
+                .requestMatchers("/api/**").authenticated()
+
                 .anyRequest().denyAll()
             )
 
