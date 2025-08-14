@@ -5,6 +5,7 @@ import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence
 import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.search.document.UserDocument;
 import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.search.repository.UserDocumentRepository;
 import net.datafaker.Faker;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,7 +28,7 @@ public class UserBulkInsertTest {
     @Autowired
     private UserDocumentRepository userDocumentRepository;
 
-//    @Disabled
+    @Disabled
     @Test
     @Transactional
     @Rollback(false)
