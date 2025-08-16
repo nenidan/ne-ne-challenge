@@ -116,7 +116,7 @@ public class PaymentFacade {
 
     /**
      * 결제 취소 처리
-     * 1. 사용자 검증 -> 2. 결제 취소 가능 여부 확인 후 결제 취소 -> 3. 토스 결제 취소 -> 4. 포인트 차감
+     * 1. 사용자 검증 -> 2. 결제 취소 가능 여부 확인 -> 3. 포인트 차감 -> 4. DB에 결제 취소 업데이트 -> 5. 토스 결제 취소
      */
     public PaymentCancelResult cancelPayment(Long userId, String orderId, PaymentCancelCommand command) {
 
@@ -130,19 +130,22 @@ public class PaymentFacade {
             userClient.getUserById(userId);
             userVerified = true;
 
-            // 2. DB를 취소 처리
-            result = paymentService.cancelPayment(userId, orderId, command);
+            // 2. 결제 취소가 가능한 결제인지 검증 후 조회
+            Payment paymentForCancel = paymentService.getPaymentForCancel(userId, orderId);
+
+            // 3. 포인트 차감
+            pointClient.cancelPoint(orderId);
+
+            // 4. DB를 취소 처리
+            result = paymentService.cancelPayment(paymentForCancel, command);
             paymentCanceled = true;
 
-            // 3. 토스 페이에 결제 취소 요청
+            // 5. 토스 페이에 결제 취소 요청
             TossCancelResult tossCancelResult = tossClient.cancelPayment(
-                result.getPaymentKey(),
-                result.getCancelReason()
+                paymentForCancel.getPaymentKey().getValue(),
+                command.getCancelReason()
             );
             tossCanceled = true;
-
-            // 4. 포인트 차감
-            pointClient.cancelPoint(orderId);
 
             return result;
 
@@ -230,5 +233,4 @@ public class PaymentFacade {
             throw new PaymentException(PaymentErrorCode.PAYMENT_CANCEL_FAILED, e);
         }
     }
-
 }

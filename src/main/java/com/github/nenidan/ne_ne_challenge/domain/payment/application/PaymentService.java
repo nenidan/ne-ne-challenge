@@ -83,14 +83,18 @@ public class PaymentService {
 
     // ============================= 결제 취소 관련 =============================
 
-    @Transactional
-    public PaymentCancelResult cancelPayment(Long userId, String orderId, PaymentCancelCommand command) {
+    @Transactional(readOnly = true)
+    public Payment getPaymentForCancel(Long userId, String orderId) {
 
         Payment payment = getPaymentByOrderId(OrderId.of(orderId));
 
-        if (!payment.getUserId().equals(userId)) {
-            throw new PaymentException(PaymentErrorCode.PAYMENT_ACCESS_DENIED);
-        }
+        payment.validateCancelable(userId);
+
+        return payment;
+    }
+
+    @Transactional
+    public PaymentCancelResult cancelPayment(Payment payment, PaymentCancelCommand command) {
 
         payment.cancel(command.getCancelReason());
 
@@ -101,6 +105,7 @@ public class PaymentService {
 
     @Transactional
     public void rollbackCancel(String orderId) {
+
         Payment payment = getPaymentByOrderId(OrderId.of(orderId));
 
         payment.rollbackCancel();
@@ -165,6 +170,7 @@ public class PaymentService {
 
     // 상태 문자열 정리 (빈 문자열 → null)
     private String convertToStatusString(String status) {
+
         if (!StringUtils.hasText(status)) {
             return null;
         }
@@ -173,5 +179,7 @@ public class PaymentService {
 
         return paymentStatus.name();
     }
+
+
 }
 

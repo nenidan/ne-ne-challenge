@@ -119,16 +119,16 @@ public class Payment extends BaseEntity {
     // ====================== 결제 취소 관련 ======================
 
     public void cancel(String cancelReason) {
-
-        // 취소 가능한 결제인지 확인합니다.
-        validateCancelable();
-
         this.cancelReason = cancelReason;
         this.canceledAt = LocalDateTime.now();
         this.status = PaymentStatus.CANCELED;
     }
 
-    private void validateCancelable() {
+    public void validateCancelable(Long userId) {
+        if (this.userId != userId) {
+            throw new PaymentException(PaymentErrorCode.PAYMENT_ACCESS_DENIED);
+        }
+
         // 상태 확인
         if (this.status != PaymentStatus.DONE) {
             throw new PaymentException(PaymentErrorCode.CANNOT_CANCEL_PAYMENT);
@@ -141,10 +141,6 @@ public class Payment extends BaseEntity {
     }
 
     public void rollbackCancel() {
-        if (this.status != PaymentStatus.CANCELED) {
-            throw new PaymentException(PaymentErrorCode.INVALID_PAYMENT_STATUS);
-        }
-
         this.status = PaymentStatus.DONE;
         this.cancelReason = null;
         this.canceledAt = null;
