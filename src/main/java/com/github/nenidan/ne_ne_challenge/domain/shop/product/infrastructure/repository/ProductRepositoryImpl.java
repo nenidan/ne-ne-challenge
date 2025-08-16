@@ -12,14 +12,22 @@ import com.github.nenidan.ne_ne_challenge.domain.shop.product.infrastructure.ent
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.infrastructure.mapper.ProductMapper;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Repository
-@RequiredArgsConstructor
 public class ProductRepositoryImpl implements ProductRepository {
 
     private final ProductJpaRepository productJpaRepository;
     private final ProductQueryDslRepository  productQueryDslRepository;
+
+    public ProductRepositoryImpl(
+        ProductJpaRepository productJpaRepository,
+        ProductQueryDslRepository  productQueryDslRepository
+    ) {
+        this.productJpaRepository = productJpaRepository;
+        this.productQueryDslRepository = productQueryDslRepository;
+    }
 
     @Override
     public Product save(Product product) {

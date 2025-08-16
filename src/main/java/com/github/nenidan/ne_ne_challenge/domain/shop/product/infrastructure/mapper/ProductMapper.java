@@ -7,7 +7,7 @@ import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 public class ProductMapper {
 
     public static Product toDomain(ProductEntity productEntity) {
-        return new Product(
+        return Product.create(
             new ProductId(productEntity.getId()),
             productEntity.getProductName(),
             productEntity.getProductDescription(),
