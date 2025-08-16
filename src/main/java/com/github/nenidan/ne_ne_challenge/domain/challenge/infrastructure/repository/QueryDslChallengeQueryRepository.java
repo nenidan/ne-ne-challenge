@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import com.querydsl.core.types.Predicate;
 import org.springframework.stereotype.Repository;
 
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.request.ChallengeSearchCond;
@@ -45,7 +46,8 @@ public class QueryDslChallengeQueryRepository implements ChallengeQueryRepositor
         builder.and(userIdEq(cond.getUserId()));
         builder.and(nameContains(cond.getName()));
         builder.and(statusEq(cond.getStatus()));
-        builder.and(dueAtEq(cond.getDueAt()));
+        builder.and(startAtGoe(cond.getStartAt()));
+        builder.and(dueAtLoe(cond.getDueAt()));
         builder.and(categoryEq(cond.getCategory()));
         builder.and(maxParticipationFeeLoe(cond.getMaxParticipationFee()));
         builder.and(createdAtLoe(cond.getCursor()));
@@ -53,7 +55,6 @@ public class QueryDslChallengeQueryRepository implements ChallengeQueryRepositor
 
         return projectToChallengeResponse()
             .from(challenge)
-            .join(challenge.participants, participant)
             .where(builder)
             .orderBy(challenge.createdAt.desc())
             .limit(cond.getSize() + 1)
@@ -96,8 +97,12 @@ public class QueryDslChallengeQueryRepository implements ChallengeQueryRepositor
         return status == null ? null : challenge.status.eq(status);
     }
 
-    private BooleanExpression dueAtEq(LocalDate dueAt) {
-        return dueAt == null ? null : challenge.dueAt.eq(dueAt);
+    private BooleanExpression startAtGoe(LocalDate startAt) {
+        return startAt == null ? null : challenge.startAt.goe(startAt);
+    }
+
+    private BooleanExpression dueAtLoe(LocalDate dueAt) {
+        return dueAt == null ? null : challenge.dueAt.loe(dueAt);
     }
 
     private BooleanExpression createdAtLoe(LocalDateTime cursor) {
