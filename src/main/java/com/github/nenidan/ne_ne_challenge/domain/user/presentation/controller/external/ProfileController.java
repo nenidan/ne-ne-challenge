@@ -74,6 +74,25 @@ public class ProfileController {
         );
     }
 
+    @GetMapping("/profiles/search")
+    public ResponseEntity<ApiResponse<CursorResponse<UserResponse, String>>> searchProfilesV2(
+            @RequestParam(defaultValue = "") String cursor,
+            @RequestParam(defaultValue = "10") @Min(1) int size,
+            @RequestParam(defaultValue = "") String keyword
+    ) {
+
+        CursorResponse<UserResult, String> res = userFacade.searchProfilesV2(cursor, size, keyword);
+        List<UserResponse> content = res.getContent().stream()
+                .map(userMapper::toResponse)
+                .toList();
+
+        return ApiResponse.success(
+                HttpStatus.OK,
+                "프로필 목록 조회가 완료되었습니다.",
+                new CursorResponse<>(content, res.getNextCursor(), res.isHasNext())
+        );
+    }
+
     @PatchMapping("/profiles/me")
     public ResponseEntity<ApiResponse<UserResponse>> updateMyProfile(
             @AuthenticationPrincipal Auth auth,

@@ -9,4 +9,6 @@ public interface UserClient {
     UserResponse getUserById(long userId);
 
     List<UserResponse> getUserAll();
+
+    List<UserResponse> getUserListByidList(List<Long> userIdList);
 }
