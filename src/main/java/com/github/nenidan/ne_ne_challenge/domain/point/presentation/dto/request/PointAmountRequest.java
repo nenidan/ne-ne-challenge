@@ -7,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class PointAmountRequest {
 
-    int amount;
-    String reason;
+    private int amount;
+    private String reason;
 }
 

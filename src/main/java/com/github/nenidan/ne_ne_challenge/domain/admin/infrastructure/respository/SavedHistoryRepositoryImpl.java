@@ -10,8 +10,8 @@ import com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.response.
 import com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.response.logs.UserHistoryResponse;
 import com.github.nenidan.ne_ne_challenge.domain.admin.domain.repository.SavedHistoryRepositoryCustom;
 import com.github.nenidan.ne_ne_challenge.domain.payment.domain.model.QPayment;
-import com.github.nenidan.ne_ne_challenge.domain.point.domain.QPointTransaction;
-import com.github.nenidan.ne_ne_challenge.domain.point.domain.QPointWallet;
+import com.github.nenidan.ne_ne_challenge.domain.point.domain.model.QPointTransaction;
+import com.github.nenidan.ne_ne_challenge.domain.point.domain.model.QPointWallet;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;

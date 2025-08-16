@@ -1,7 +1,8 @@
 package com.github.nenidan.ne_ne_challenge.domain.point.infrastructure.repository;
 
-import static com.github.nenidan.ne_ne_challenge.domain.point.domain.QPointTransaction.*;
-import static com.github.nenidan.ne_ne_challenge.domain.point.domain.QPointWallet.*;
+
+import static com.github.nenidan.ne_ne_challenge.domain.point.domain.model.QPoint.*;
+import static com.github.nenidan.ne_ne_challenge.domain.point.domain.model.QPointTransaction.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -9,9 +10,9 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
 
-import com.github.nenidan.ne_ne_challenge.domain.point.domain.Point;
-import com.github.nenidan.ne_ne_challenge.domain.point.domain.PointTransaction;
-import com.github.nenidan.ne_ne_challenge.domain.point.domain.PointWallet;
+import com.github.nenidan.ne_ne_challenge.domain.point.domain.model.Point;
+import com.github.nenidan.ne_ne_challenge.domain.point.domain.model.PointTransaction;
+import com.github.nenidan.ne_ne_challenge.domain.point.domain.model.PointWallet;
 import com.github.nenidan.ne_ne_challenge.domain.point.domain.repository.PointRepository;
 import com.github.nenidan.ne_ne_challenge.domain.point.domain.type.PointReason;
 import com.querydsl.core.BooleanBuilder;
@@ -73,7 +74,14 @@ public class PointRepositoryImpl implements PointRepository {
 
     @Override
     public List<Point> findUsablePointsByWalletId(Long walletId) {
-        return jpaPointRepository.findUsablePointsByWalletId(walletId);
+        return factory.selectFrom(point)
+            .where(
+                point.pointWallet.id.eq(walletId),
+                point.remainingAmount.gt(0),
+                point.canceledAt.isNull()
+            )
+            .orderBy(point.id.asc())
+            .fetch();
     }
 
     @Override
@@ -87,7 +95,7 @@ public class PointRepositoryImpl implements PointRepository {
 
         BooleanBuilder builder = new BooleanBuilder();
 
-        builder.and(pointWallet.pointWallet.id.eq(pointWalletId));
+        builder.and(pointTransaction.pointWallet.id.eq(pointWalletId));
 
         if (cursor != null) {
             builder.and(pointTransaction.id.loe(cursor));

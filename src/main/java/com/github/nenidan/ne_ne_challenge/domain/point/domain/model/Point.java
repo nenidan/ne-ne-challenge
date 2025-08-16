@@ -1,4 +1,4 @@
-package com.github.nenidan.ne_ne_challenge.domain.point.domain;
+package com.github.nenidan.ne_ne_challenge.domain.point.domain.model;
 
 import java.time.LocalDateTime;
 
@@ -14,12 +14,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Point extends BaseEntity {
 
     @Id
@@ -45,14 +46,20 @@ public class Point extends BaseEntity {
     @Column(nullable = false)
     private boolean isUsed = false;
 
+    private Point(PointWallet pointWallet, int amount, String sourceOrderId) {
+        this.pointWallet = pointWallet;
+        this.amount = amount;
+        this.remainingAmount = amount;
+        this.sourceOrderId = sourceOrderId;
+    }
+
     // 생성 메서드
     public static Point createChargePoint(PointWallet pointWallet, int amount, String sourceOrderId) {
-        Point point = new Point();
-        point.pointWallet = pointWallet;
-        point.amount = amount;
-        point.remainingAmount = amount;
-        point.sourceOrderId = sourceOrderId;
-        return point;
+        return new Point(
+            pointWallet,
+            amount,
+            sourceOrderId
+        );
     }
 
     // 사용
