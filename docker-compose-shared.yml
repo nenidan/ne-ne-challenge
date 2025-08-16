@@ -1,0 +1,38 @@
+networks:
+  shared-net:
+    name: shared-net
+    external: true
+
+volumes:
+  mysql-data:
+  redis-data:
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: shared-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpw
+      MYSQL_DATABASE: mydb
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      retries: 5
+    networks:
+      - shared-net
+
+  redis:
+    image: redis:7
+    container_name: shared-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 5
+    networks:
+      - shared-net
