@@ -16,6 +16,7 @@ public enum PaymentErrorCode implements ErrorCode {
     POINT_CHARGE_FAILED("포인트 충전에 실패하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     CONFIRM_FAILED("토스 결제를 실패하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     PAYMENT_PROCESSING_FAILED("결제 처리 중 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+    EXTERNAL_SERVICE_ERROR("외부 서비스 연동 중 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
 
     // 4xx
     INVALID_PAYMENT_METHOD("유효하지 않은 결제 수단입니다.", HttpStatus.BAD_REQUEST),
@@ -26,7 +27,11 @@ public enum PaymentErrorCode implements ErrorCode {
     TOSS_ERROR("토스 결제에 실패하였습니다.", HttpStatus.BAD_REQUEST),
     CANNOT_CANCEL_PAYMENT("취소할 수 없는 결제입니다.", HttpStatus.BAD_REQUEST),
     CANNOT_CANCEL_EXPIRED("취소 가능 기간이 지났습니다.", HttpStatus.BAD_REQUEST),
-    PAYMENT_ACCESS_DENIED("본인의 결제만 취소할 수 있습니다.", HttpStatus.FORBIDDEN);;
+    PAYMENT_ACCESS_DENIED("본인의 결제만 취소할 수 있습니다.", HttpStatus.FORBIDDEN),
+    INVALID_PAYMENT_AMOUNT("유효하지 않은 요청 금액입니다.", HttpStatus.BAD_REQUEST),
+    PAYMENT_CANCEL_FAILED("결제 취소 중 오류가 발생하였습니다.", HttpStatus.BAD_REQUEST),
+    INVALID_AMOUNT("금액은 0원 이상이어야 합니다.", HttpStatus.BAD_REQUEST),
+    INVALID_ORDER_ID("유효하지 않은 주문 ID입니다.", HttpStatus.BAD_REQUEST);
 
     private final String message;
     private final HttpStatus status;

@@ -46,7 +46,11 @@ public class PaymentRepositoryImpl implements PaymentRepository {
 
     @Override
     public Optional<Payment> findByOrderId(String orderId) {
-        return jpaPaymentRepository.findByOrderId(orderId);
+        Payment result = factory.selectFrom(payment)
+            .where(payment.orderId.value.eq(orderId))
+            .fetchOne();
+
+        return Optional.ofNullable(result);
     }
 
     @Override
