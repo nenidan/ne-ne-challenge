@@ -1,6 +1,8 @@
-package com.github.nenidan.ne_ne_challenge.domain.point.domain;
+package com.github.nenidan.ne_ne_challenge.domain.point.domain.model;
 
 import com.github.nenidan.ne_ne_challenge.domain.point.domain.type.PointReason;
+import com.github.nenidan.ne_ne_challenge.domain.point.exception.PointErrorCode;
+import com.github.nenidan.ne_ne_challenge.domain.point.exception.PointException;
 import com.github.nenidan.ne_ne_challenge.global.entity.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -49,10 +51,25 @@ public class PointTransaction extends BaseEntity {
     }
 
     public static PointTransaction createChargeTransaction(PointWallet pointWallet, int amount, PointReason reason, String description) {
+        validateIncreaseReason(reason);
         return new PointTransaction(pointWallet, amount, reason, description);
     }
 
     public static PointTransaction createUsageTransaction(PointWallet pointWallet, int amount, PointReason reason, String description) {
+        validateDecreaseReason(reason);
         return new PointTransaction(pointWallet, -amount, reason, description);
+    }
+
+    // ========================== 헬퍼 메서드 ==========================
+    private static void validateIncreaseReason(PointReason reason) {
+        if (!reason.isIncrease()) {
+            throw new PointException(PointErrorCode.INVALID_POINT_REASON);
+        }
+    }
+
+    private static void validateDecreaseReason(PointReason reason) {
+        if (!reason.isDecrease()) {
+            throw new PointException(PointErrorCode.INVALID_POINT_REASON);
+        }
     }
 }
