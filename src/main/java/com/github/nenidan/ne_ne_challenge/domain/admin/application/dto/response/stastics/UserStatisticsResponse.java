@@ -8,23 +8,12 @@ import java.time.LocalDateTime;
 
 @Getter
 public class UserStatisticsResponse extends StatisticsResponse{
-    private Long id;
+    private Long newUsersCount;
+    private Long totalUsersCount;
 
-    private String email;
-
-    private String role;
-
-    private String nickname;
-
-    private LocalDate birth;
-
-    private String bio;
-
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private LocalDateTime deletedAt;
-
-    public UserStatisticsResponse(String type, LocalDateTime createdAt) {
+    public UserStatisticsResponse(String type, LocalDateTime createdAt, Long newUsersCount, Long totalUsersCount) {
         super(type, createdAt);
+        this.newUsersCount = newUsersCount;
+        this.totalUsersCount = totalUsersCount;
     }
 }

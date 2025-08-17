@@ -1,24 +1,26 @@
 package com.github.nenidan.ne_ne_challenge.global.aop;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Set;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.nenidan.ne_ne_challenge.domain.admin.domain.type.DomainType;
+import com.github.nenidan.ne_ne_challenge.global.trace.TraceContext;
+import com.github.nenidan.ne_ne_challenge.global.trace.TraceContextHolder;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.context.ApplicationEventPublisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
-import com.github.nenidan.ne_ne_challenge.domain.admin.domain.type.DomainType;
-import com.github.nenidan.ne_ne_challenge.global.aop.event.AdminActionLoggedEvent;
-
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.time.Instant;
+import java.util.*;
 
 @Slf4j
 @Aspect
@@ -26,96 +28,86 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class AdminLogAspect {
 
-    private static final Set<String> CLEAR_TRIGGER_METHODS = Set.of(
-            "PaymentFacade.confirmAndChargePoint()"
-    );//체인의 종료메서드 명시
-    private final ApplicationEventPublisher applicationEventPublisher;
+    private static final Logger AUDIT = LoggerFactory.getLogger("AUDIT");
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Pointcut("execution(* com..github.nenidan.ne_ne_challenge.domain.payment.application..*(..))")
-    private void paymentMethods() {}
+    // 필요한 도메인 묶음
+    @Pointcut("execution(* com.github.nenidan.ne_ne_challenge.domain..application..*(..))")
+    private void domainServices() {}
 
-    @Pointcut("execution(* com..github.nenidan.ne_ne_challenge.domain.point.application..*(..))")
-    private void pointMethods() {}
+    // 컨트롤러 레벨에서도 한 번 잡아 유저케이스의 시작과 끝을 명확히
+    @Pointcut("within(@org.springframework.web.bind.annotation.RestController *)")
+    private void anyController() {}
 
-    @Pointcut("execution(* com..github.nenidan.ne_ne_challenge.domain.order.application..*(..))")
-    private void orderMethods() {}
-
-    /*@Pointcut("execution(* com..github.nenidan.ne_ne_challenge.domain.challenge..*(..))")
-    private void challengeMethods() {}*/
-
-    @Pointcut("paymentMethods() || pointMethods() || orderMethods()")
-    private void adminDomainMethods() {}
-
-    @Around("adminDomainMethods()")
+    @Around("domainServices() || anyController()")
     public Object logAdminAction(ProceedingJoinPoint joinPoint) throws Throwable {
-        long start = System.currentTimeMillis();
 
         // 요청 정보
-        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-        String packageName = signature.getDeclaringType().getPackageName();
-        String className = signature.getDeclaringType().getSimpleName();
-        String methodName = signature.getName();
-        String fullMethodName = className + "." + methodName + "()";
+        long start = System.currentTimeMillis();
+        MethodSignature sig = (MethodSignature) joinPoint.getSignature();
+        String className = sig.getDeclaringType().getSimpleName();
+        String methodName = sig.getName();
+        String fullMethod = className + "." + methodName + "()";
+        String pkg = sig.getDeclaringType().getPackageName();
+        DomainType domain = resolveDomain(pkg);
 
-        //로그의 도메인 타입
-        String[] parts = packageName.split("\\.");
-        String domainName = parts[5];
-        DomainType type = DomainType.valueOf(domainName.toUpperCase());
-
-        // 파라미터 정보
         Object[] args = joinPoint.getArgs();
-        String params = Arrays.toString(args);
-
-        // 요청자 정보
-        HttpServletRequest request =
-                ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        String requestURI = request.getRequestURI();
-        String clientIp = request.getRemoteAddr();
-
-        Object result = null;
-        Long targetId = LoggingContext.getId();
-        boolean success = true;
+        Object result = null; boolean success = false; String error = null;
 
         try {
-            //proceed = return에서 추출, args = method 인자에서 추출
             result = joinPoint.proceed();
+            success = true;
             return result;
-        } catch (Throwable ex) {
-            success = false;
-            fullMethodName = ex.getMessage() + "(" + fullMethodName + ")"; //에러메시지 커스텀
-            targetId = LoggingContext.getId();
-
-            LoggingContext.clear();
-            throw ex;
+        } catch (Throwable t) {
+            error = t.getClass().getSimpleName() + ": " + Optional.ofNullable(t.getMessage()).orElse("");
+            throw t;
         } finally {
-//            for (Object arg : args) {
-//                if (arg instanceof BaseEntity entity) {
-//                    targetId = entity.getId();
-//                    break;
-//                }
-//            }
-            if (success && result instanceof BaseEntity entity) {
-                targetId = entity.getId();
+            long took = System.currentTimeMillis() - start;
+            TraceContext ctx = TraceContextHolder.get();
 
-                LoggingContext.updateId(targetId);
+            Long targetId = TargetIdExtractor.tryExtract(args, result);
+
+            // JSON 페이로드 (민감정보 마스킹)
+            String paramsJson = MaskingUtils.toMaskedJson(args);
+            String resultJson = MaskingUtils.toMaskedJson(result);
+
+            Map<String, Object> event = new LinkedHashMap<>();
+            event.put("ts", Instant.now().toEpochMilli());
+            event.put("service", "ne-ne-challenge");
+            event.put("env", System.getProperty("spring.profiles.active", "local"));
+            if (ctx != null) {
+                event.put("traceId", ctx.getTraceId());
+                event.put("userId", ctx.getUserId());
+                event.put("ip", ctx.getIp());
+                event.put("uri", ctx.getUri());
+                event.put("httpMethod", ctx.getHttpMethod());
             }
+            event.put("domain", domain != null ? domain.name() : null);
+            event.put("classMethod", fullMethod);
+            event.put("targetId", targetId);
+            event.put("success", success);
+            event.put("durationMs", took);
+            event.put("req", paramsJson);
+            event.put("res", resultJson);
+            event.put("error", error);
 
-            long elapsedTime = System.currentTimeMillis() - start;
-
-            // 로그 출력
-            log.info("[ADMIN_LOG] uri={}, method={}, clientIp={}, params={}, success={}, elapsed={}ms",
-                    requestURI, fullMethodName, clientIp, params, success, elapsedTime);
-
-            if(CLEAR_TRIGGER_METHODS.contains(fullMethodName)){
-                System.out.println("끝");
-                LoggingContext.clear();
+            try {
+                AUDIT.info(objectMapper.writeValueAsString(event));
+            } catch (Exception e) {
+                log.warn("[AUDIT_WRITE_ERR] {}", e.toString());
             }
-
-            applicationEventPublisher.publishEvent(
-                    new AdminActionLoggedEvent(type, targetId, fullMethodName, params, result != null ? result.toString() : null, success)
-            );
-
-
         }
     }
+
+    private DomainType resolveDomain(String pkg) {
+        try {
+            String[] p = pkg.split("\\.");
+            int i = Arrays.asList(p).indexOf("domain");
+            if (i >= 0 && i + 1 < p.length) {
+                return DomainType.valueOf(p[i + 1].toUpperCase());
+            }
+        } catch (Exception ignored) {}
+        return null;
+    }
+
 }
