@@ -75,6 +75,9 @@ dependencies {
 	// https://mvnrepository.com/artifact/com.google.firebase/firebase-admin
 	implementation 'com.google.firebase:firebase-admin:8.1.0'
 
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	runtimeOnly  'io.micrometer:micrometer-registry-prometheus'
+
 	testImplementation 'com.h2database:h2'
 
 	implementation 'net.datafaker:datafaker:2.4.4'
