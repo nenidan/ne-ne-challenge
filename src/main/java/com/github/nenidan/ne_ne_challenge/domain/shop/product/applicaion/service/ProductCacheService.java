@@ -34,7 +34,7 @@ public class ProductCacheService {
     // 애플리케이션 시작 시, 캐시 미리 적재 (Warm-up)
     @EventListener(ApplicationReadyEvent.class)
     public void warmUpCache() {
-        List<Product> productList = productRepository.findAllByCursor(null, PRODUCT_CACHE_SIZE, null);
+        List<Product> productList = productRepository.findAllByKeyword(null, PRODUCT_CACHE_SIZE, null);
         Cache cache = cacheManager.getCache(PRODUCT_CACHE_NAME);
         if (cache != null) {
             cache.put(PRODUCT_CACHE_KEY, productList);
@@ -44,7 +44,7 @@ public class ProductCacheService {
     }
 
     public void putMainPageCache() {
-        List<Product> productList = productRepository.findAllByCursor(null, PRODUCT_CACHE_SIZE, null);
+        List<Product> productList = productRepository.findAllByKeyword(null, PRODUCT_CACHE_SIZE, null);
         Cache cache = cacheManager.getCache(PRODUCT_CACHE_NAME);
         if (cache != null) {
             cache.put(PRODUCT_CACHE_KEY, productList);
@@ -58,7 +58,7 @@ public class ProductCacheService {
             PRODUCT_CACHE_KEY,
             () -> {
                 log.info("cache miss -> DB 에서 첫 페이지 상품 조회");
-                return productRepository.findAllByCursor(null, PRODUCT_CACHE_SIZE, null);
+                return productRepository.findAllByKeyword(null, PRODUCT_CACHE_SIZE, null);
             }
         );
 

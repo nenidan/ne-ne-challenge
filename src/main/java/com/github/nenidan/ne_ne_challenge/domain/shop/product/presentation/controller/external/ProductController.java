@@ -1,5 +1,7 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.product.presentation.controller.external;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -71,7 +73,7 @@ public class ProductController {
 
     @GetMapping("/products")
     public ResponseEntity<ApiResponse<CursorResponse<ProductResponse, Long>>> findAllProducts(
-        @RequestParam(required = false) Long cursor,
+        @RequestParam(required = false) List<Object> cursor,
         @RequestParam(defaultValue = "10") @Min(1) int size,
         @RequestParam(required = false) String keyword
     ) {
