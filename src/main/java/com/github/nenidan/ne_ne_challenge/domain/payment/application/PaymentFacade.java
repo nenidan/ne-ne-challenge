@@ -24,6 +24,7 @@ import com.github.nenidan.ne_ne_challenge.global.client.point.PointClient;
 import com.github.nenidan.ne_ne_challenge.global.client.user.UserClient;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,65 +51,49 @@ public class PaymentFacade {
      * 1. 사용자 검증 -> 2. 토스 결제 승인 -> 3. Payment 객체를 DONE 으로 변경 -> 4. 포인트 충전, 알림 이벤트 발행
      */
     public PaymentConfirmResult confirmAndChargePoint(Long userId, PaymentConfirmCommand command) {
-
         boolean userVerified = false;
         boolean tossPaymentSucceeded = false;
         TossConfirmResult tossConfirmResult = null;
-        Payment payment;
 
         try {
-            // 유저 검증
+            // 1. 사용자 검증
             userClient.getUserById(userId);
             userVerified = true;
 
-            // 토스 페이먼츠의 /payments/confirm API 호출 (결제 승인)
+            // 2. 토스 결제 승인
             tossConfirmResult = tossClient.confirmPayment(
-                command.getPaymentKey(),
-                command.getOrderId(),
-                command.getAmount()
-            );
+                command.getPaymentKey(), command.getOrderId(), command.getAmount());
             tossPaymentSucceeded = true;
 
-            // 프론트에서 요청한 결제 금액과 토스에서 실제로 결제한 금액이 일치하는지 확인
-            // 일치하지 않는다면 예외를 터트린다.
-            // 일치한다면, 토스에서 응답받은 값을 이용하여 payment 객체 생성
-            payment = paymentService.markAsSuccess(
-                tossConfirmResult,
-                command.getAmount()
-            );
+            // 3. Payment 성공 처리
+            Payment payment = paymentService.markAsSuccess(tossConfirmResult, command.getAmount());
 
-            // 포인트 충전 및 알림 전송 이벤트 발행
+            // 4. 포인트 충전 및 알림 전송 이벤트 발행
             publishPaymentCompletedEvent(payment);
 
             return PaymentApplicationMapper.toPaymentConfirmResult(payment);
 
+        } catch (CallNotPermittedException e) {
+
+            log.error("토스 서킷 브레이커 OPEN: {}", e.getMessage());
+
+            handleConfirmCircuitBreakerError(command);
+
+            throw new PaymentException(PaymentErrorCode.TOSS_SERVICE_UNAVAILABLE, e);
+
         } catch (RestClientResponseException e) {
-            // RestClient 에서 오류가 발생하였을 때,
 
-            // 1. 토스 결제 요청 하기 전 실행된 prepare API 에서 저장된 Payment 객체를 fail 상태로 바꾼다.
-            paymentService.markAsFailed(
-                command.getOrderId(),
-                command.getPaymentKey()
-            );
+            log.error("외부 클라이언트 오류: {}", e.getMessage());
 
-            // 2. userClient 오류인지, tossClient 오류인지 확인 후에, 적절한 오류를 던져준다.
-            handleRestClientError(e, userVerified, tossPaymentSucceeded);
+            handleConfirmRestClientError(e, command, userVerified, tossPaymentSucceeded);
 
-            // 실행되지 않음, 컴파일 에러 방지용
             return null;
+
         } catch (Exception e) {
-            // 어쩔 수 없이 발생하는 모든 예외 상황
 
-            // 1. Payment 객체를 fail 상태로 수정
-            paymentService.markAsFailed(
-                command.getOrderId(),
-                command.getPaymentKey()
-            );
+            log.error("예상치 못한 오류: {}", e.getMessage());
 
-            // 2. 토스 결제 승인을 한 상태로 예외가 발생하면, 토스 결제를 취소해줘야한다.
-            if (tossConfirmResult != null) {
-                cancelToss(tossConfirmResult);
-            }
+            handleConfirmUnknownError(command, tossConfirmResult);
 
             throw new PaymentException(PaymentErrorCode.PAYMENT_PROCESSING_FAILED, e);
         }
@@ -116,11 +101,11 @@ public class PaymentFacade {
 
     /**
      * 결제 취소 처리
-     * 1. 사용자 검증 -> 2. 결제 취소 가능 여부 확인 -> 3. 포인트 차감 -> 4. DB에 결제 취소 업데이트 -> 5. 토스 결제 취소
+     * 1. 사용자 검증 -> 2. 결제 취소 가능 여부 확인 -> 3. 포인트 차감 -> 4. DB 취소 -> 5. 토스 취소
      */
     public PaymentCancelResult cancelPayment(Long userId, String orderId, PaymentCancelCommand command) {
-
         boolean userVerified = false;
+        boolean pointCanceled = false;
         boolean paymentCanceled = false;
         boolean tossCanceled = false;
         PaymentCancelResult result = null;
@@ -130,37 +115,51 @@ public class PaymentFacade {
             userClient.getUserById(userId);
             userVerified = true;
 
-            // 2. 결제 취소가 가능한 결제인지 검증 후 조회
+            // 2. 취소 가능한 결제인지 확인
             Payment paymentForCancel = paymentService.getPaymentForCancel(userId, orderId);
 
             // 3. 포인트 차감
             pointClient.cancelPoint(orderId);
+            pointCanceled = true;
 
-            // 4. DB를 취소 처리
+            // 4. DB 취소 처리
             result = paymentService.cancelPayment(paymentForCancel, command);
             paymentCanceled = true;
 
-            // 5. 토스 페이에 결제 취소 요청
+            // 5. 토스 취소
             TossCancelResult tossCancelResult = tossClient.cancelPayment(
-                paymentForCancel.getPaymentKey().getValue(),
-                command.getCancelReason()
-            );
+                paymentForCancel.getPaymentKey().getValue(), command.getCancelReason());
             tossCanceled = true;
 
             return result;
 
+        } catch (CallNotPermittedException e) {
+
+            log.error("토스 취소 서킷 브레이커 OPEN: orderId={}", orderId, e);
+
+            handleCancelCircuitBreakerError(userId, orderId, result);
+
+            throw new PaymentException(PaymentErrorCode.TOSS_SERVICE_UNAVAILABLE, e);
+
         } catch (RestClientResponseException e) {
-            handleRestClientError(orderId, e, userVerified, paymentCanceled, tossCanceled);
+
+            log.error("취소 중 외부 클라이언트 오류: orderId={}", orderId, e);
+
+            handleCancelRestClientError(userId, orderId, result, e, userVerified, pointCanceled, paymentCanceled,
+                tossCanceled);
+
             return null;
+
         } catch (Exception e) {
-            handleUnexpectedError(orderId, e, tossCanceled);
+
+            log.error("취소 중 예상치 못한 오류: orderId={}", orderId, e);
+
+            handleCancelUnexpectedError(userId, orderId, result, e, pointCanceled, paymentCanceled, tossCanceled);
+
             return null;
         }
     }
 
-    /**
-     * 자신의 결제 내역 확인
-     */
     public CursorResponse<PaymentSearchResult, Long> searchMyPayments(Long userId, PaymentSearchCommand command) {
 
         userClient.getUserById(userId);
@@ -168,69 +167,126 @@ public class PaymentFacade {
         return paymentService.searchMyPayments(userId, command);
     }
 
-    // ============================== private 헬퍼 메서드 ==============================
+    // ================================ 결제 승인 헬퍼 메서드 ================================
 
-    // 포인트 충전이 결제에 장애를 전파하지 않기 위함
-    private void publishPaymentCompletedEvent(Payment payment) {
-        try {
-            eventPublisher.publishEvent(new PaymentCompletedEvent(
-                payment.getUserId(),
-                payment.getAmount().getValue(),
-                "CHARGE",
-                payment.getOrderId().getValue()
-            ));
-        } catch (Exception e) {
-            log.info("포인트 충전 이벤트 발행 실패 - 수동 처리 필요: orderId = {}", payment.getOrderId());
+    private void handleConfirmCircuitBreakerError(PaymentConfirmCommand command) {
+        paymentService.markAsFailed(command.getOrderId(), command.getPaymentKey());
+    }
+
+    private void handleConfirmRestClientError(RestClientResponseException e, PaymentConfirmCommand command,
+        boolean userVerified, boolean tossPaymentSucceeded) {
+        paymentService.markAsFailed(command.getOrderId(), command.getPaymentKey());
+
+        if (!userVerified) {
+            throw new PaymentException(PaymentErrorCode.USER_NOT_FOUND, e);
+        } else if (!tossPaymentSucceeded) {
+            throw new PaymentException(PaymentErrorCode.TOSS_ERROR, e);
         }
     }
 
-    private void handleRestClientError(RestClientResponseException e, boolean userVerified,
-        boolean tossPaymentSucceeded) {
-        if (!userVerified) {
-            // 유저 검증 단계에서 실패 하였을 때
-            throw new PaymentException(PaymentErrorCode.USER_NOT_FOUND, e);
-        } else if (!tossPaymentSucceeded) {
-            // 토스 결제 단계에서 실패 하였을 때
-            throw new PaymentException(PaymentErrorCode.TOSS_ERROR, e);
+    private void handleConfirmUnknownError(PaymentConfirmCommand command, TossConfirmResult tossConfirmResult) {
+        paymentService.markAsFailed(command.getOrderId(), command.getPaymentKey());
+
+        if (tossConfirmResult != null) {
+            cancelToss(tossConfirmResult);
         }
     }
 
     private void cancelToss(TossConfirmResult tossConfirmResult) {
         try {
-            // 토스 결제 취소 요청
-            tossClient.cancelPayment(
-                tossConfirmResult.getPaymentKey(),
-                "시스템 오류로 인한 결제 취소"
-            );
+            tossClient.cancelPayment(tossConfirmResult.getPaymentKey(), "시스템 오류로 인한 결제 취소");
         } catch (Exception ex) {
-            // 토스 결제 취소마저 실패를 하였을 경우
-            log.error("토스 결제 취소 실패 - 수동 처리 필요.");
+            log.error("토스 결제 취소 실패 - 수동 처리 필요");
             throw new PaymentException(PaymentErrorCode.PAYMENT_PROCESSING_FAILED, ex);
         }
     }
 
-    // 결제 취소 중 예상치 못한 예외가 발생하였을 때
-    private void handleUnexpectedError(String orderId, Exception e, boolean tossCanceled) {
-        if (!tossCanceled) {
+    // ================================ 결제 취소 헬퍼 메서드 ================================
+
+    private void handleCancelCircuitBreakerError(Long userId, String orderId, PaymentCancelResult result) {
+        try {
+            log.info("취소 서킷 브레이커 보상 시작: orderId={}", orderId);
+
             paymentService.rollbackCancel(orderId);
-        } else {
-            throw new PaymentException(PaymentErrorCode.PAYMENT_CANCEL_FAILED, e);
+            pointClient.increasePoint(userId, result.getRefundAmount(), "RESTORE_POINT");
+
+            log.info("취소 서킷 브레이커 보상 완료: orderId={}", orderId);
+        } catch (Exception e) {
+            log.error("보상 실패 - 수동 처리 필요: orderId={}", orderId, e);
         }
     }
 
-    // 결제 취소 중 restClient 예외가 발생하였을 때
-    private void handleRestClientError(String orderId, RestClientResponseException e, boolean userVerified,
-        boolean paymentCanceled,
-        boolean tossCanceled) {
+    private void handleCancelRestClientError(Long userId, String orderId, PaymentCancelResult result,
+        RestClientResponseException e, boolean userVerified,
+        boolean pointCanceled, boolean paymentCanceled, boolean tossCanceled) {
+        try {
+            log.info("취소 RestClient 오류 보상 시작: orderId={}", orderId);
+
+            if (paymentCanceled && !tossCanceled) {
+                paymentService.rollbackCancel(orderId);
+            }
+
+            if (pointCanceled && (!paymentCanceled || !tossCanceled)) {
+                pointClient.increasePoint(
+                    userId,
+                    result.getRefundAmount(),
+                    "RESTORE_POINT"
+                );
+            }
+
+            log.info("취소 RestClient 오류 보상 완료: orderId={}", orderId);
+        } catch (Exception compensationEx) {
+            log.error("보상 실패 - 수동 처리 필요: orderId={}", orderId, compensationEx);
+        }
+
+        // 적절한 예외 던지기
         if (!userVerified) {
             throw new PaymentException(PaymentErrorCode.USER_NOT_FOUND, e);
         } else if (!paymentCanceled) {
             throw new PaymentException(PaymentErrorCode.PAYMENT_CANCEL_FAILED, e);
         } else if (!tossCanceled) {
-            paymentService.rollbackCancel(orderId);
             throw new PaymentException(PaymentErrorCode.TOSS_ERROR, e);
         } else {
             throw new PaymentException(PaymentErrorCode.PAYMENT_CANCEL_FAILED, e);
+        }
+    }
+
+    private void handleCancelUnexpectedError(Long userId, String orderId, PaymentCancelResult result,
+        Exception e, boolean pointCanceled,
+        boolean paymentCanceled, boolean tossCanceled) {
+        try {
+            log.info("취소 예상치 못한 오류 보상 시작: orderId={}", orderId);
+
+            if (paymentCanceled && !tossCanceled) {
+                paymentService.rollbackCancel(orderId);
+            }
+
+            if (pointCanceled && (!paymentCanceled || !tossCanceled)) {
+                pointClient.increasePoint(userId, result.getRefundAmount(), "RESTORE_POINT");
+            }
+
+            log.info("취소 예상치 못한 오류 보상 완료: orderId={}", orderId);
+        } catch (Exception compensationEx) {
+            log.error("보상 실패 - 수동 처리 필요: orderId={}", orderId, compensationEx);
+        }
+
+        throw new PaymentException(PaymentErrorCode.PAYMENT_CANCEL_FAILED, e);
+    }
+
+    // ================================ 공통 헬퍼 메서드 ================================
+
+    private void publishPaymentCompletedEvent(Payment payment) {
+        try {
+            eventPublisher.publishEvent(
+                new PaymentCompletedEvent(
+                payment.getUserId(),
+                payment.getAmount().getValue(),
+                "CHARGE",
+                payment.getOrderId().getValue()
+                )
+            );
+        } catch (Exception e) {
+            log.info("포인트 충전 이벤트 발행 실패 - 수동 처리 필요: orderId={}", payment.getOrderId());
         }
     }
 }

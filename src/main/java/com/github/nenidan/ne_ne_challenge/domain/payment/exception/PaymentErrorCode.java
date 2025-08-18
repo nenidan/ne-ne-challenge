@@ -17,6 +17,7 @@ public enum PaymentErrorCode implements ErrorCode {
     CONFIRM_FAILED("토스 결제를 실패하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     PAYMENT_PROCESSING_FAILED("결제 처리 중 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     EXTERNAL_SERVICE_ERROR("외부 서비스 연동 중 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+    TOSS_SERVICE_UNAVAILABLE("토스 페이먼츠 서비스가 일시적으로 사용할 수 없습니다. 잠시 후 다시 시도해주세요.", HttpStatus.SERVICE_UNAVAILABLE),
 
     // 4xx
     INVALID_PAYMENT_METHOD("유효하지 않은 결제 수단입니다.", HttpStatus.BAD_REQUEST),

@@ -64,6 +64,11 @@ dependencies {
 	// logs
 	implementation 'org.springframework.boot:spring-boot-starter-aop'
 
+	// Circuit Breaker
+	implementation 'io.github.resilience4j:resilience4j-spring-boot3:2.2.0'
+	implementation 'io.github.resilience4j:resilience4j-circuitbreaker:2.2.0'
+	implementation 'io.github.resilience4j:resilience4j-retry:2.2.0'
+
 	// querydsl
 	implementation 'io.github.openfeign.querydsl:querydsl-jpa:6.10.1'
 	annotationProcessor 'io.github.openfeign.querydsl:querydsl-apt:6.10.1:jpa'
