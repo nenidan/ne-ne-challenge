@@ -5,8 +5,6 @@ import java.util.List;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto.CreateProductCommand;
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto.ProductResult;
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto.ProductStatisticsResult;
@@ -52,7 +50,7 @@ public class ProductFacade {
     }
 
     public CursorResponse<ProductResult, Long> findAllProducts(
-        Long cursor,
+        List<Object> cursor,
         int size,
         String keyword
     ) {
@@ -66,12 +64,12 @@ public class ProductFacade {
             productResultList = productList.stream()
                 .map(ProductResult::fromEntity)
                 .toList();
+
+            return CursorResponse.of(productResultList, res -> res.getId().getValue(), size);
         } else {
             // 첫 페이지가 아닌 경우 -> DB 직접 조회
-            productResultList = productService.findAllProducts(cursor,size+1, keyword);
+            return productService.findAllProducts(cursor,size+1, keyword);
         }
-
-        return CursorResponse.of(productResultList, res -> res.getId().getValue(), size);
     }
 
     public void deleteProduct(Long productId) {

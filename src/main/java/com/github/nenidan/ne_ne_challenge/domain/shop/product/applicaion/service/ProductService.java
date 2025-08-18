@@ -15,6 +15,7 @@ import com.github.nenidan.ne_ne_challenge.domain.shop.product.domain.repository.
 import com.github.nenidan.ne_ne_challenge.domain.shop.review.domain.event.ReviewDeleteEvent;
 import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.event.StockDeleteEvent;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
+import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -96,15 +97,18 @@ public class ProductService {
      * @author kimyongjun0129
      */
     @Transactional(readOnly = true)
-    public List<ProductResult> findAllProducts(
-        Long cursor,
+    public CursorResponse<ProductResult, Long> findAllProducts(
+        List<Object> cursor,
         int size,
         String keyword
     ) {
-        return productRepository.findAllByCursor(cursor, size, keyword)
-            .stream()
+        List<Product> allByKeyword = productRepository.findAllByKeyword(cursor, size+1, keyword);
+
+        List<ProductResult> list = allByKeyword.stream()
             .map(ProductResult::fromEntity)
             .toList();
+
+        return CursorResponse.ofExclusive(list, r -> r.getId().getValue(), size);
     }
 
     /**
