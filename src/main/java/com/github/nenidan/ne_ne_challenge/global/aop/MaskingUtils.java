@@ -8,14 +8,17 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.github.nenidan.ne_ne_challenge.global.aop.annotation.Masked;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.regex.Pattern;
 
+@Component
+@RequiredArgsConstructor
 public final class MaskingUtils {
-    private static final ObjectMapper MAPPER = new ObjectMapper()
-            .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+    private final ObjectMapper loggingObjectMapper;
 
     private static final Set<String> SENSITIVE_KEYS = Set.of(
             "password", "pass", "pwd", "email", "phone", "ssn", "residentRegNo"
@@ -24,18 +27,18 @@ public final class MaskingUtils {
     private static final Pattern EMAIL = Pattern.compile("^([^@]{2})[^@]*(@.*)$");
     private static final Pattern PHONE = Pattern.compile("^(01\\d)(\\d{2,4})(\\d{4})$");
 
-    public static String toMaskedJson(Object obj) {
+    public String toMaskedJson(Object obj) {
         if (obj == null) return null;
-        JsonNode tree = MAPPER.valueToTree(obj);
-        JsonNode masked = maskNode(tree);
         try {
-            return MAPPER.writeValueAsString(masked);
+            JsonNode tree = loggingObjectMapper.valueToTree(obj);
+            JsonNode masked = maskNode(tree);
+            return loggingObjectMapper.writeValueAsString(masked);
         } catch (JsonProcessingException e) {
             return String.valueOf(obj);
         }
     }
 
-    private static JsonNode maskNode(JsonNode node) {
+    private JsonNode maskNode(JsonNode node) {
         if (node == null) return null;
         if (node.isObject()) {
             ObjectNode obj = (ObjectNode) node;
@@ -69,7 +72,7 @@ public final class MaskingUtils {
         return node;
     }
 
-    public static void maskAnnotatedFields(Object obj) {
+    public void maskAnnotatedFields(Object obj) {
         if (obj == null) return;
         for (Field f : obj.getClass().getDeclaredFields()) {
             if (f.isAnnotationPresent(Masked.class)) {
@@ -78,6 +81,4 @@ public final class MaskingUtils {
             }
         }
     }
-
-    private MaskingUtils() {}
 }

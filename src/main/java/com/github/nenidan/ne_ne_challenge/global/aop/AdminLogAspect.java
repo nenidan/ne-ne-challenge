@@ -29,10 +29,11 @@ import java.util.*;
 public class AdminLogAspect {
 
     private static final Logger AUDIT = LoggerFactory.getLogger("AUDIT");
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper loggingObjectMapper;
+    private final MaskingUtils maskingUtils;
 
     // 필요한 도메인 묶음
-    @Pointcut("execution(* com.github.nenidan.ne_ne_challenge.domain..application..*(..))")
+    @Pointcut("execution(* com.github.nenidan.ne_ne_challenge.domain..application..*(..))" + "&& !within(com.github.nenidan.ne_ne_challenge.domain.notification.application.service.NotificationRetryService)")
     private void domainServices() {}
 
     // 컨트롤러 레벨에서도 한 번 잡아 유저케이스의 시작과 끝을 명확히
@@ -68,8 +69,8 @@ public class AdminLogAspect {
             Long targetId = TargetIdExtractor.tryExtract(args, result);
 
             // JSON 페이로드 (민감정보 마스킹)
-            String paramsJson = MaskingUtils.toMaskedJson(args);
-            String resultJson = MaskingUtils.toMaskedJson(result);
+            String paramsJson = maskingUtils.toMaskedJson(args);
+            String resultJson = maskingUtils.toMaskedJson(result);
 
             Map<String, Object> event = new LinkedHashMap<>();
             event.put("ts", Instant.now().toEpochMilli());
@@ -92,7 +93,7 @@ public class AdminLogAspect {
             event.put("error", error);
 
             try {
-                AUDIT.info(objectMapper.writeValueAsString(event));
+                AUDIT.info(loggingObjectMapper.writeValueAsString(event));
             } catch (Exception e) {
                 log.warn("[AUDIT_WRITE_ERR] {}", e.toString());
             }
