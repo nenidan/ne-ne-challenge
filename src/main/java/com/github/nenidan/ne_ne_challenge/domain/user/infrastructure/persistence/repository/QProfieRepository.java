@@ -8,6 +8,7 @@ import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence
 import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.QAccountEntity;
 import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.QProfileEntity;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -21,9 +22,31 @@ public class QProfieRepository {
     QProfileEntity profile = QProfileEntity.profileEntity;
     QAccountEntity account = QAccountEntity.accountEntity;
 
+//    public List<ProfileEntity> findByKeyword(String cursor, String keyword, int limit) {
+//        BooleanExpression cursorCondition = cursor == null ? null : profile.nickname.goe(cursor);
+//        BooleanExpression keywordCondition = keyword == null ? null : profile.nickname.startsWith(keyword);
+//
+//        return queryFactory
+//                .selectFrom(profile)
+//                .join(profile.account, account).fetchJoin()
+//                .where(
+//                        cursorCondition,
+//                        keywordCondition
+//                )
+//                .orderBy(profile.nickname.asc())
+//                .limit(limit)
+//                .fetch();
+//    }
+
     public List<ProfileEntity> findByKeyword(String cursor, String keyword, int limit) {
         BooleanExpression cursorCondition = cursor == null ? null : profile.nickname.goe(cursor);
-        BooleanExpression keywordCondition = keyword == null ? null : profile.nickname.startsWith(keyword);
+
+        BooleanExpression keywordCondition = null;
+        if (keyword != null) {
+            keywordCondition = profile.nickname.contains(keyword)
+                    .or(profile.account.email.contains(keyword))
+                    .or(profile.bio.contains(keyword));
+        }
 
         return queryFactory
                 .selectFrom(profile)
@@ -32,6 +55,28 @@ public class QProfieRepository {
                         cursorCondition,
                         keywordCondition
                 )
+                .orderBy(profile.nickname.asc())
+                .limit(limit)
+                .fetch();
+    }
+
+    // 성능 비교용
+
+    public List<ProfileEntity> findByKeyword2(String cursor, String keyword, int limit) {
+        BooleanExpression cursorCondition = cursor == null ? null : profile.nickname.goe(cursor);
+
+        BooleanExpression keywordCondition = null;
+        if (keyword != null && !keyword.isEmpty()) {
+            keywordCondition = Expressions.booleanTemplate(
+                    "MATCH(nickname, bio) AGAINST ({0} IN BOOLEAN MODE)",
+                    "+" + keyword + "*"
+            );
+        }
+
+        return queryFactory
+                .selectFrom(profile)
+                .join(profile.account, account).fetchJoin()
+                .where(cursorCondition, keywordCondition)
                 .orderBy(profile.nickname.asc())
                 .limit(limit)
                 .fetch();

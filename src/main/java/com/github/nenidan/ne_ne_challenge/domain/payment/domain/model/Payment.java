@@ -2,23 +2,36 @@ package com.github.nenidan.ne_ne_challenge.domain.payment.domain.model;
 
 import java.time.LocalDateTime;
 
+import com.github.nenidan.ne_ne_challenge.domain.payment.domain.model.vo.Money;
+import com.github.nenidan.ne_ne_challenge.domain.payment.domain.model.vo.OrderId;
+import com.github.nenidan.ne_ne_challenge.domain.payment.domain.model.vo.OrderName;
+import com.github.nenidan.ne_ne_challenge.domain.payment.domain.model.vo.PaymentKey;
 import com.github.nenidan.ne_ne_challenge.domain.payment.domain.type.PaymentStatus;
 import com.github.nenidan.ne_ne_challenge.domain.payment.exception.PaymentErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.payment.exception.PaymentException;
 import com.github.nenidan.ne_ne_challenge.global.entity.BaseEntity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Table(
+    uniqueConstraints = {
+        @UniqueConstraint(name = "uk_payment_order_id", columnNames = "order_id"),
+        @UniqueConstraint(name = "uk_payment_payment_key", columnNames = "payment_key")
+    }
+)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Payment extends BaseEntity {
@@ -30,17 +43,20 @@ public class Payment extends BaseEntity {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(nullable = false)
-    private int amount;
+    @Embedded
+    private Money amount;
 
     @Column(name = "payment_method")
     private String paymentMethod;
 
-    @Column(name = "payment_key", unique = true)
-    private String paymentKey;
+    @Embedded
+    private PaymentKey paymentKey;
 
-    @Column(name = "order_id", nullable = false, unique = true)
-    private String orderId;
+    @Embedded
+    private OrderId orderId;
+
+    @Embedded
+    private OrderName orderName;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -61,54 +77,58 @@ public class Payment extends BaseEntity {
     @Column(name = "canceled_at")
     private LocalDateTime canceledAt;
 
-    private Payment(Long userId, String paymentKey, String orderId, String status, String method,
-        LocalDateTime requestedAt, LocalDateTime approvedAt, int totalAmount) {
+    private Payment(Long userId, OrderId orderId, Money amount, OrderName orderName) {
         this.userId = userId;
-        this.paymentKey = paymentKey;
         this.orderId = orderId;
-        this.status = PaymentStatus.of(status);
-        this.paymentMethod = method;
-        this.requestedAt = requestedAt;
-        this.approvedAt = approvedAt;
-        this.amount = totalAmount;
+        this.amount = amount;
+        this.orderName = orderName;
+        this.status = PaymentStatus.PENDING;
+        this.requestedAt = LocalDateTime.now();
     }
 
-    public static Payment createPaymentFromConfirm(
-        Long userId,
-        String paymentKey,
-        String orderId,
-        String status,
-        String method,
-        LocalDateTime requestedAt,
-        LocalDateTime approvedAt,
-        int totalAmount
-    ) {
-        return new Payment(
-            userId,
-            paymentKey,
-            orderId,
-            status,
-            method,
-            requestedAt,
-            approvedAt,
-            totalAmount
-        );
+    // ====================== 결제 준비 관련 ======================
+
+    public static Payment createPreparePayment(Long userId, Money amount) {
+        OrderId orderId = OrderId.generate();
+        OrderName orderName = OrderName.forPointCharge(amount);
+        return new Payment(userId, orderId, amount, orderName);
     }
 
-    // ================= 비즈니스 로직 =================
+    // ====================== 결제 승인 관련 ======================
 
-    public void fail(String status, LocalDateTime canceledAt) {
-        PaymentStatus paymentStatus = PaymentStatus.of(status);
-        if (paymentStatus != PaymentStatus.CANCELED) {
-            throw new PaymentException(PaymentErrorCode.ALREADY_PROCESSED_PAYMENT);
+    public void markAsSuccess(String paymentKey, String status, String method, LocalDateTime approvedAt) {
+
+        if (this.status != PaymentStatus.PENDING) {
+            throw new PaymentException(PaymentErrorCode.INVALID_PAYMENT_STATUS);
         }
-        this.status = PaymentStatus.FAIL;
-        this.failedAt = canceledAt;
+
+        PaymentStatus paymentStatus = PaymentStatus.of(status);
+
+        this.paymentKey = PaymentKey.of(paymentKey);
+        this.status = paymentStatus;
+        this.paymentMethod = method;
+        this.approvedAt = approvedAt;
     }
 
-    // ================= 조회 메서드 =================
+    public void markAsFailed(String paymentKey) {
+        this.paymentKey = PaymentKey.of(paymentKey);
+        this.failedAt = LocalDateTime.now();
+        this.status = PaymentStatus.FAIL;
+    }
 
-    public void validateCancelable() {
+    // ====================== 결제 취소 관련 ======================
+
+    public void cancel(String cancelReason) {
+        this.cancelReason = cancelReason;
+        this.canceledAt = LocalDateTime.now();
+        this.status = PaymentStatus.CANCELED;
+    }
+
+    public void validateCancelable(Long userId) {
+        if (this.userId != userId) {
+            throw new PaymentException(PaymentErrorCode.PAYMENT_ACCESS_DENIED);
+        }
+
         // 상태 확인
         if (this.status != PaymentStatus.DONE) {
             throw new PaymentException(PaymentErrorCode.CANNOT_CANCEL_PAYMENT);
@@ -120,12 +140,9 @@ public class Payment extends BaseEntity {
         }
     }
 
-    // ================= 유틸리티 메서드 =================
-
-    public void cancel(String cancelReason, LocalDateTime canceledAt, String status) {
-        this.cancelReason = cancelReason;
-        this.canceledAt = canceledAt;
-        this.status = PaymentStatus.of(status);
+    public void rollbackCancel() {
+        this.status = PaymentStatus.DONE;
+        this.cancelReason = null;
+        this.canceledAt = null;
     }
-
 }

@@ -1,4 +1,4 @@
-package com.github.nenidan.ne_ne_challenge.domain.point.domain;
+package com.github.nenidan.ne_ne_challenge.domain.point.domain.model;
 
 import com.github.nenidan.ne_ne_challenge.domain.point.exception.PointErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.point.exception.PointException;
@@ -22,7 +22,7 @@ public class PointWallet extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
+    @Column(name = "user_id", nullable = false, unique = true)
     private Long userId;
 
     private int balance;
@@ -46,9 +46,12 @@ public class PointWallet extends BaseEntity {
     }
 
     public void decrease(int amount) {
+        this.balance -= amount;
+    }
+
+    public void validateSufficientBalance(int amount) {
         if (this.balance < amount) {
             throw new PointException(PointErrorCode.INSUFFICIENT_POINT_BALANCE);
         }
-        this.balance -= amount;
     }
 }

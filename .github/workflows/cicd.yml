@@ -47,7 +47,8 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd /home/ubuntu/my-app
-
+            
+            echo "SPRING_PROFILES_ACTIVE=prof" >> .env
             echo "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" > .env
             echo "DB_URL=${{ secrets.DB_URL }}" >> .env
             echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
@@ -63,11 +64,11 @@ jobs:
             echo "KAKAO_REDIRECT_URI=localhost:8080/oauth/kakao" >> .env
             echo "NAVER_CLIENT_ID=PkWF00P7EtlCjh_wO57B" >> .env
             echo "NAVER_CLIENT_SECRET=6G76rrm2do" >> .env
-
+            echo "SPRING_ELASTICSEARCH_URIS=host.docker.internal:9200" >> .env
+            
             docker rm -f my-app || true
             docker rm -f redis || true
-            docker rm -f mysql || true
-
+            
             /usr/local/bin/docker-compose pull
             /usr/local/bin/docker-compose down
             /usr/local/bin/docker-compose up -d --remove-orphans

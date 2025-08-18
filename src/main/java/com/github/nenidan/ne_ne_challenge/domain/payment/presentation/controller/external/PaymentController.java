@@ -15,12 +15,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.PaymentFacade;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentCancelResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentConfirmResult;
+import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentPrepareResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentSearchResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.request.PaymentCancelRequest;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.request.PaymentConfirmRequest;
+import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.request.PaymentPrepareRequest;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.request.PaymentSearchRequest;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.response.PaymentCancelResponse;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.response.PaymentConfirmResponse;
+import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.response.PaymentPrepareResponse;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.response.PaymentSearchResponse;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.mapper.PaymentPresentationMapper;
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
@@ -39,9 +42,40 @@ public class PaymentController {
 
     private final PaymentFacade paymentFacade;
 
+    /**
+     * 토스 결제 요청 전, orderId와 amount를 데이터베이스에 저장하기 위한 API
+     * @param auth 인증된 사용자 정보
+     * @param request amount(요청 가격)
+     * @return amount(요청 가격), orderId(UUID로 생성된 고유 ID), orderName(주문한 상품 이름 예: 포인트 10,000원)
+     *
+     * 토스에서는 결제 요청 전 orderId와 amount를 세션이나 데이터베이스에 저장하는 것을 적극 권장한다.
+     * @see <a href="https://docs.tosspayments.com/guides/v2/get-started/payment-flow#%EB%8D%94-%EC%95%8C%EC%95%84%EB%B3%B4%EA%B8%B0">토스페이먼츠 가이드</a>
+     */
+    @PostMapping("/payments/prepare")
+    public ResponseEntity<ApiResponse<PaymentPrepareResponse>> preparePayment(
+        @AuthenticationPrincipal Auth auth,
+        @Valid @RequestBody PaymentPrepareRequest request
+    ) {
+
+        PaymentPrepareResult result = paymentFacade.preparePayment(auth.getId(),
+            PaymentPresentationMapper.toPaymentPrepareCommand(request));
+
+        return ApiResponse.success(
+            HttpStatus.CREATED,
+            "결제 준비가 완료되었습니다.",
+            PaymentPresentationMapper.toPaymentPrepareResponse(result)
+        );
+    }
+
+    /**
+     * 토스페이 결제 승인 및 포인트 충전 API
+     * @param request 토스페이먼츠에서 제공한 결제 정보 (paymentKey, orderId, amount)
+     * @param auth 인증된 사용자 정보
+     * @return 결제 승인 결과 (orderId, amount, method, status, approvedAt)
+     */
     @PostMapping("/payments/confirm")
     public ResponseEntity<ApiResponse<PaymentConfirmResponse>> confirmAndChargePoint(
-        @RequestBody PaymentConfirmRequest request,
+        @Valid @RequestBody PaymentConfirmRequest request,
         @AuthenticationPrincipal Auth auth) {
 
         PaymentConfirmResult paymentConfirmResult = paymentFacade.confirmAndChargePoint(
@@ -51,10 +85,18 @@ public class PaymentController {
 
         return ApiResponse.success(
             HttpStatus.OK,
-            "포인트 충전이 완료되었습니다.",
+            "결제가 완료되었습니다. 포인트는 1~2분 이내로 충전될 예정입니다.",
             PaymentPresentationMapper.toPaymentConfirmResponse(paymentConfirmResult));
     }
 
+    /**
+     * 결제 취소 API
+     * 사용자는 자신이 결제한 포인트 중에서, 7일 이내의 사용되지 않은 포인트는 환불이 가능하다.
+     * @param auth 인증된 사용자 정보
+     * @param orderId 결제할 때 사용한 orderId
+     * @param request 환불 사유(예: 단순 변심)
+     * @return 결제 취소 결과
+     */
     @PostMapping("/payments/{orderId}/cancel")
     public ResponseEntity<ApiResponse<PaymentCancelResponse>> cancelPayment(
         @AuthenticationPrincipal Auth auth,
@@ -71,6 +113,12 @@ public class PaymentController {
         );
     }
 
+    /**
+     * 나의 결제 내역 조회 API
+     * @param auth 인증된 사용자 정보
+     * @param request 결제 내역 검색 조건(cursor, size, status, startDate, endDate)
+     * @return 커서 기반의 자신의 결제 내역
+     */
     @GetMapping("/payments")
     public ResponseEntity<ApiResponse<CursorResponse<PaymentSearchResponse, Long>>> searchMyPayments(
         @AuthenticationPrincipal Auth auth,

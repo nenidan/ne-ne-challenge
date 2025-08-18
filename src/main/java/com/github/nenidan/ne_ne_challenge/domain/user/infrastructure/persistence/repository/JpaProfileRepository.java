@@ -49,4 +49,25 @@ public interface JpaProfileRepository extends JpaRepository<ProfileEntity, Long>
             @Param("keyword") String keyword,
             @Param("limit") int limit
     );
+
+    @Query(value = """
+    SELECT p.*
+    FROM profile p
+    INNER JOIN account a ON p.id = a.id
+    WHERE (:cursor IS NULL OR p.nickname >= :cursor)
+      AND (
+        :keyword IS NULL
+        OR (
+            MATCH(p.nickname, p.bio) AGAINST (CONCAT('+', :keyword, '*') IN BOOLEAN MODE)
+            OR MATCH(a.email)AGAINST (CONCAT('+', :keyword, '*') IN BOOLEAN MODE)
+        )
+      )
+    ORDER BY p.nickname ASC
+    LIMIT :limit
+    """, nativeQuery = true)
+    List<ProfileEntity> searchProfilesWithFulltext(
+            @Param("cursor") String cursor,
+            @Param("keyword") String keyword,
+            @Param("limit") int limit
+    );
 }

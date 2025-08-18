@@ -3,10 +3,13 @@ package com.github.nenidan.ne_ne_challenge.domain.user.domain.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.github.nenidan.ne_ne_challenge.domain.user.application.client.oauth.dto.OAuthUserInfo;
+import com.github.nenidan.ne_ne_challenge.domain.user.domain.event.UserDeletedEvent;
+import com.github.nenidan.ne_ne_challenge.domain.user.domain.event.UserSavedEvent;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.exception.UserErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.exception.UserException;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.model.Account;
@@ -22,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserService {
 
+    private final ApplicationEventPublisher eventPublisher;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -39,7 +43,10 @@ public class UserService {
             user.updatePassword(passwordEncoder.encode(user.getAccount().getPassword()));
         }
 
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        eventPublisher.publishEvent(new UserSavedEvent(savedUser));
+
+        return savedUser;
     }
 
     public User login(String email, String password) {
@@ -73,6 +80,7 @@ public class UserService {
         );
 
         user.updateProfile(profile);
+        eventPublisher.publishEvent(new UserSavedEvent(user));
 
         return userRepository.update(user);
     }
@@ -112,6 +120,7 @@ public class UserService {
         findUser.delete();
 
         userRepository.delete(findUser);
+        eventPublisher.publishEvent(new UserDeletedEvent(id));
     }
 
     public void verifyPassword(Long id, String password) {
@@ -140,6 +149,7 @@ public class UserService {
         Role newRole = Role.of(role);
 
         findUser.updateRole(newRole);
+        eventPublisher.publishEvent(new UserSavedEvent(findUser));
 
         return userRepository.update(findUser);
     }

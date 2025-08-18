@@ -19,6 +19,8 @@ public class ChallengeSearchCond {
 
     private ChallengeStatus status;
 
+    private LocalDate startAt;
+
     private LocalDate dueAt;
 
     private ChallengeCategory category;
