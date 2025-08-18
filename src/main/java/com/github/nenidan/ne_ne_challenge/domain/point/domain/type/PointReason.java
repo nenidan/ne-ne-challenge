@@ -16,6 +16,7 @@ public enum PointReason {
     CHALLENGE_REWARD("챌린지 보상"),
     PRODUCT_REFUND("상품 취소"),
     CHALLENGE_REFUND("챌린지 참가비 환불"),
+    RESTORE_POINT("포인트 복원"),
 
     // 포인트 차감
     CHARGE_CANCEL("포인트 결제 취소"),
