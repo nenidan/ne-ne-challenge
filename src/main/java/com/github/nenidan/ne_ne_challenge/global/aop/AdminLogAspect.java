@@ -8,6 +8,7 @@ import java.util.Set;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.nenidan.ne_ne_challenge.domain.admin.domain.type.DomainType;
 import com.github.nenidan.ne_ne_challenge.global.aop.annotation.AuditIgnore;
+import com.github.nenidan.ne_ne_challenge.global.security.auth.Auth;
 import com.github.nenidan.ne_ne_challenge.global.trace.TraceContext;
 import com.github.nenidan.ne_ne_challenge.global.trace.TraceContextHolder;
 import lombok.RequiredArgsConstructor;
@@ -82,6 +83,17 @@ public class AdminLogAspect {
 
             Long targetId = TargetIdExtractor.tryExtract(args, result);
 
+            // userId 보강 로직 추가
+            Long userId = (ctx != null ? ctx.getUserId() : null);
+            if (userId == null ) {
+                for (Object arg : args) {
+                    if (arg instanceof Auth auth) {
+                        userId = auth.getId();
+                        break;
+                    }
+                }
+            }
+
             // JSON 페이로드 (민감정보 마스킹)
             String paramsJson = maskingUtils.toMaskedJson(args);
             String resultJson = maskingUtils.toMaskedJson(result);
@@ -92,11 +104,11 @@ public class AdminLogAspect {
             event.put("env", System.getProperty("spring.profiles.active", "local"));
             if (ctx != null) {
                 event.put("traceId", ctx.getTraceId());
-                event.put("userId", ctx.getUserId());
                 event.put("ip", ctx.getIp());
                 event.put("uri", ctx.getUri());
                 event.put("httpMethod", ctx.getHttpMethod());
             }
+            event.put("userId", userId);
             event.put("domain", domain != null ? domain.name() : null);
             event.put("classMethod", fullMethod);
             event.put("targetId", targetId);
