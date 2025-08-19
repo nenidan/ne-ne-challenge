@@ -6,6 +6,7 @@ import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.repository.InnerChallengeQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ChallengeStatisticsService {
 
     private final InnerChallengeQueryRepository innerChallengeRepository;

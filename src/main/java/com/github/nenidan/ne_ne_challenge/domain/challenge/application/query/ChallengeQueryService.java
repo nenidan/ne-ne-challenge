@@ -27,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ChallengeQueryService {
 
     private final ChallengeRepository challengeRepository;
@@ -72,7 +73,6 @@ public class ChallengeQueryService {
         return new ChallengeSuccessRateResponse((int) ((successfulDays * 100) / totalPeriod));
     }
 
-    @Transactional(readOnly = true)
     public CursorResponse<Long, Long> findParticipants(Long id, Long cursor, int size) {
         Challenge challenge = challengeRepository.findById(id)
             .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND));
@@ -88,5 +88,4 @@ public class ChallengeQueryService {
 
         return new CursorResponse<>(result, nextCursor, hasNext);
     }
-
 }

@@ -1,16 +1,5 @@
 package com.github.nenidan.ne_ne_challenge.domain.challenge.application.command.service;
 
-import static com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus.*;
-
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.command.dto.CreateChallengeCommand;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.command.dto.CreateHistoryCommand;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.command.dto.UpdateChallengeInfoCommand;
@@ -24,8 +13,18 @@ import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.repository.Cha
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.repository.HistoryRepository;
 import com.github.nenidan.ne_ne_challenge.global.client.point.PointClient;
 import com.github.nenidan.ne_ne_challenge.global.client.user.UserClient;
-
 import lombok.RequiredArgsConstructor;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus.ONGOING;
+import static com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus.READY;
 
 @Service
 @RequiredArgsConstructor
@@ -33,13 +32,16 @@ import lombok.RequiredArgsConstructor;
 public class ChallengeCommandService {
 
     private static final ChallengeMapper challengeMapper = ChallengeMapper.INSTANCE;
-    private final UserClient userClient;
-    private final PointClient pointClient;
-    private final RedissonClient redissonClient;
-    private final ChallengeRepository challengeRepository;
-    private final HistoryRepository historyRepository;
 
-    private final SelectWinnerService selectWinnerService;
+    private final UserClient userClient;
+
+    private final PointClient pointClient;
+
+    private final RedissonClient redissonClient;
+
+    private final ChallengeRepository challengeRepository;
+
+    private final HistoryRepository historyRepository;
 
     public Long createChallenge(Long requesterId, CreateChallengeCommand command) {
         verifyUserExists(requesterId);
@@ -84,7 +86,7 @@ public class ChallengeCommandService {
                     lock.unlock();
                 }
             }
-        }catch (InterruptedException e){
+        } catch (InterruptedException e) {
             System.out.println("e.getMessage() = " + e.getMessage());
             throw new ChallengeException(ChallengeErrorCode.SERVER_ERROR);
         }
@@ -94,7 +96,7 @@ public class ChallengeCommandService {
         Challenge challenge = getChallengeOrThrow(challengeId);
 
         challenge.quit(requesterId);
-        if(challenge.getStatus() == ChallengeStatus.WAITING) {
+        if (challenge.getStatus() == ChallengeStatus.WAITING) {
             pointClient.refundPoints(List.of(requesterId), challenge.getParticipationFee());
         }
     }
@@ -103,18 +105,12 @@ public class ChallengeCommandService {
         verifyUserExists(userId);
         Challenge challenge = getChallengeOrThrow(challengeId);
 
-        if(newStatus == READY) {
+        if (newStatus == READY) {
             challenge.ready();
-        }
-        else if(newStatus == ONGOING) {
+        } else if (newStatus == ONGOING) {
             challenge.start();
-        } else if(newStatus == FINISHED) {
-            challenge.finish();
-            // Todo 비동기 처리로 변환 가능
-            List<Long> winners = selectWinnerService.getWinners(challenge);
-            if(!winners.isEmpty()) {
-                pointClient.refundPoints(winners, challenge.getTotalFee() / winners.size());
-            }
+        } else {
+            throw new ChallengeException(ChallengeErrorCode.INVALID_STATUS_TRANSITION);
         }
     }
 
