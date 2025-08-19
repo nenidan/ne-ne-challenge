@@ -31,7 +31,7 @@ public class DashBoardController {
     //통계 관리
     @GetMapping("/admin/statistics/{statisticsType}")
     public ResponseEntity<ApiResponse<StatisticsResponse>> getStatistics(@PathVariable String statisticsType, @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime monthPeriod) {
-        //? extends StatisticsResponse 직렬화 이슈 해결 후 바꾸기
+
         StatisticsResponse response;
         DomainType type;
         try {

@@ -6,7 +6,9 @@ import com.github.nenidan.ne_ne_challenge.domain.admin.application.client.PointC
 import com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.response.stastics.PaymentStatisticsResponse;
 import com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.response.stastics.PointStatisticsResponse;
 import com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.response.stastics.UserStatisticsResponse;
+import com.github.nenidan.ne_ne_challenge.domain.admin.domain.repository.GetStatisticsRepository;
 import com.github.nenidan.ne_ne_challenge.domain.admin.domain.repository.StatisticsRedisRepository;
+import com.github.nenidan.ne_ne_challenge.domain.admin.domain.type.DomainType;
 import com.github.nenidan.ne_ne_challenge.domain.admin.infrastructure.out.ChallengeDto;
 import com.github.nenidan.ne_ne_challenge.domain.admin.infrastructure.out.ChallengeUserDto;
 import com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.response.stastics.ChallengeStatisticsResponse;
@@ -32,65 +34,69 @@ public class StatisticsService {
 
     private final StatisticsRedisRepository redisRepository;
     private final RestClient restClient;
+    private final GetStatisticsRepository getStatisticsRepository;
 
     @Value("${external.base-url}")
     private String BASE_URL;
 
     public ChallengeStatisticsResponse getChallengeStatistics(LocalDateTime monthPeriod) {
+        YearMonth ym = YearMonth.from(monthPeriod);
+        String key = "statistics:challenge:" + ym;
 
-        String key = "statistics:challenge:" + YearMonth.from(monthPeriod);
         ChallengeStatisticsResponse cached = redisRepository.get(key, ChallengeStatisticsResponse.class);
-        if(cached==null) {
-            cached = restClient.post()
-                    .uri(BASE_URL+"/batch/statistics/challenge?monthPeriod=" + monthPeriod)
-                    .retrieve()
-                    .body(ChallengeStatisticsResponse.class);
-        }
-        return cached;
+        if(cached!=null) {return cached;}
+
+            var dto = getStatisticsRepository.findMonthlyOne(DomainType.CHALLENGE, ym)
+                    .map(ChallengeStatisticsResponse::fromModel)
+                    .orElse(null);
+            return dto;
     }
 
 
     public PaymentStatisticsResponse getPaymentStatistics(LocalDateTime monthPeriod) {
 
-        String key = "statistics:payment:" + YearMonth.from(monthPeriod);
-        PaymentStatisticsResponse cached = redisRepository.get(key, PaymentStatisticsResponse.class);
+        YearMonth ym = YearMonth.from(monthPeriod);
+        String key = "statistics:payment:" + ym;
 
-        if(cached==null) {
-            cached = restClient.post()
-                    .uri(BASE_URL+"/batch/statistics/payment?monthPeriod=" + monthPeriod)
-                    .retrieve()
-                    .body(PaymentStatisticsResponse.class);
-        }
-        return cached;
+        PaymentStatisticsResponse cached = redisRepository.get(key, PaymentStatisticsResponse.class);
+        if(cached!=null) {return cached;}
+
+        var dto = getStatisticsRepository.findMonthlyOne(DomainType.PAYMENT, ym)
+                .map(PaymentStatisticsResponse::fromModel)
+                .orElse(null);
+
+        return dto;
     }
 
     public PointStatisticsResponse getPointStatistics(LocalDateTime monthPeriod) {
 
-        String key = "statistics:point:" + YearMonth.from(monthPeriod);
-        PointStatisticsResponse cached = redisRepository.get(key, PointStatisticsResponse.class);
+        YearMonth ym = YearMonth.from(monthPeriod);
+        String key = "statistics:point:" + ym;
 
-        if(cached==null) {
-            cached = restClient.post()
-                    .uri(BASE_URL+"/batch/statistics/point?monthPeriod=" + monthPeriod)
-                    .retrieve()
-                    .body(PointStatisticsResponse.class);
-        }
-        return cached;
+        PointStatisticsResponse cached = redisRepository.get(key, PointStatisticsResponse.class);
+        if(cached!=null) {return cached;}
+
+        var dto = getStatisticsRepository.findMonthlyOne(DomainType.POINT, ym)
+                .map(PointStatisticsResponse::fromModel)
+                .orElse(null);
+
+        return dto;
 
     }
 
     public UserStatisticsResponse getUserStatistics(LocalDateTime monthPeriod) {
 
-        String key = "statistics:user:" + YearMonth.from(monthPeriod);
+        YearMonth ym = YearMonth.from(monthPeriod);
+        String key = "statistics:user:" + ym;
+
         UserStatisticsResponse cached = redisRepository.get(key, UserStatisticsResponse.class);
+        if(cached!=null) {return cached;}
 
-        if(cached==null) {
-            cached = restClient.post()
-                    .uri(BASE_URL+"/batch/statistics/user?monthPeriod=" + monthPeriod)
-                    .retrieve()
-                    .body(UserStatisticsResponse.class);
-        }
+        var dto = getStatisticsRepository.findMonthlyOne(DomainType.USER, ym)
+                .map(UserStatisticsResponse::fromModel)
+                .orElse(null);
 
-        return cached;
+        return dto;
+
     }
 }
