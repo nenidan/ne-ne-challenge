@@ -26,9 +26,5 @@ public class ProductDocument {
 
     private Integer productPrice;
 
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
-
     private LocalDateTime deletedAt;
 }

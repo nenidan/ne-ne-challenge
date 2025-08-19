@@ -11,12 +11,14 @@ public class Stock {
 
     private final StockId stockId;
     private final ProductId productId;
+    private Integer reservedQuantity;
     private Integer quantity;
     private LocalDateTime deletedAt;
 
-    public Stock(StockId stockId, ProductId productId, Integer quantity, LocalDateTime deletedAt) {
+    public Stock(StockId stockId, ProductId productId, Integer reservedQuantity, Integer quantity, LocalDateTime deletedAt) {
         this.stockId = stockId;
         this.productId = productId;
+        this.reservedQuantity = reservedQuantity;
         this.quantity = quantity;
         this.deletedAt = deletedAt;
     }
@@ -29,6 +31,8 @@ public class Stock {
         return productId;
     }
 
+    public int getReservedQuantity() {return reservedQuantity;}
+
     public int getQuantity() {
         return quantity;
     }
@@ -37,6 +41,7 @@ public class Stock {
         return deletedAt;
     }
 
+    // 관리자 전용 : 입고
     public void inbound(int quantity) {
         if(quantity <= 0){
             throw new StockException(StockErrorCode.INVALID_INBOUND_QUANTITY);
@@ -60,23 +65,47 @@ public class Stock {
         if(quantity <= 0){
             throw new StockException(StockErrorCode.INVALID_DECREASE_QUANTITY);
         }
-        if(this.quantity < quantity){
+        if(this.reservedQuantity < quantity){
             throw new StockException(StockErrorCode.NOT_ENOUGH_OUTBOUND_QUANTITY);
         }
-        this.quantity -= quantity;
+        this.reservedQuantity -= quantity;
     }
 
-    // 재고 복구
+    // 소비자 전용 : 재고 출고 시, 예비 재고 저장
+    public void decreaseReservedQuantity(Integer quantity) {
+        if(quantity <= 0){
+            throw new StockException(StockErrorCode.INVALID_DECREASE_QUANTITY);
+        }
+        if(this.quantity < quantity){
+            throw new StockException(StockErrorCode.NOT_ENOUGH_DECREASE_QUANTITY);
+        }
+        this.quantity -= quantity;
+        this.reservedQuantity += quantity;
+    }
+
+    // 소비자 전용 : 재고 복구 (확정)
     public void restoreQuantity(Integer quantity) {
         if(quantity <= 0){
             throw new StockException(StockErrorCode.INVALID_RESTORE_QUANTITY);
         }
+        this.reservedQuantity -= quantity;
         this.quantity += quantity;
     }
 
-    // 재고 복구 취소 (보상 트랜잭션)
-    public void convertRestoreQuantity(Integer quantity) {
-        this.quantity -= quantity;
+    // 소비자 전용 : 예비 재고 복구
+    public void restoreReservedQuantity(Integer quantity) {
+        if(quantity <= 0){
+            throw new StockException(StockErrorCode.INVALID_RESTORE_QUANTITY);
+        }
+        this.reservedQuantity += quantity;
+    }
+
+    // 소비자 전용 : 예비 재고 복구 취소
+    public void canceledRestoreReservedQuantity(Integer quantity) {
+        if(quantity <= 0){
+            throw new StockException(StockErrorCode.INVALID_RESTORE_QUANTITY);
+        }
+        this.reservedQuantity -= quantity;
     }
 
     public void checkDeletableOnlyIfStockEmpty() {

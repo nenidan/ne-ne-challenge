@@ -12,9 +12,7 @@ import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto.Upd
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.service.ProductCacheService;
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.service.ProductService;
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.domain.model.Product;
-import com.github.nenidan.ne_ne_challenge.domain.shop.review.domain.event.ReviewDeleteEvent;
 import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.event.StockDeleteEvent;
-import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.event.StockRegisteredEvent;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 
@@ -35,9 +33,6 @@ public class ProductFacade {
 
         // 상품 캐시 업데이트
         productCacheService.putMainPageCache();
-
-        // 재고 등록 이벤트 발행
-        applicationEventPublisher.publishEvent(new StockRegisteredEvent(saveProduct.getId()));
         return saveProduct;
     }
 
@@ -77,7 +72,6 @@ public class ProductFacade {
 
         // 상품이 삭제될 때, 상품과 관련된 재고와 리뷰도 삭제하기 위해 이벤트 발행
         applicationEventPublisher.publishEvent(new StockDeleteEvent(new ProductId(productId)));
-        applicationEventPublisher.publishEvent(new ReviewDeleteEvent(new ProductId(productId)));
     }
 
     public List<ProductStatisticsResult> getAllProducts() {

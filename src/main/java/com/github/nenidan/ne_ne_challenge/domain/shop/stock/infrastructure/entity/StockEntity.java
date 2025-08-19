@@ -27,11 +27,15 @@ public class StockEntity extends BaseEntity {
     private Long productId;
 
     @Column(nullable = false)
+    private Integer reservedQuantity;
+
+    @Column(nullable = false)
     private Integer quantity;
 
-    public StockEntity(Long id, Long productId, Integer quantity, LocalDateTime deletedAt) {
+    public StockEntity(Long id, Long productId, Integer reservedQuantity, Integer quantity, LocalDateTime deletedAt) {
         this.id = id;
         this.productId = productId;
+        this.reservedQuantity = reservedQuantity;
         this.quantity = quantity;
         this.deletedAt = deletedAt;
     }
