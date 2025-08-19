@@ -7,8 +7,6 @@ services:
     depends_on:
       redis:
         condition: service_healthy
-      elasticsearch:
-        condition: service_healthy
     env_file:
       - .env
     environment:
@@ -26,11 +24,13 @@ services:
       KAKAO_REDIRECT_URI: ${KAKAO_REDIRECT_URI}
       NAVER_CLIENT_ID: ${NAVER_CLIENT_ID}
       NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET}
+      # ES 연결은 외부 실행 컨테이너 기준 (별도 compose에서 관리)
       SPRING_ELASTICSEARCH_URIS: http://elasticsearch:9200
     volumes:
       - ./firebase-key.json:/app/firebase/firebase-key.json
     networks:
       - app-network
+      - search   # 외부 elasticsearch와 연결할 네트워크 (external)
 
   redis:
     image: redis
@@ -53,57 +53,15 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin  # 기본 Grafana 비밀번호 설정
+      - GF_SECURITY_ADMIN_PASSWORD=admin
     volumes:
       - grafana_data:/var/lib/grafana
     networks:
       - monitoring
 
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:9.1.0
-    container_name: elasticsearch
-    environment:
-      discovery.type: single-node
-      ES_JAVA_OPTS: -Xms1g -Xmx1g                # 메모리 2g → 1g로 줄임
-      xpack.security.enabled: false              # 보완 설정
-      xpack.security.http.ssl.enabled: false     # https 접속
-      logger.level: WARN
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-    healthcheck:
-      test: [ "CMD", "curl", "http://localhost:9200/_cluster/health" ]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    volumes:
-      - es-data:/usr/share/elasticsearch/data
-      - es-config:/usr/share/elasticsearch/config
-    networks:
-      - search
-      - app-network
-
-  kibana:
-    image: docker.elastic.co/kibana/kibana:9.1.0
-    container_name: kibana
-    depends_on:
-      elasticsearch:
-        condition: service_healthy
-    ports:
-      - "5601:5601"
-    volumes:
-      - ./kibana:/app/kibana
-    environment:
-      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
-      SERVER_HOST: "0.0.0.0"
-    networks:
-      - search
-
 volumes:
   redis-data:
   grafana_data:
-  es-data:
-  es-config:
 
 networks:
   app-network:
@@ -111,4 +69,4 @@ networks:
   monitoring:
     driver: bridge
   search:
-    driver: bridge
+    external: true   # ES/Kibana용 compose에서 생성
