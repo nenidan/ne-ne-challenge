@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.model.vo.AuditInfo;
 
+import com.github.nenidan.ne_ne_challenge.domain.user.domain.type.Sex;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -13,6 +14,7 @@ public class Profile {
     private final UserId id;
     private String nickname;
     private LocalDate birth;
+    private Sex sex;
     private String bio;
     private Long imageId;
     private final AuditInfo auditInfo;
@@ -22,6 +24,7 @@ public class Profile {
             null,
             nickname,
             birth,
+            Sex.UNKNOWN,
             bio,
             null,
             null
@@ -33,6 +36,7 @@ public class Profile {
             null,
             nickname,
             birth,
+            Sex.UNKNOWN,
             bio,
             imageId,
             null

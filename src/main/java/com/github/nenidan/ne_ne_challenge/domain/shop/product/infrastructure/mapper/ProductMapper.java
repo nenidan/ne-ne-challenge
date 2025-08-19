@@ -1,13 +1,16 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.product.infrastructure.mapper;
 
+import java.time.LocalDateTime;
+
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.domain.model.Product;
+import com.github.nenidan.ne_ne_challenge.domain.shop.product.infrastructure.entity.ProductDocument;
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.infrastructure.entity.ProductEntity;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 
 public class ProductMapper {
 
     public static Product toDomain(ProductEntity productEntity) {
-        return new Product(
+        return Product.create(
             new ProductId(productEntity.getId()),
             productEntity.getProductName(),
             productEntity.getProductDescription(),
@@ -22,6 +25,27 @@ public class ProductMapper {
             product.getProductDescription(),
             product.getProductPrice(),
             product.getDeletedAt() == null ? null : product.getDeletedAt()
+        );
+    }
+
+    public static ProductDocument fromEntity(ProductEntity productEntity) {
+        return new ProductDocument(
+            productEntity.getId(),
+            productEntity.getProductName(),
+            productEntity.getProductDescription(),
+            productEntity.getProductPrice(),
+            LocalDateTime.now(),
+            LocalDateTime.now(),
+            productEntity.getDeletedAt()
+        );
+    }
+
+    public static Product fromDocument(ProductDocument productDocument) {
+        return Product.create(
+            new ProductId(productDocument.getId()),
+            productDocument.getProductName(),
+            productDocument.getProductDescription(),
+            productDocument.getProductPrice()
         );
     }
 }

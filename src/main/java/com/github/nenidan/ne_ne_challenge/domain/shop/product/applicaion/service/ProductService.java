@@ -14,7 +14,6 @@ import com.github.nenidan.ne_ne_challenge.domain.shop.product.domain.model.Produ
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.domain.repository.ProductRepository;
 import com.github.nenidan.ne_ne_challenge.domain.shop.review.domain.event.ReviewDeleteEvent;
 import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.event.StockDeleteEvent;
-import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.event.StockRegisteredEvent;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 
@@ -27,7 +26,10 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    public ProductService(ProductRepository productRepository, ApplicationEventPublisher applicationEventPublisher) {
+    public ProductService(
+        ProductRepository productRepository,
+        ApplicationEventPublisher applicationEventPublisher
+    ) {
         this.productRepository = productRepository;
         this.applicationEventPublisher = applicationEventPublisher;
     }
@@ -42,14 +44,12 @@ public class ProductService {
     @Transactional
     public ProductResult createProduct(CreateProductCommand createProductCommand) {
         Product product = Product.create(
+            null,
             createProductCommand.getProductName(),
             createProductCommand.getProductDescription(),
             createProductCommand.getProductPrice()
         );
         Product saveProduct = productRepository.save(product);
-
-        // 재고 등록 이벤트 발행
-        applicationEventPublisher.publishEvent(new StockRegisteredEvent(saveProduct.getProductId()));
         return ProductResult.fromEntity(saveProduct);
     }
 
@@ -98,22 +98,17 @@ public class ProductService {
      */
     @Transactional(readOnly = true)
     public CursorResponse<ProductResult, Long> findAllProducts(
-        Long cursor,
+        List<Object> cursor,
         int size,
         String keyword
     ) {
-        List<ProductResult> productList = productRepository.findAllByCursor(cursor,size+1, keyword)
-            .stream()
+        List<Product> allByKeyword = productRepository.findAllByKeyword(cursor, size+1, keyword);
+
+        List<ProductResult> list = allByKeyword.stream()
             .map(ProductResult::fromEntity)
             .toList();
 
-        boolean hasNext = productList.size() > size;
-
-        List<ProductResult> content = hasNext ? productList.subList(0, size) : productList;
-
-        Long nextCursor = hasNext ? productList.get(productList.size() - 1).getId().getValue() : null;
-
-        return CursorResponse.of(content, nextCursor, productList.size() > size);
+        return CursorResponse.ofExclusive(list, r -> r.getId().getValue(), size);
     }
 
     /**

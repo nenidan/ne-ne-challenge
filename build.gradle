@@ -30,6 +30,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+	implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.29'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
@@ -69,6 +71,11 @@ dependencies {
 	//time-type
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
+	// Circuit Breaker
+	implementation 'io.github.resilience4j:resilience4j-spring-boot3:2.2.0'
+	implementation 'io.github.resilience4j:resilience4j-circuitbreaker:2.2.0'
+	implementation 'io.github.resilience4j:resilience4j-retry:2.2.0'
+
 	// querydsl
 	implementation 'io.github.openfeign.querydsl:querydsl-jpa:6.10.1'
 	annotationProcessor 'io.github.openfeign.querydsl:querydsl-apt:6.10.1:jpa'
@@ -80,9 +87,16 @@ dependencies {
 	// https://mvnrepository.com/artifact/com.google.firebase/firebase-admin
 	implementation 'com.google.firebase:firebase-admin:8.1.0'
 
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	runtimeOnly  'io.micrometer:micrometer-registry-prometheus'
+
 	testImplementation 'com.h2database:h2'
+
+	implementation 'net.datafaker:datafaker:2.4.4'
+	testImplementation 'net.datafaker:datafaker:2.4.4'
+
 }
 
-//tasks.named('test') {
-//	useJUnitPlatform()
-//}
+tasks.named('test') {
+	useJUnitPlatform()
+}

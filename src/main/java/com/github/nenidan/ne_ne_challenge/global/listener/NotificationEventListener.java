@@ -8,6 +8,7 @@ import com.github.nenidan.ne_ne_challenge.domain.notification.application.dto.re
 import com.github.nenidan.ne_ne_challenge.domain.notification.application.service.NotificationService;
 import com.github.nenidan.ne_ne_challenge.domain.notification.domain.entity.NotificationType;
 import com.github.nenidan.ne_ne_challenge.domain.notification.infrastructure.fcm.Platform;
+import com.github.nenidan.ne_ne_challenge.domain.payment.domain.event.PaymentCompletedEvent;
 import com.github.nenidan.ne_ne_challenge.global.client.user.UserClient;
 import com.github.nenidan.ne_ne_challenge.global.client.user.dto.UserResponse;
 import com.github.nenidan.ne_ne_challenge.global.event.ChallengeClearedEvent;
@@ -53,6 +54,21 @@ public class NotificationEventListener {
 		notificationService.send(new SendNotificationRequest(
 			title, content,
 			NotificationType.CHALLENGE_ENDED,
+			event.getUserId(), null, Platform.WEB
+		));
+	}
+
+	@Async
+	@EventListener
+	public void handlePaymentCompleted(PaymentCompletedEvent event) {
+		UserResponse userResponse = userClient.getUserById(event.getUserId());
+
+		String title = "결제 완료!";
+		String content = userResponse.getNickname() + "님이 " + event.getAmount() + "원 결제가 완료되었습니다.";
+
+		notificationService.send(new SendNotificationRequest(
+			title, content,
+			NotificationType.PAYMENT_SUCCESS,
 			event.getUserId(), null, Platform.WEB
 		));
 	}

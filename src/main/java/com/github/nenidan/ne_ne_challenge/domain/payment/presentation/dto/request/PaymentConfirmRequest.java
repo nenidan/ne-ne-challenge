@@ -14,7 +14,7 @@ public class PaymentConfirmRequest {
     @NotBlank(message = "주문 ID는 필수입니다")
     private String orderId;
 
-    @Min(value = 1000, message = "최소 결제 금액은 1,000원입니다")
-    @Max(value = 1000000, message = "최대 결제 금액은 1,000,000원입니다")
+    @Min(value = 10000, message = "최소 결제 금액은 10,000원입니다")
+    @Max(value = 100000, message = "최대 결제 금액은 100,000원입니다")
     private int amount;
 }

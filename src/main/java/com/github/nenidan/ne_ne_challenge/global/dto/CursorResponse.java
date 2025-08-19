@@ -34,4 +34,12 @@ public class CursorResponse<T, S> {
 
         return new CursorResponse<>(content, nextCursor, hasNext);
     }
+
+    public static <T, S> CursorResponse<T, S> ofExclusive(List<T> resultList, Function<T, S> getCursorFieldFunction, int size) {
+        boolean hasNext = resultList.size() > size;
+        List<T> content = hasNext ? resultList.subList(0, size) : resultList;
+        S nextCursor = hasNext ? getCursorFieldFunction.apply(content.get(size-1)) : null;
+
+        return new CursorResponse<>(content, nextCursor, hasNext);
+    }
 }

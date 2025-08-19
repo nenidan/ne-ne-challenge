@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class PointChargeRequested {
+public class PaymentCompletedEvent {
     private final Long userId;
     private final int amount;
     private final String reason;

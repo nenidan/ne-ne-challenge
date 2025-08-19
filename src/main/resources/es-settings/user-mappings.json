@@ -1,0 +1,69 @@
+{
+  "properties": {
+    "_class": {
+      "type": "keyword",
+      "index": false,
+      "doc_values": false
+    },
+    "id": {
+      "type": "text",
+      "fields": {
+        "keyword": { "type": "keyword", "ignore_above": 256 }
+      }
+    },
+    "email": {
+      "type": "keyword",
+      "fields": {
+        "ngram": {
+          "type": "text",
+          "analyzer": "ngram_analyzer",
+          "search_analyzer": "standard"
+        }
+      }
+    },
+    "role": { "type": "keyword" },
+    "nickname": {
+      "type": "text",
+      "analyzer": "standard",
+      "fields": {
+        "ngram": {
+          "type": "text",
+          "analyzer": "ngram_analyzer",
+          "search_analyzer": "standard"
+        },
+        "keyword": { "type": "keyword" }
+      }
+    },
+    "birthYear": { "type": "integer" },
+    "birthDay": {
+      "type": "keyword",
+      "fields": {
+        "text": { "type": "text" }
+      }
+    },
+    "sex": { "type": "keyword" },
+    "bio": {
+      "type": "text",
+      "analyzer": "standard",
+      "fields": {
+        "ngram": {
+          "type": "text",
+          "analyzer": "ngram_analyzer",
+          "search_analyzer": "standard"
+        }
+      }
+    },
+    "createdAt": {
+      "type": "date",
+      "format": "date_optional_time"
+    },
+    "updatedAt": {
+      "type": "date",
+      "format": "date_optional_time"
+    },
+    "deletedAt": {
+      "type": "date",
+      "format": "date_optional_time"
+    }
+  }
+}

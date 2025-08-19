@@ -5,6 +5,7 @@ import com.github.nenidan.ne_ne_challenge.domain.user.domain.model.User;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.model.UserId;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.model.vo.AuditInfo;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.model.vo.SocialAccount;
+import com.github.nenidan.ne_ne_challenge.domain.user.domain.type.Sex;
 import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.AccountEntity;
 import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.ProfileEntity;
 import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.type.Role;
@@ -20,6 +21,7 @@ public class UserMapper {
                         new UserId(profileEntity.getId()),
                         profileEntity.getNickname(),
                         profileEntity.getBirth(),
+                        Sex.of(profileEntity.getSex().name()),
                         profileEntity.getBio(),
                         profileEntity.getImageId(),
                         new AuditInfo(
@@ -54,6 +56,7 @@ public class UserMapper {
             domain.getId() != null ? domain.getId().getValue() : null,
             domain.getProfile().getNickname(),
             domain.getProfile().getBirth(),
+            domain.getProfile().getSex().name(),
             domain.getProfile().getBio(),
             profileAudit != null ? profileAudit.getDeletedAt() : null,
             profileAudit != null ? profileAudit.getUpdatedAt() : null,
