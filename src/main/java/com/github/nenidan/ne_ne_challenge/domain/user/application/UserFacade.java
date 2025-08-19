@@ -2,12 +2,11 @@ package com.github.nenidan.ne_ne_challenge.domain.user.application;
 
 import java.util.List;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.github.nenidan.ne_ne_challenge.domain.user.application.service.UserSearchService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.nenidan.ne_ne_challenge.domain.user.application.client.oauth.OAuthClient;
 import com.github.nenidan.ne_ne_challenge.domain.user.application.client.oauth.OAuthClientFactory;
@@ -21,6 +20,7 @@ import com.github.nenidan.ne_ne_challenge.domain.user.application.dto.UserWithTo
 import com.github.nenidan.ne_ne_challenge.domain.user.application.mapper.UserMapper;
 import com.github.nenidan.ne_ne_challenge.domain.user.application.service.CachedUserService;
 import com.github.nenidan.ne_ne_challenge.domain.user.application.service.JwtTokenProvider;
+import com.github.nenidan.ne_ne_challenge.domain.user.application.service.UserSearchService;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.model.User;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.service.UserService;
 import com.github.nenidan.ne_ne_challenge.global.client.point.PointClient;

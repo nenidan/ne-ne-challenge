@@ -1,10 +1,11 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.search.repository;
 
-import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.search.document.UserDocument;
+import java.util.List;
+
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.search.document.UserDocument;
 
 @Repository
 public interface UserDocumentRepository extends ElasticsearchRepository<UserDocument, String> {

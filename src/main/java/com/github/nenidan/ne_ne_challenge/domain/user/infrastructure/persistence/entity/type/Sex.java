@@ -1,9 +1,9 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.type;
 
+import java.util.Arrays;
+
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.exception.UserErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.exception.UserException;
-
-import java.util.Arrays;
 
 public enum Sex {
     MALE, FEMALE, UNKNOWN;

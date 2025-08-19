@@ -22,14 +22,13 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ProductCacheService {
 
+    public static String PRODUCT_CACHE_NAME = "product_first_page";
+    public static String PRODUCT_CACHE_KEY = "default";
+    public static int PRODUCT_CACHE_SIZE = 30;
     private final CacheManager cacheManager;
     private final CacheHelper cacheHelper;
     private final ProductRepository productRepository;
     private final ObjectMapper objectMapper;
-
-    public static String PRODUCT_CACHE_NAME = "product_first_page";
-    public static String PRODUCT_CACHE_KEY = "default";
-    public static int PRODUCT_CACHE_SIZE = 30;
 
     // 애플리케이션 시작 시, 캐시 미리 적재 (Warm-up)
     @EventListener(ApplicationReadyEvent.class)
