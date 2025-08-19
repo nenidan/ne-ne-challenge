@@ -45,10 +45,17 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public Product findById(ProductId productId) {
+    public Product findByIdFromElasticsearch(ProductId productId) {
         ProductDocument productDocument = productElasticsearchRepository.findById(productId.getValue())
             .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
         return ProductMapper.fromDocument(productDocument);
+    }
+
+    @Override
+    public Product findByIdFromJpa(ProductId productId) {
+        ProductEntity productEntity = productJpaRepository.findById(productId.getValue())
+            .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
+        return ProductMapper.toDomain(productEntity);
     }
 
     @Override
