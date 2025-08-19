@@ -17,6 +17,9 @@ configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
+	all {
+		exclude group: 'commons-logging', module: 'commons-logging'
+	}
 }
 
 repositories {
@@ -63,6 +66,10 @@ dependencies {
 
 	// logs
 	implementation 'org.springframework.boot:spring-boot-starter-aop'
+	implementation "net.logstash.logback:logstash-logback-encoder:7.4"
+
+	//time-type
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
 	// Circuit Breaker
 	implementation 'io.github.resilience4j:resilience4j-spring-boot3:2.2.0'

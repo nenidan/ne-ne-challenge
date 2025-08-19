@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
-@NoArgsConstructor
 public class UserResult {
 
     private Long id;

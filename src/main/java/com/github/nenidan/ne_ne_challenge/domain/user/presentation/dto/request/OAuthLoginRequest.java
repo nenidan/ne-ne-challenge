@@ -5,10 +5,10 @@ import com.github.nenidan.ne_ne_challenge.domain.user.application.client.oauth.t
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
-@AllArgsConstructor
 public class OAuthLoginRequest {
 
     @NotBlank(message = "토큰은 필수입니다.")

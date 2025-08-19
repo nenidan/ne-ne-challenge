@@ -1,5 +1,6 @@
 package com.github.nenidan.ne_ne_challenge.domain.notification.presentation;
 
+import com.github.nenidan.ne_ne_challenge.global.aop.annotation.AuditIgnore;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +33,7 @@ public class NotificationController {
 	알림 생성 테스트 용 URL
 	 */
 	@PostMapping("/notifications/send")
+	@AuditIgnore
 	public ResponseEntity<ApiResponse<Void>> send(@RequestBody SendNotificationRequest notificationRequest){
 		return ApiResponse.success(
 			HttpStatus.OK,
@@ -41,6 +43,7 @@ public class NotificationController {
 	}
 
 	@PatchMapping("/notifications/{id}")
+	@AuditIgnore
 	public ResponseEntity<ApiResponse<Void>> read(@RequestBody ReadNotificationRequest request,@PathVariable Long id){
 		return ApiResponse.success(
 			HttpStatus.OK,
@@ -57,6 +60,7 @@ public class NotificationController {
 		- 사이즈 : 10
 	 */
 	@GetMapping("/notifications")
+	@AuditIgnore
 	public ResponseEntity<ApiResponse<CursorResponse<NotificationResponse, Long>>> searchNotifications(
 		@RequestParam Long userId,
 		@RequestParam(defaultValue = "all") String isRead,

@@ -5,9 +5,11 @@ import com.github.nenidan.ne_ne_challenge.domain.notification.infrastructure.fcm
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class SendNotificationRequest {
 	private String title;
 	private String content;

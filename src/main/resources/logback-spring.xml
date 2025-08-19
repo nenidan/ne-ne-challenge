@@ -1,0 +1,41 @@
+<configuration>
+    <!-- 로그 디렉토리 (없으면 ./logs 로 기본 설정) -->
+    <property name="LOG_DIR" value="${LOG_DIR:-./logs}" />
+
+    <!-- 파일 로그 Appender -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/application.log</file>
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp>
+                    <timeZone>Asia/Seoul</timeZone>
+                </timestamp>
+                <logLevel />
+                <threadName />
+                <loggerName />
+                <message />
+                <mdc /> <!-- MDC 컨텍스트 (traceId, userId 등) -->
+                <arguments />
+                <stackTrace />
+            </providers>
+        </encoder>
+
+        <!-- 일 단위 로그 롤링 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/application-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory> <!-- 30일 보관 -->
+            <totalSizeCap>5GB</totalSizeCap> <!-- 전체 용량 5GB 제한 -->
+        </rollingPolicy>
+    </appender>
+
+    <!-- 루트 로거 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+</configuration>
