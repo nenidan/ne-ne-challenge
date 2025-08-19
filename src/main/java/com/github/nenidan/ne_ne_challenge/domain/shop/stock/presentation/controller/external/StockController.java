@@ -1,4 +1,4 @@
-package com.github.nenidan.ne_ne_challenge.domain.shop.stock.presentation.controller;
+package com.github.nenidan.ne_ne_challenge.domain.shop.stock.presentation.controller.external;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
