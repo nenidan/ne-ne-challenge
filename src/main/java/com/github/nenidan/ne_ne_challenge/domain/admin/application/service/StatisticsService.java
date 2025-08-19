@@ -49,6 +49,7 @@ public class StatisticsService {
             var dto = getStatisticsRepository.findMonthlyOne(DomainType.CHALLENGE, ym)
                     .map(ChallengeStatisticsResponse::fromModel)
                     .orElse(null);
+
             return dto;
     }
 

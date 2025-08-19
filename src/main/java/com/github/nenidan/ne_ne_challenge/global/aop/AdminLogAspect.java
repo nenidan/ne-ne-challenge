@@ -1,11 +1,13 @@
 package com.github.nenidan.ne_ne_challenge.global.aop;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.nenidan.ne_ne_challenge.domain.admin.domain.type.DomainType;
+import com.github.nenidan.ne_ne_challenge.global.aop.annotation.AuditIgnore;
 import com.github.nenidan.ne_ne_challenge.global.trace.TraceContext;
 import com.github.nenidan.ne_ne_challenge.global.trace.TraceContextHolder;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +19,9 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.core.Ordered;
 
 import java.time.Instant;
 import java.util.*;
@@ -26,6 +30,7 @@ import java.util.*;
 @Aspect
 @Component
 @RequiredArgsConstructor
+@Order(Ordered.LOWEST_PRECEDENCE)
 public class AdminLogAspect {
 
     private static final Logger AUDIT = LoggerFactory.getLogger("AUDIT");
@@ -33,15 +38,24 @@ public class AdminLogAspect {
     private final MaskingUtils maskingUtils;
 
     // 필요한 도메인 묶음
-    @Pointcut("execution(* com.github.nenidan.ne_ne_challenge.domain..application..*(..))" + "&& !within(com.github.nenidan.ne_ne_challenge.domain.notification.application.service.NotificationRetryService)")
+    @Pointcut("execution(* com.github.nenidan.ne_ne_challenge.domain..application..*(..))"
+            + "&& !within(com.github.nenidan.ne_ne_challenge.domain.notification.application.service.NotificationRetryService)"
+    )
     private void domainServices() {}
 
     // 컨트롤러 레벨에서도 한 번 잡아 유저케이스의 시작과 끝을 명확히
-    @Pointcut("within(@org.springframework.web.bind.annotation.RestController *)")
+    @Pointcut("within(@org.springframework.web.bind.annotation.RestController *)"
+            )
     private void anyController() {}
 
-    @Around("domainServices() || anyController()")
+
+    @Around("(domainServices() || anyController())")
     public Object logAdminAction(ProceedingJoinPoint joinPoint) throws Throwable {
+
+        //스킵 로깅 대상 패스
+        if (AuditSkipContext.isSkip() || isAuditIgnored(joinPoint)) {
+            return joinPoint.proceed();
+        }
 
         // 요청 정보
         long start = System.currentTimeMillis();
@@ -109,6 +123,29 @@ public class AdminLogAspect {
             }
         } catch (Exception ignored) {}
         return null;
+    }
+
+    private boolean isAuditIgnored(ProceedingJoinPoint pjp) {
+        MethodSignature sig = (MethodSignature) pjp.getSignature();
+        Method method = sig.getMethod();
+
+        // 1) 현재 메서드에 @AuditIgnore?
+        if (method.isAnnotationPresent(AuditIgnore.class)) return true;
+
+        // 2) 선언 클래스에 @AuditIgnore?
+        Class<?> declaring = method.getDeclaringClass();
+        if (declaring.isAnnotationPresent(AuditIgnore.class)) return true;
+
+        // 3) 실제 타겟 클래스 메서드(프록시 우회)에도 달렸는지 확인
+        try {
+            Method targetMethod = pjp.getTarget()
+                    .getClass()
+                    .getMethod(method.getName(), method.getParameterTypes());
+            if (targetMethod.isAnnotationPresent(AuditIgnore.class)) return true;
+            if (targetMethod.getDeclaringClass().isAnnotationPresent(AuditIgnore.class)) return true;
+        } catch (NoSuchMethodException ignored) {}
+
+        return false;
     }
 
 }

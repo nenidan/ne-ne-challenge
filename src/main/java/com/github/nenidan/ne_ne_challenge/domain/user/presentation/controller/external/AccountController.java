@@ -1,5 +1,6 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.presentation.controller.external;
 
+import com.github.nenidan.ne_ne_challenge.global.aop.annotation.AuditIgnore;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -63,7 +64,8 @@ public class AccountController {
     }
 
     @PostMapping("/accounts/login/{provider}")
-    public ResponseEntity<ApiResponse<UserResponse>> login(
+    @AuditIgnore
+    public ResponseEntity<ApiResponse<UserResponse>> loginSns(
             @PathVariable String provider,
             @RequestBody OAuthLoginRequest request
     ) {

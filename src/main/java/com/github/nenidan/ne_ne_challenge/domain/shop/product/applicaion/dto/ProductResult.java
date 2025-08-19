@@ -1,5 +1,9 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.application.dto.OrderDetailResult;
+import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.type.OrderStatus;
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.domain.model.Product;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 

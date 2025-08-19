@@ -6,11 +6,14 @@ import com.github.nenidan.ne_ne_challenge.domain.shop.product.domain.exception.P
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.domain.exception.ProductException;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Product {
-    private final ProductId productId;
+    private ProductId productId;
     private String productName;
     private String productDescription;
     private Integer productPrice;

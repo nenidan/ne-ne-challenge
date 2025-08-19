@@ -2,9 +2,11 @@ package com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.reques
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
 @Getter
+@NoArgsConstructor
 public class PaymentConfirmCommand {
 
     private String paymentKey;

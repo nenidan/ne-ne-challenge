@@ -12,7 +12,8 @@ public class RedissonConfig {
 	public RedissonClient redissonClient() {
 		Config config = new Config();
 		config.useSingleServer()
-			.setAddress("redis://redis:6379"); // docker-compose 서비스명
+//			.setAddress("redis://redis:6379"); // docker-compose 서비스명
+					.setAddress("redis://localhost:6380"); // 로컬호스트에서
 		return Redisson.create(config);
 	}
 }

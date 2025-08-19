@@ -6,10 +6,12 @@ import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.Cha
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class ChallengeRequestInfo {
 
     private Long Id;

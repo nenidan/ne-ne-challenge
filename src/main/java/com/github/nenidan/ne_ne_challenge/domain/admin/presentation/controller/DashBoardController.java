@@ -25,7 +25,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DashBoardController {
 
-
     private final StatisticsService statisticsService;
 
     //통계 관리
