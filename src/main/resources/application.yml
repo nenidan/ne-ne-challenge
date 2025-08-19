@@ -123,8 +123,8 @@ spring:
 
   data:
     redis:
-      host: ${SPRING_REDIS_HOST}
-      port: ${SPRING_REDIS_PORT}
+      host: ${SPRING_REDIS_HOST:redis}
+      port: ${SPRING_REDIS_PORT:6379}
 
   elasticsearch:
     uris: ${ELASTIC_SEARCH_URL}
