@@ -3,8 +3,8 @@ package com.github.nenidan.ne_ne_challenge.domain.user.domain.model;
 import java.time.LocalDate;
 
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.model.vo.AuditInfo;
-
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.type.Sex;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

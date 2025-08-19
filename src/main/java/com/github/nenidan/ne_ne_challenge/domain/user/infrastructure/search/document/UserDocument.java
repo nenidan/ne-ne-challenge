@@ -1,10 +1,13 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.search.document;
 
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Mapping;
+import org.springframework.data.elasticsearch.annotations.Setting;
+
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.elasticsearch.annotations.*;
 
 @Getter
 @AllArgsConstructor

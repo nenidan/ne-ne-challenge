@@ -2,7 +2,6 @@ package com.github.nenidan.ne_ne_challenge.domain.shop.order.application.service
 
 import java.util.List;
 
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,21 +11,16 @@ import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.model.Order;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.repository.OrderRepository;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.type.OrderStatus;
 import com.github.nenidan.ne_ne_challenge.domain.shop.order.domain.vo.OrderDetail;
-import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.event.StockRestoreEvent;
-import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.event.StockUpdateEvent;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.OrderId;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.UserId;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class OrderService {
     private final OrderRepository orderRepository;
-    private final ApplicationEventPublisher applicationEventPublisher;
-
-    public OrderService(OrderRepository orderRepository, ApplicationEventPublisher applicationEventPublisher) {
-        this.orderRepository = orderRepository;
-        this.applicationEventPublisher = applicationEventPublisher;
-    }
 
     /**
      * 주문을 생성하고, 재고 감소 이벤트를 발행합니다.
@@ -47,14 +41,6 @@ public class OrderService {
         );
         Order saveOrder = orderRepository.save(order);
 
-        // 재고 감소
-        applicationEventPublisher.publishEvent(
-            new StockUpdateEvent(
-                saveOrder.getOrderDetail().getProductId(),
-                saveOrder.getOrderDetail().getQuantity()
-            )
-        );
-
         return OrderResult.fromEntity(saveOrder);
     }
 
@@ -62,25 +48,15 @@ public class OrderService {
      * 주문을 취소합니다.
      *
      * @param orderId 취소할 주문 ID
-     * @param userId 주문 자 ID
+     * @param userId  주문 자 ID
      * @author kimyongjun0129
      */
     @Transactional
-    public OrderResult cancelOrder(UserId userId, OrderId orderId) {
+    public void cancelOrder(UserId userId, OrderId orderId) {
         Order order = orderRepository.findByUserIdAndOrderId(userId, orderId);
         order.isCanceled();
         order.cancel();
         orderRepository.save(order);
-
-        // 재고 복구
-        applicationEventPublisher.publishEvent(
-            new StockRestoreEvent(
-                order.getOrderDetail().getProductId(),
-                order.getOrderDetail().getQuantity()
-            )
-        );
-
-        return OrderResult.fromEntity(order);
     }
 
     /**

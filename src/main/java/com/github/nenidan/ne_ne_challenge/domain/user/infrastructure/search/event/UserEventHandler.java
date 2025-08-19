@@ -1,14 +1,16 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.search.event;
 
+import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
+
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.event.UserDeletedEvent;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.event.UserSavedEvent;
 import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.search.document.UserDocument;
 import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.search.mapper.UserMapper;
 import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.search.repository.UserDocumentRepository;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor

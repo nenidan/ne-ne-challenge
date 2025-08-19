@@ -1,10 +1,10 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.search.mapper;
 
+import java.time.LocalDateTime;
+
 import com.github.nenidan.ne_ne_challenge.domain.user.application.dto.UserResult;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.model.User;
 import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.search.document.UserDocument;
-
-import java.time.LocalDateTime;
 
 public class UserMapper {
 

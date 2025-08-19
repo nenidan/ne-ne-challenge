@@ -3,12 +3,22 @@ package com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistenc
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.type.Sex;
-import jakarta.persistence.*;
 import org.hibernate.annotations.SQLRestriction;
 
 import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.embedded.AuditInfo;
+import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.type.Sex;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapsId;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

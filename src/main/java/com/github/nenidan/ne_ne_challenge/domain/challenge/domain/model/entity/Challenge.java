@@ -289,7 +289,7 @@ public class Challenge extends BaseEntity {
 
     public void checkCanWrite() {
         LocalDate today = LocalDate.now();
-        if(status != ONGOING || today.isAfter(dueAt) || (today.isEqual(startAt) || today.isBefore(startAt))) {
+        if(status != ONGOING || today.isAfter(dueAt) || today.isBefore(startAt)) {
             throw new ChallengeException(ChallengeErrorCode.NOT_WRITABLE);
         }
     }

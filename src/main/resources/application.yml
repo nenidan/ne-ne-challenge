@@ -12,7 +12,7 @@ spring:
     show-sql: true
     open-in-view: false
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
 
 # Resilience4j 설정
 resilience4j:
@@ -52,8 +52,6 @@ toss:
   payments:
     secret-key: ${TOSS_SECRET_KEY}
     client-key: ${TOSS_CLIENT_KEY}
-    success-url: ${TOSS_SUCCESS_URL}
-    fail-url: ${TOSS_FAIL_URL}
     base-url: ${TOSS_BASE_URL}
 
 server:

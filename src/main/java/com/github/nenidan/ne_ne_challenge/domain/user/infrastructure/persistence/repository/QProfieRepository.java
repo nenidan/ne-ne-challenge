@@ -2,13 +2,13 @@ package com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistenc
 
 import java.util.List;
 
-import com.querydsl.core.types.dsl.Expressions;
 import org.springframework.stereotype.Repository;
 
 import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.ProfileEntity;
 import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.QAccountEntity;
 import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.QProfileEntity;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;

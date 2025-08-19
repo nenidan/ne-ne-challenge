@@ -20,9 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class CacheHelper {
 
-    private final CacheManager cacheManager;
-
     private static final long TIMEOUT_MS = 100;
+    private final CacheManager cacheManager;
     private final ExecutorService executor = Executors.newCachedThreadPool();
 
     public <T> T getOrLoad(String cacheName, String key, Supplier<T> fallback) {

@@ -1,10 +1,11 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.integration;
 
-import com.github.nenidan.ne_ne_challenge.domain.user.domain.type.Role;
-import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.type.Sex;
-import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.search.document.UserDocument;
-import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.search.repository.UserDocumentRepository;
-import net.datafaker.Faker;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.ThreadLocalRandom;
+
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +14,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.ThreadLocalRandom;
+import net.datafaker.Faker;
+
+import com.github.nenidan.ne_ne_challenge.domain.user.domain.type.Role;
+import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.type.Sex;
+import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.search.document.UserDocument;
+import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.search.repository.UserDocumentRepository;
 
 @SpringBootTest
 public class UserBulkInsertTest {

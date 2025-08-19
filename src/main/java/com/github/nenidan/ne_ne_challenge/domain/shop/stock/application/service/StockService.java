@@ -36,8 +36,8 @@ public class StockService {
      * @author kimyongjun0129
      */
     @Transactional
-    public AddStockResult inBoundStock(AddStockCommand addStockCommand) {
-        Stock stock = stockRepository.findById(addStockCommand.getProductId());
+    public AddStockResult inBoundStock(ProductId productId, AddStockCommand addStockCommand) {
+        Stock stock = stockRepository.findById(productId);
         stock.inbound(addStockCommand.getQuantity());
         stockRepository.save(stock);
         return AddStockResult.from(stock);
@@ -50,9 +50,22 @@ public class StockService {
      * @author kimyongjun0129
      */
     @Transactional
-    public void decreaseStock(AddStockCommand addStockCommand) {
-        Stock stock = stockRepository.findById(addStockCommand.getProductId());
+    public void decreaseStock(ProductId productId, AddStockCommand addStockCommand) {
+        Stock stock = stockRepository.findById(productId);
         stock.decreaseQuantity(addStockCommand.getQuantity());
+        stockRepository.save(stock);
+    }
+
+    /**
+     * 예비 재고를 감소시킵니다.
+     *
+     * @param addStockCommand 예비 재고 감소 명령(상품 ID, 감소 수량)
+     * @author kimyongjun0129
+     */
+    @Transactional
+    public void decreaseReservedStock(ProductId productId, AddStockCommand addStockCommand) {
+        Stock stock = stockRepository.findById(productId);
+        stock.decreaseReservedQuantity(addStockCommand.getQuantity());
         stockRepository.save(stock);
     }
 
@@ -90,14 +103,43 @@ public class StockService {
      * <p>
      * 복구하기 전, 복구 수량이 0이하인지 확인합니다.
      *
-     * @param productId 복구할 재고 상품 ID
-     * @param quantity 복구 수량
+     * @param addStockCommand 재고 복구 명령(상품 ID, 복구 수량)
      * @author kimyongjun0129
      */
     @Transactional
-    public void restoreStock(Long productId, Integer quantity) {
-        Stock stock = stockRepository.findById(new ProductId(productId));
-        stock.restoreQuantity(quantity);
+    public void restoreStock(ProductId productId, AddStockCommand addStockCommand) {
+        Stock stock = stockRepository.findById(productId);
+        stock.restoreQuantity(addStockCommand.getQuantity());
+        stockRepository.save(stock);
+    }
+
+    /**
+     * 주문 취소 시, 예비 재고를 복구합니다.
+     * <p>
+     * 복구하기 전, 복구 수량이 0이하인지 확인합니다.
+     *
+     * @param addStockCommand 재고 복구 명령(상품 ID, 복구 수량)
+     * @author kimyongjun0129
+     */
+    @Transactional
+    public void restoreReservedStock(ProductId productId, AddStockCommand addStockCommand) {
+        Stock stock = stockRepository.findById(productId);
+        stock.restoreReservedQuantity(addStockCommand.getQuantity());
+        stockRepository.save(stock);
+    }
+
+    /**
+     * 예비 재고 복구를 취소합니다.
+     * <p>
+     * 복구하기 전, 복구 수량이 0이하인지 확인합니다.
+     *
+     * @param addStockCommand 재고 복구 명령(상품 ID, 복구 수량)
+     * @author kimyongjun0129
+     */
+    @Transactional
+    public void canceledRestoreReservedStock(ProductId productId, AddStockCommand addStockCommand) {
+        Stock stock = stockRepository.findById(productId);
+        stock.canceledRestoreReservedQuantity(addStockCommand.getQuantity());
         stockRepository.save(stock);
     }
 }

@@ -1,4 +1,4 @@
-package com.github.nenidan.ne_ne_challenge.domain.shop.stock.presentation.controller;
+package com.github.nenidan.ne_ne_challenge.domain.shop.stock.presentation.controller.external;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +14,7 @@ import com.github.nenidan.ne_ne_challenge.domain.shop.stock.application.service.
 import com.github.nenidan.ne_ne_challenge.domain.shop.stock.presentation.dto.AddStockRequest;
 import com.github.nenidan.ne_ne_challenge.domain.shop.stock.presentation.dto.AddStockResponse;
 import com.github.nenidan.ne_ne_challenge.domain.shop.stock.presentation.mapper.StockPresentationMapper;
+import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
 
 import jakarta.validation.Valid;
@@ -31,9 +32,9 @@ public class StockController {
         @PathVariable Long productId,
         @RequestBody @Valid AddStockRequest addStockRequest
     ) {
-        AddStockCommand addStockCommand = AddStockCommand.from(productId, addStockRequest.getQuantity());
+        AddStockCommand addStockCommand = AddStockCommand.from(addStockRequest.getQuantity());
         AddStockResponse addStockResponse = StockPresentationMapper.toAddStockResponse(
-            stockService.inBoundStock(addStockCommand)
+            stockService.inBoundStock(new ProductId(productId), addStockCommand)
         );
         return ApiResponse.success(HttpStatus.OK, "재고가 성공적으로 추가되었습니다.", addStockResponse);
     }

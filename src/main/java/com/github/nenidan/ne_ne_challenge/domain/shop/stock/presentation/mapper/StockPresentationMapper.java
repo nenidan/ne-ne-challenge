@@ -5,11 +5,10 @@ import com.github.nenidan.ne_ne_challenge.domain.shop.stock.application.dto.AddS
 import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.event.StockUpdateEvent;
 import com.github.nenidan.ne_ne_challenge.domain.shop.stock.presentation.dto.AddStockRequest;
 import com.github.nenidan.ne_ne_challenge.domain.shop.stock.presentation.dto.AddStockResponse;
-import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 
 public class StockPresentationMapper {
-    public static AddStockCommand toAddStockCommand(Long productId, AddStockRequest addStockRequest){
-        return new AddStockCommand(new ProductId(productId), addStockRequest.getQuantity());
+    public static AddStockCommand toAddStockCommand(AddStockRequest addStockRequest){
+        return new AddStockCommand(addStockRequest.getQuantity());
     }
 
     public static AddStockResponse toAddStockResponse(AddStockResult addStockResult){
@@ -21,6 +20,6 @@ public class StockPresentationMapper {
     }
 
     public static AddStockCommand fromStockUpdateEvent(StockUpdateEvent stockUpdateEvent){
-        return new  AddStockCommand(stockUpdateEvent.getProductId(), stockUpdateEvent.getQuantity());
+        return new  AddStockCommand(stockUpdateEvent.getQuantity());
     }
 }

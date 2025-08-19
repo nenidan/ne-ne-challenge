@@ -11,6 +11,7 @@ public class StockMapper {
         return new Stock (
             new StockId(stockEntity.getId()),
             new ProductId(stockEntity.getProductId()),
+            stockEntity.getReservedQuantity(),
             stockEntity.getQuantity(),
             stockEntity.getDeletedAt()
         );
@@ -20,6 +21,7 @@ public class StockMapper {
         return new StockEntity(
             stock.getStockId().getValue(),
             stock.getProductId().getValue(),
+            stock.getReservedQuantity(),
             stock.getQuantity(),
             stock.getDeletedAt()
         );
