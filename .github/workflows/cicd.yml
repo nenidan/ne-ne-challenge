@@ -64,7 +64,7 @@ jobs:
             echo "KAKAO_REDIRECT_URI=localhost:8080/oauth/kakao" >> .env
             echo "NAVER_CLIENT_ID=PkWF00P7EtlCjh_wO57B" >> .env
             echo "NAVER_CLIENT_SECRET=6G76rrm2do" >> .env
-            echo "SPRING_ELASTICSEARCH_URIS=http://elasticsearch:9200" >> .env
+            echo "SPRING_ELASTICSEARCH_URIS=http://3.36.220.104:9200" >> .env
             
             docker rm -f my-app || true
             docker rm -f redis || true
