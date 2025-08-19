@@ -12,27 +12,21 @@ import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto.Pro
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto.UpdateProductCommand;
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.domain.model.Product;
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.domain.repository.ProductRepository;
-import com.github.nenidan.ne_ne_challenge.domain.shop.review.domain.event.ReviewDeleteEvent;
 import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.event.StockDeleteEvent;
+import com.github.nenidan.ne_ne_challenge.domain.shop.stock.domain.event.StockRegisteredEvent;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class ProductService {
 
     private final ProductRepository productRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
-
-    public ProductService(
-        ProductRepository productRepository,
-        ApplicationEventPublisher applicationEventPublisher
-    ) {
-        this.productRepository = productRepository;
-        this.applicationEventPublisher = applicationEventPublisher;
-    }
 
     /**
      * 상품을 생성하고 재고 등록 이벤트를 발행합니다.
@@ -50,6 +44,9 @@ public class ProductService {
             createProductCommand.getProductPrice()
         );
         Product saveProduct = productRepository.save(product);
+
+        // 재고 등록 이벤트 발행
+        applicationEventPublisher.publishEvent(new StockRegisteredEvent(saveProduct.getProductId()));
         return ProductResult.fromEntity(saveProduct);
     }
 
@@ -125,7 +122,6 @@ public class ProductService {
 
         // 상품이 삭제될 때, 상품과 관련된 재고와 리뷰도 삭제하기 위해 이벤트 발행
         applicationEventPublisher.publishEvent(new StockDeleteEvent(new ProductId(productId)));
-        applicationEventPublisher.publishEvent(new ReviewDeleteEvent(new ProductId(productId)));
     }
 
     public List<ProductStatisticsResult> getAllProducts() {
