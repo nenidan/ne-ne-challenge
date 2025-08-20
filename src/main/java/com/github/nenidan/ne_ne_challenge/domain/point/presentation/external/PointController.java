@@ -3,6 +3,7 @@ package com.github.nenidan.ne_ne_challenge.domain.point.presentation.external;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "포인트", description = "포인트 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class PointController {
 
     private final PointFacade pointFacade;

@@ -3,6 +3,7 @@ package com.github.nenidan.ne_ne_challenge.domain.payment.presentation.controlle
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,7 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 @Tag(name = "결제", description = "결제 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 public class PaymentController {
 
