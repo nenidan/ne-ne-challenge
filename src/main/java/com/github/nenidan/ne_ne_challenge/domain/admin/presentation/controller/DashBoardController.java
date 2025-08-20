@@ -31,13 +31,17 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-@ApiResponses({
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                responseCode = "200",
-                description = "통계 조회",
-                content = @Content(
-                        mediaType = "application/json",
-                        schema = @Schema(example = """
+public class DashBoardController {
+
+    private final StatisticsService statisticsService;
+
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "통계 조회",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(example = """
             {
               "message": "통계 조회",
               "data": {
@@ -50,30 +54,13 @@ import lombok.RequiredArgsConstructor;
               "timestamp": "2025-08-20T07:39:01.107Z"
             }
             """)
-                )
-        ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                responseCode = "404",
-                description = "서버 오류",
-                content = @Content(
-                        mediaType = "application/json",
-                        schema = @Schema(example = """
-            {
-              "message": "(statisticsType) 통계를 찾을 수 없습니다.",
-              "timestamp": "2025-08-20T07:39:01.107Z"
-            }
-            """)
-                )
-        )
-})
-public class DashBoardController {
-
-    private final StatisticsService statisticsService;
-
+                    )
+            )
+    })
     @Operation(summary = "통계 조회", description = "집계된 통계값을 조회합니다.")
     @GetMapping("/admin/statistics/{statisticsType}")
     public ResponseEntity<ApiResponse<StatisticsResponse>> getStatistics(
-            @Parameter(name = "statisticsType", description = "어떤 도메인의 통계데이터를 받을지 정해주는 값", in = ParameterIn.PATH, example = "challenge,point,payment,user")
+            @Parameter(name = "statisticsType", description = "어떤 도메인의 통계데이터를 받을지 정해주는 값", in = ParameterIn.PATH, example = "challenge")
             @PathVariable String statisticsType,
             @Parameter(name = "monthPeriod", description = "yyyy-mm-ddThh:mm:ss의 형식의 파라미터", example = "2025-08-20T07:39:01")
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime monthPeriod) {
