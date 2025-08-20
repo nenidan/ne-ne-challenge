@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class PaymentConfirmRequest {
 
     @Schema(
-        description = "토스 결제 완료 후 토스에서 보내주는 결제 키, 임의의 값으로 요청을 보낼 수 없습니다.",
+        description = "토스 결제 결제 키(토스에서 생성)",
         example = "tviva20250820163347aX8I6"
     )
     @NotBlank(message = "결제 키는 필수입니다")
