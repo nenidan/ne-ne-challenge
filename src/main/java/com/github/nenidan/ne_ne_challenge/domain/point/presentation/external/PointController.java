@@ -19,9 +19,14 @@ import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 import com.github.nenidan.ne_ne_challenge.global.security.auth.Auth;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "포인트", description = "포인트 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -29,28 +34,26 @@ public class PointController {
 
     private final PointFacade pointFacade;
 
-    /**
-     * 자신의 포인트 지갑의 잔액을 확인하는 API
-     * @param auth 인증된 사용자 정보
-     * @return 자신의 포인트 잔액
-     */
+    @Operation(summary = "포인트 잔액 조회", description = "본인 포인트 지갑의 잔액을 조회합니다.")
+    @ApiResponses({
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "포인트 잔액을 조회하였습니다."),
+    })
     @GetMapping("/points")
-    public ResponseEntity<ApiResponse<PointBalanceResponse>> getMyBalance(@AuthenticationPrincipal Auth auth) {
+    public ResponseEntity<ApiResponse<PointBalanceResponse>> getMyBalance(
+        @Parameter(hidden = true) @AuthenticationPrincipal Auth auth) {
 
         PointBalanceResponse response = PointPresentationMapper.toPointBalanceResponse(pointFacade.getMyBalance(auth.getId()));
 
         return ApiResponse.success(HttpStatus.OK, "포인트 잔액을 조회하였습니다.", response);
     }
 
-    /**
-     * 자신의 포인트 사용 이력을 조회하는 API
-     * @param auth 인증된 사용자 정보
-     * @param request 포인트 사용 이력 검색 조건(cursor, size, reason, startDate, endDate)
-     * @return 커서 기반의 자신의 포인트 사용 이력
-     */
+    @Operation(summary = "포인트 사용 이력 조회", description = "본인 포인트 사용 이력을 조회합니다.")
+    @ApiResponses({
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "포인트 이력을 조회하였습니다."),
+    })
     @GetMapping("/points/history")
     public ResponseEntity<ApiResponse<CursorResponse<PointHistoryResponse, Long>>> searchMyPointHistory(
-        @AuthenticationPrincipal Auth auth,
+        @Parameter(hidden = true) @AuthenticationPrincipal Auth auth,
         @Valid PointSearchRequest request) {
 
         CursorResponse<PointHistoryResult, Long> result = pointFacade.searchMyPointHistory(
