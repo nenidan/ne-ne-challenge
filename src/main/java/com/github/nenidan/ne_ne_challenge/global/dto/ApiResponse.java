@@ -1,6 +1,7 @@
 package com.github.nenidan.ne_ne_challenge.global.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -12,8 +13,11 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
 
+    @Schema(description = "응답 메시지", example = "응답 메시지 입니다.")
     private final String message;
+
     private final T data;
+
     private final LocalDateTime timestamp;
 
     private ApiResponse(String message, T data) {
