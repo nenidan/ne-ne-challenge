@@ -81,6 +81,10 @@ public class PaymentController {
      * @param auth 인증된 사용자 정보
      * @return 결제 승인 결과 (orderId, amount, method, status, approvedAt)
      */
+    @Operation(summary = "결제 승인", description = "토스 결제 성공 후, 토스 페이먼츠에 승인 요청을 보내고, 포인트를 충전합니다.")
+    @ApiResponses({
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "결제가 완료되었습니다. 포인트는 1~2분 이내로 충전될 예정입니다."),
+    })
     @PostMapping("/payments/confirm")
     public ResponseEntity<ApiResponse<PaymentConfirmResponse>> confirmAndChargePoint(
         @Valid @RequestBody PaymentConfirmRequest request,
