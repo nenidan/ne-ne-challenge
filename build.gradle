@@ -88,13 +88,16 @@ dependencies {
 	implementation 'com.google.firebase:firebase-admin:8.1.0'
 
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	runtimeOnly  'io.micrometer:micrometer-registry-prometheus'
+    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 
-	testImplementation 'com.h2database:h2'
+
+    testImplementation 'com.h2database:h2'
 
 	implementation 'net.datafaker:datafaker:2.4.4'
 	testImplementation 'net.datafaker:datafaker:2.4.4'
 
+    // Swagger
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.8.9'
 }
 
 //tasks.named('test') {
