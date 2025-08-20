@@ -1,18 +1,26 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.stock.application.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 
+import com.github.nenidan.ne_ne_challenge.domain.shop.vo.UserId;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
 public class AddStockCommand {
 
-    private final ProductId productId;
     private final int quantity;
 
-    public static AddStockCommand from(Long productId, int quantity) {
-        return new AddStockCommand(new ProductId(productId), quantity);
+    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    public AddStockCommand(
+            @JsonProperty("quantity") int quantity
+    ){
+        this.quantity = quantity;
+    }
+
+    public static AddStockCommand from(int quantity) {
+        return new AddStockCommand(quantity);
     }
 }

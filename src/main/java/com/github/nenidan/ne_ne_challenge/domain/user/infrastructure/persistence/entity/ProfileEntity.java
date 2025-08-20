@@ -6,10 +6,13 @@ import java.time.LocalDateTime;
 import org.hibernate.annotations.SQLRestriction;
 
 import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.embedded.AuditInfo;
+import com.github.nenidan.ne_ne_challenge.domain.user.infrastructure.persistence.entity.type.Sex;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -37,15 +40,17 @@ public class ProfileEntity extends AuditInfo {
     @JoinColumn(name = "id") // FK 이면서 PK
     private AccountEntity account;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 20)
     private String nickname;
 
     private LocalDate birth;
 
+    @Enumerated(EnumType.STRING)
+    private Sex sex;
+
     private String bio;
 
     private Long imageId;
-
 
     public static ProfileEntity of(AccountEntity account, String nickname, LocalDate birth, String bio) {
         return new ProfileEntity(
@@ -64,7 +69,7 @@ public class ProfileEntity extends AuditInfo {
         this.bio = profileEntity.getBio() != null ? profileEntity.getBio() : this.bio;
     }
 
-    public ProfileEntity(AccountEntity account, Long id, String nickname, LocalDate birth, String bio,
+    public ProfileEntity(AccountEntity account, Long id, String nickname, LocalDate birth, String sex, String bio,
         LocalDateTime createdAt, LocalDateTime updatedAt,
         LocalDateTime deletedAt) {
         super(createdAt, updatedAt, deletedAt);
@@ -73,6 +78,7 @@ public class ProfileEntity extends AuditInfo {
         this.id = id;
         this.nickname = nickname;
         this.birth = birth;
+        this.sex = Sex.of(sex);
         this.bio = bio;
     }
 

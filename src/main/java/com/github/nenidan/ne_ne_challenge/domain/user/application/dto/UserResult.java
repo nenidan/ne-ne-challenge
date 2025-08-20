@@ -1,10 +1,10 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.application.dto;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
@@ -18,7 +18,7 @@ public class UserResult {
 
     private String nickname;
 
-    private LocalDate birth;
+    private String birth;
 
     private String bio;
 

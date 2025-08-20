@@ -1,8 +1,9 @@
 package com.github.nenidan.ne_ne_challenge.domain.admin.application.mapper;
 
+import org.mapstruct.Mapper;
+
 import com.github.nenidan.ne_ne_challenge.domain.admin.domain.model.AopLogModel;
 import com.github.nenidan.ne_ne_challenge.domain.admin.infrastructure.entity.AopLog;
-import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface AopLogMapper {

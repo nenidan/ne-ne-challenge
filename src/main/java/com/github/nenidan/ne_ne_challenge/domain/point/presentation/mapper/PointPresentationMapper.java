@@ -3,11 +3,13 @@ package com.github.nenidan.ne_ne_challenge.domain.point.presentation.mapper;
 import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.request.PointAmountCommand;
 import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.request.PointChargeCommand;
 import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.request.PointRefundCommand;
+import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.request.PointSearchCommand;
 import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.response.PointBalanceResult;
 import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.response.PointHistoryResult;
 import com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.request.PointAmountRequest;
 import com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.request.PointChargeRequest;
 import com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.request.PointRefundRequest;
+import com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.request.PointSearchRequest;
 import com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.response.PointBalanceResponse;
 import com.github.nenidan.ne_ne_challenge.domain.point.presentation.dto.response.PointHistoryResponse;
 
@@ -23,7 +25,7 @@ public class PointPresentationMapper {
         return new PointHistoryResponse(
             result.getPointTransactionId(),
             result.getAmount(),
-            result.getReason(),
+            result.getReason().name(),
             result.getDescription()
         );
     }
@@ -33,6 +35,16 @@ public class PointPresentationMapper {
             request.getAmount(),
             request.getReason(),
             request.getOrderId()
+        );
+    }
+
+    public static PointSearchCommand toPointSearchCommand(PointSearchRequest request) {
+        return new PointSearchCommand(
+            request.getCursor(),
+            request.getSize(),
+            request.getReason(),
+            request.getStartDate(),
+            request.getEndDate()
         );
     }
 

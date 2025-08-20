@@ -1,24 +1,22 @@
-version: "3.8"
-
 services:
   app:
     image: ${DOCKERHUB_USERNAME}/my-spring-app:latest
     container_name: my-app
-    env_file:
-      - .env
     ports:
       - "8080:8080"
     depends_on:
-      - mysql
-      - redis
+      redis:
+        condition: service_healthy
+    env_file:
+      - .env
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      DB_URL: ${DB_URL}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
+      SPRING_DATASOURCE_URL: ${DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       SECRET_KEY: ${SECRET_KEY}
-      SPRING_REDIS_HOST: ${SPRING_REDIS_HOST}
-      SPRING_REDIS_PORT: ${SPRING_REDIS_PORT}
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
       TOSS_SECRET_KEY: ${TOSS_SECRET_KEY}
       TOSS_CLIENT_KEY: ${TOSS_CLIENT_KEY}
       TOSS_BASE_URL: ${TOSS_BASE_URL}
@@ -26,8 +24,12 @@ services:
       KAKAO_REDIRECT_URI: ${KAKAO_REDIRECT_URI}
       NAVER_CLIENT_ID: ${NAVER_CLIENT_ID}
       NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET}
+      SPRING_ELASTICSEARCH_URIS: ${SPRING_ELASTICSEARCH_URIS}
     volumes:
-      - /home/ubuntu/my-app/firebase-key.json:/app/firebase/firebase-key.json
+      - /home/ubuntu/my-app/firebase-key.json:/app/firebase/firebase-key.json:ro
+    networks:
+      - app-network
+      - search   # 외부 elasticsearch와 연결할 네트워크 (external)
 
   redis:
     image: redis
@@ -36,18 +38,34 @@ services:
       - "6379:6379"
     volumes:
       - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - app-network
 
-  mysql:
-    image: mysql:8
-    container_name: mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      MYSQL_DATABASE: mydb
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
     ports:
-      - "3306:3306"
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
     volumes:
-      - mysql-data:/var/lib/mysql
+      - grafana_data:/var/lib/grafana
+    networks:
+      - monitoring
 
 volumes:
-  mysql-data:
   redis-data:
+  grafana_data:
+
+networks:
+  app-network:
+    driver: bridge
+  monitoring:
+    driver: bridge
+  search:
+    external: true   # ES/Kibana용 compose에서 생성

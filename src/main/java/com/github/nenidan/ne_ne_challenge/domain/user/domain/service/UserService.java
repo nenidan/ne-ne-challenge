@@ -3,10 +3,13 @@ package com.github.nenidan.ne_ne_challenge.domain.user.domain.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.github.nenidan.ne_ne_challenge.domain.user.application.client.oauth.dto.OAuthUserInfo;
+import com.github.nenidan.ne_ne_challenge.domain.user.domain.event.UserDeletedEvent;
+import com.github.nenidan.ne_ne_challenge.domain.user.domain.event.UserSavedEvent;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.exception.UserErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.exception.UserException;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.model.Account;
@@ -15,7 +18,6 @@ import com.github.nenidan.ne_ne_challenge.domain.user.domain.model.User;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.model.vo.SocialAccount;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.repository.UserRepository;
 import com.github.nenidan.ne_ne_challenge.domain.user.domain.type.Role;
-import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserService {
 
+    private final ApplicationEventPublisher eventPublisher;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -40,7 +43,10 @@ public class UserService {
             user.updatePassword(passwordEncoder.encode(user.getAccount().getPassword()));
         }
 
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        eventPublisher.publishEvent(new UserSavedEvent(savedUser));
+
+        return savedUser;
     }
 
     public User login(String email, String password) {
@@ -60,16 +66,12 @@ public class UserService {
         );
     }
 
-    public CursorResponse<User, String> searchProfiles(String cursor, int size, String keyword) {
-        List<User> userList = userRepository.findByKeyword(cursor, keyword, size + 1);
+    public List<User> getProfiles() {
+        return userRepository.findAll();
+    }
 
-        boolean hasNext = userList.size() > size;
-
-        List<User> content = hasNext ? userList.subList(0, size) : userList;
-
-        String nextCursor = hasNext ? userList.get(userList.size() - 1).getProfile().getNickname() : null;
-
-        return new CursorResponse<>(content, nextCursor, userList.size() > size);
+    public List<User> searchProfiles(String cursor, int size, String keyword) {
+        return userRepository.findByKeyword(cursor, keyword, size + 1);
     }
 
     public User updateProfile(Long id, Profile profile) {
@@ -78,6 +80,7 @@ public class UserService {
         );
 
         user.updateProfile(profile);
+        eventPublisher.publishEvent(new UserSavedEvent(user));
 
         return userRepository.update(user);
     }
@@ -117,6 +120,7 @@ public class UserService {
         findUser.delete();
 
         userRepository.delete(findUser);
+        eventPublisher.publishEvent(new UserDeletedEvent(id));
     }
 
     public void verifyPassword(Long id, String password) {
@@ -145,6 +149,7 @@ public class UserService {
         Role newRole = Role.of(role);
 
         findUser.updateRole(newRole);
+        eventPublisher.publishEvent(new UserSavedEvent(findUser));
 
         return userRepository.update(findUser);
     }

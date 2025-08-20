@@ -1,12 +1,14 @@
 package com.github.nenidan.ne_ne_challenge.global.listener;
 
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.github.nenidan.ne_ne_challenge.domain.notification.application.dto.request.SendNotificationRequest;
 import com.github.nenidan.ne_ne_challenge.domain.notification.application.service.NotificationService;
 import com.github.nenidan.ne_ne_challenge.domain.notification.domain.entity.NotificationType;
 import com.github.nenidan.ne_ne_challenge.domain.notification.infrastructure.fcm.Platform;
+import com.github.nenidan.ne_ne_challenge.domain.payment.domain.event.PaymentCompletedEvent;
 import com.github.nenidan.ne_ne_challenge.global.client.user.UserClient;
 import com.github.nenidan.ne_ne_challenge.global.client.user.dto.UserResponse;
 import com.github.nenidan.ne_ne_challenge.global.event.ChallengeClearedEvent;
@@ -19,6 +21,7 @@ public class NotificationEventListener {
 	private final NotificationService notificationService;
 	private final UserClient userClient;
 
+	@Async
 	@EventListener
 	/*
     리스너 설명 및 주요 옵션
@@ -45,14 +48,27 @@ public class NotificationEventListener {
 	public void handle(ChallengeClearedEvent event) {
 		UserResponse userResponse = userClient.getUserById(event.getUserId());
 
-		//TODO challengeName = challengeService.getTitle(event.getChallengeId()); 첼린지 MVP 완료 후 작성
-
 		String title = " 챌린지 완료!";
 		String content = userResponse.getNickname() + "님이 첼린지를 완료했습니다.";
 
 		notificationService.send(new SendNotificationRequest(
 			title, content,
 			NotificationType.CHALLENGE_ENDED,
+			event.getUserId(), null, Platform.WEB
+		));
+	}
+
+	@Async
+	@EventListener
+	public void handlePaymentCompleted(PaymentCompletedEvent event) {
+		UserResponse userResponse = userClient.getUserById(event.getUserId());
+
+		String title = "결제 완료!";
+		String content = userResponse.getNickname() + "님이 " + event.getAmount() + "원 결제가 완료되었습니다.";
+
+		notificationService.send(new SendNotificationRequest(
+			title, content,
+			NotificationType.PAYMENT_SUCCESS,
 			event.getUserId(), null, Platform.WEB
 		));
 	}

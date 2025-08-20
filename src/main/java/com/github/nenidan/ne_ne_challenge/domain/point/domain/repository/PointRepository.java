@@ -4,9 +4,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import com.github.nenidan.ne_ne_challenge.domain.point.domain.Point;
-import com.github.nenidan.ne_ne_challenge.domain.point.domain.PointTransaction;
-import com.github.nenidan.ne_ne_challenge.domain.point.domain.PointWallet;
+import com.github.nenidan.ne_ne_challenge.domain.point.domain.model.Point;
+import com.github.nenidan.ne_ne_challenge.domain.point.domain.model.PointTransaction;
+import com.github.nenidan.ne_ne_challenge.domain.point.domain.model.PointWallet;
 import com.github.nenidan.ne_ne_challenge.domain.point.domain.type.PointReason;
 
 public interface PointRepository {
@@ -34,4 +34,6 @@ public interface PointRepository {
     Optional<Point> findBySourceOrderId(String orderId);
 
     List<Point> findUsablePointsByWalletId(Long walletId);
+
+    List<PointTransaction> findAll();
 }

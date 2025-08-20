@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.PaymentFacade;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentCancelResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentConfirmResult;
+import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentPrepareResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.application.dto.response.PaymentSearchResult;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.request.PaymentCancelRequest;
 import com.github.nenidan.ne_ne_challenge.domain.payment.presentation.dto.request.PaymentConfirmRequest;
@@ -42,48 +43,39 @@ public class PaymentController {
     private final PaymentFacade paymentFacade;
 
     /**
-     * 포인트 충전을 위한 결제 준비 API
+     * 토스 결제 요청 전, orderId와 amount를 데이터베이스에 저장하기 위한 API
+     * @param auth 인증된 사용자 정보
+     * @param request amount(요청 가격)
+     * @return amount(요청 가격), orderId(UUID로 생성된 고유 ID), orderName(주문한 상품 이름 예: 포인트 10,000원)
      *
-     * 토스페이먼츠 결제창 호출 전에 필요한 결제 정보를 생성하고 저장합니다.
-     * 결제 상태는 PENDING으로 초기화되며, 실제 결제는 confirm API에서 처리됩니다.
-     * /payments/confirm API 호출 후에 포인트 충전을 성공하면 결제 상태가 DONE, 실패하면 결제상태가 FAIL로 저장됩니다.
-     *
-     * 처리 과정
-     *
-     * 고유한 주문 ID 생성 (UUID)
-     * Payment 엔티티 생성 및 DB 저장 (상태: PENDING)
-     * 프론트엔드에서 토스 결제창 호출에 필요한 정보 반환
-     * 토스 공식문서에서 /payments/confirm 요청 시 필요한 정보 반환
-     * amount, orderId, orderName
-     *
-     * 결제 플로우
-     *
-     * 1. prepare (현재 API) → Payment 생성 (PENDING)
-     * 2. 토스 결제창 → 사용자 결제 진행
-     * 3. confirm API → 결제 확인 및 포인트 충전
-     *
+     * 토스에서는 결제 요청 전 orderId와 amount를 세션이나 데이터베이스에 저장하는 것을 적극 권장한다.
+     * @see <a href="https://docs.tosspayments.com/guides/v2/get-started/payment-flow#%EB%8D%94-%EC%95%8C%EC%95%84%EB%B3%B4%EA%B8%B0">토스페이먼츠 가이드</a>
      */
     @PostMapping("/payments/prepare")
     public ResponseEntity<ApiResponse<PaymentPrepareResponse>> preparePayment(
-        @Valid @RequestBody PaymentPrepareRequest request,
-        @AuthenticationPrincipal Auth auth
+        @AuthenticationPrincipal Auth auth,
+        @Valid @RequestBody PaymentPrepareRequest request
     ) {
+
+        PaymentPrepareResult result = paymentFacade.preparePayment(auth.getId(),
+            PaymentPresentationMapper.toPaymentPrepareCommand(request));
 
         return ApiResponse.success(
             HttpStatus.CREATED,
             "결제 준비가 완료되었습니다.",
-            PaymentPresentationMapper.toPaymentPrepareResponse(
-                paymentFacade.createPreparePayment(
-                    auth.getId(),
-                    PaymentPresentationMapper.toPaymentPrepareCommand(request)
-                )
-            )
+            PaymentPresentationMapper.toPaymentPrepareResponse(result)
         );
     }
 
+    /**
+     * 토스페이 결제 승인 및 포인트 충전 API
+     * @param request 토스페이먼츠에서 제공한 결제 정보 (paymentKey, orderId, amount)
+     * @param auth 인증된 사용자 정보
+     * @return 결제 승인 결과 (orderId, amount, method, status, approvedAt)
+     */
     @PostMapping("/payments/confirm")
     public ResponseEntity<ApiResponse<PaymentConfirmResponse>> confirmAndChargePoint(
-        @RequestBody PaymentConfirmRequest request,
+        @Valid @RequestBody PaymentConfirmRequest request,
         @AuthenticationPrincipal Auth auth) {
 
         PaymentConfirmResult paymentConfirmResult = paymentFacade.confirmAndChargePoint(
@@ -93,10 +85,18 @@ public class PaymentController {
 
         return ApiResponse.success(
             HttpStatus.OK,
-            "포인트 충전이 완료되었습니다.",
+            "결제가 완료되었습니다. 포인트는 1~2분 이내로 충전될 예정입니다.",
             PaymentPresentationMapper.toPaymentConfirmResponse(paymentConfirmResult));
     }
 
+    /**
+     * 결제 취소 API
+     * 사용자는 자신이 결제한 포인트 중에서, 7일 이내의 사용되지 않은 포인트는 환불이 가능하다.
+     * @param auth 인증된 사용자 정보
+     * @param orderId 결제할 때 사용한 orderId
+     * @param request 환불 사유(예: 단순 변심)
+     * @return 결제 취소 결과
+     */
     @PostMapping("/payments/{orderId}/cancel")
     public ResponseEntity<ApiResponse<PaymentCancelResponse>> cancelPayment(
         @AuthenticationPrincipal Auth auth,
@@ -113,6 +113,12 @@ public class PaymentController {
         );
     }
 
+    /**
+     * 나의 결제 내역 조회 API
+     * @param auth 인증된 사용자 정보
+     * @param request 결제 내역 검색 조건(cursor, size, status, startDate, endDate)
+     * @return 커서 기반의 자신의 결제 내역
+     */
     @GetMapping("/payments")
     public ResponseEntity<ApiResponse<CursorResponse<PaymentSearchResponse, Long>>> searchMyPayments(
         @AuthenticationPrincipal Auth auth,

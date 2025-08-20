@@ -1,12 +1,9 @@
 package com.github.nenidan.ne_ne_challenge.domain.point.application;
 
-import java.time.LocalDate;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.request.PointAmountCommand;
-import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.request.PointChargeCommand;
-import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.request.PointRefundCommand;
+import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.request.PointSearchCommand;
 import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.response.PointBalanceResult;
 import com.github.nenidan.ne_ne_challenge.domain.point.application.dto.response.PointHistoryResult;
 import com.github.nenidan.ne_ne_challenge.global.client.user.UserClient;
@@ -17,55 +14,26 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Service
+@Component
 @RequiredArgsConstructor
-public class PointFacade {
+ public class PointFacade {
 
     private final UserClient userClient;
     private final PointService pointService;
 
+    // ============================= 나의 잔액 조회 =============================
     public PointBalanceResult getMyBalance(Long userId) {
 
-        UserResponse user = userClient.getUserById(userId);
-
-        return pointService.getBalance(user.getId());
-    }
-
-    public CursorResponse<PointHistoryResult, Long> searchMyPointHistory(Long userId, Long cursor, int size,
-        String reason, LocalDate startDate, LocalDate endDate) {
-
-        UserResponse user = userClient.getUserById(userId);
-
-        return pointService.searchMyPointHistory(user.getId(), cursor, size, reason, startDate, endDate);
-    }
-
-    public void createPointWallet(Long userId) {
-        pointService.createPointWallet(userId);
-    }
-
-    public void charge(Long userId, PointChargeCommand pointChargeCommand) {
-        pointService.charge(userId, pointChargeCommand);
-    }
-
-    public void increase(Long userId, PointAmountCommand pointAmountCommand) {
-
         userClient.getUserById(userId);
 
-        pointService.increase(userId, pointAmountCommand);
+        return pointService.getBalance(userId);
     }
 
-    public void decrease(Long userId, PointAmountCommand pointAmountCommand) {
+    // ============================= 나의 포인트 사용 이력 조회 =============================
+    public CursorResponse<PointHistoryResult, Long> searchMyPointHistory(Long userId, PointSearchCommand command) {
 
-        userClient.getUserById(userId);
+        UserResponse user = userClient.getUserById(userId);
 
-        pointService.decrease(userId, pointAmountCommand);
-    }
-
-    public void cancelPoint(String orderId) {
-        pointService.cancelPoint(orderId);
-    }
-
-    public void refundPoints(PointRefundCommand pointRefundCommand) {
-        pointService.refundPoints(pointRefundCommand);
+        return pointService.searchMyPointHistory(user.getId(), command);
     }
 }

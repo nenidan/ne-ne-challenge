@@ -1,23 +1,24 @@
 package com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity;
 
-import org.hibernate.annotations.SQLRestriction;
+import java.time.LocalDate;
 
+import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.exception.ChallengeErrorCode;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.exception.ChallengeException;
 import com.github.nenidan.ne_ne_challenge.global.entity.BaseEntity;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @NoArgsConstructor
-@SQLRestriction("deleted_at IS NULL")
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"userId", "challengeId", "date"}))
 public class History extends BaseEntity {
 
     @Id
@@ -25,19 +26,26 @@ public class History extends BaseEntity {
     private Long id;
 
     private Long userId;
+    private Long challengeId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "challenge_id")
-    private Challenge challenge;
-
-    private String content; // Todo: 인증방식 변경
-
+    private String content;
     private boolean isSuccess;
 
-    public History(Long userId, Challenge challenge, String content, boolean isSuccess) {
+    private LocalDate date;
+
+    private History(Long userId, Long challengeId, String content, boolean isSuccess, LocalDate date) {
+        if(content == null || content.isEmpty()) {
+            throw new ChallengeException(ChallengeErrorCode.EMPTY_HISTORY_CONTENT);
+        }
+
         this.userId = userId;
-        this.challenge = challenge;
+        this.challengeId = challengeId;
         this.content = content;
         this.isSuccess = isSuccess;
+        this.date = date;
+    }
+
+    public static History createSuccesfulHistory(Long userId, Long challengeId, String content) {
+        return new History(userId, challengeId, content, true, LocalDate.now());
     }
 }

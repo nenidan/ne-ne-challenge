@@ -1,5 +1,6 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.presentation.controller.external;
 
+import com.github.nenidan.ne_ne_challenge.global.aop.annotation.AuditIgnore;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -63,7 +64,8 @@ public class AccountController {
     }
 
     @PostMapping("/accounts/login/{provider}")
-    public ResponseEntity<ApiResponse<UserResponse>> login(
+    @AuditIgnore
+    public ResponseEntity<ApiResponse<UserResponse>> loginSns(
             @PathVariable String provider,
             @RequestBody OAuthLoginRequest request
     ) {
@@ -81,10 +83,11 @@ public class AccountController {
 
     @PostMapping("/accounts/logout")
     public ResponseEntity<ApiResponse<Void>> logout(
-            @RequestHeader("Authorization") String bearerToken
+            @RequestHeader("Authorization") String bearerToken,
+            @AuthenticationPrincipal Auth auth
     ) {
 
-        userFacade.logout(bearerToken);
+        userFacade.logout(bearerToken, auth.getId());
 
         return ApiResponse.success(
                 HttpStatus.OK,
@@ -124,9 +127,6 @@ public class AccountController {
         );
     }
 
-
-
-
     @DeleteMapping("/accounts/me")
     public ResponseEntity<ApiResponse<Void>> delete(
             @RequestHeader("Authorization") String bearerToken,
@@ -139,6 +139,18 @@ public class AccountController {
                 HttpStatus.OK,
                 "회원탈퇴가 완료되었습니다.",
                 null
+        );
+    }
+
+    @PostMapping("/accounts/refresh")
+    public ResponseEntity<ApiResponse<Void>> refresh(
+            @RequestHeader("Refresh-Token") String refreshToken
+    ) {
+        return ApiResponse.success(
+                HttpStatus.OK,
+                "토큰 갱신이 완료되었습니다.",
+                null,
+                userFacade.refresh(refreshToken)
         );
     }
 }

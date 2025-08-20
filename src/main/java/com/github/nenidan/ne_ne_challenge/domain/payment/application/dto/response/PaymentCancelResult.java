@@ -13,6 +13,8 @@ public class PaymentCancelResult {
 
     private String status;
 
+    private String paymentKey;
+
     private int refundAmount; // 환불 금액
 
     private String cancelReason;

@@ -20,4 +20,6 @@ public interface PaymentRepository{
     );
 
     Optional<Payment> findByOrderId(String orderId);
+
+    List<Payment> findAll();
 }
