@@ -21,7 +21,7 @@ public class UserMapper {
                         new UserId(profileEntity.getId()),
                         profileEntity.getNickname(),
                         profileEntity.getBirth(),
-                        Sex.of(profileEntity.getSex().name()),
+                        profileEntity.getSex() != null ? Sex.of(profileEntity.getSex().name()) : null,
                         profileEntity.getBio(),
                         profileEntity.getImageId(),
                         new AuditInfo(
@@ -56,7 +56,7 @@ public class UserMapper {
             domain.getId() != null ? domain.getId().getValue() : null,
             domain.getProfile().getNickname(),
             domain.getProfile().getBirth(),
-            domain.getProfile().getSex().name(),
+            domain.getProfile().getSex() != null ? domain.getProfile().getSex().name() : null,
             domain.getProfile().getBio(),
             profileAudit != null ? profileAudit.getDeletedAt() : null,
             profileAudit != null ? profileAudit.getUpdatedAt() : null,

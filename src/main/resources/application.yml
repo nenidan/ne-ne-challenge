@@ -12,7 +12,11 @@ spring:
     show-sql: true
     open-in-view: false
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
+
+springdoc:
+  paths-to-exclude:
+    - /internal/**
 
 # Resilience4j 설정
 resilience4j:
