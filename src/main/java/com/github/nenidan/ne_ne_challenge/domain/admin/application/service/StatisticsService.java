@@ -1,11 +1,10 @@
 package com.github.nenidan.ne_ne_challenge.domain.admin.application.service;
 
-import com.github.nenidan.ne_ne_challenge.domain.admin.application.client.ChallengeClientPort;
-import com.github.nenidan.ne_ne_challenge.domain.admin.application.client.PaymentClientPort;
-import com.github.nenidan.ne_ne_challenge.domain.admin.application.client.PointClientPort;
 import com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.response.stastics.PaymentStatisticsResponse;
 import com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.response.stastics.PointStatisticsResponse;
 import com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.response.stastics.UserStatisticsResponse;
+import com.github.nenidan.ne_ne_challenge.domain.admin.domain.exception.DashboardErrorCode;
+import com.github.nenidan.ne_ne_challenge.domain.admin.domain.exception.DashboardException;
 import com.github.nenidan.ne_ne_challenge.domain.admin.domain.repository.GetStatisticsRepository;
 import com.github.nenidan.ne_ne_challenge.domain.admin.domain.repository.StatisticsRedisRepository;
 import com.github.nenidan.ne_ne_challenge.domain.admin.domain.type.DomainType;
@@ -14,6 +13,7 @@ import com.github.nenidan.ne_ne_challenge.domain.admin.infrastructure.out.Challe
 import com.github.nenidan.ne_ne_challenge.domain.admin.application.dto.response.stastics.ChallengeStatisticsResponse;
 import com.github.nenidan.ne_ne_challenge.domain.admin.infrastructure.out.PaymentDto;
 import com.github.nenidan.ne_ne_challenge.domain.admin.infrastructure.out.PointDto;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -46,11 +46,9 @@ public class StatisticsService {
         ChallengeStatisticsResponse cached = redisRepository.get(key, ChallengeStatisticsResponse.class);
         if(cached!=null) {return cached;}
 
-            var dto = getStatisticsRepository.findMonthlyOne(DomainType.CHALLENGE, ym)
+            return getStatisticsRepository.findMonthlyOne(DomainType.CHALLENGE, ym)
                     .map(ChallengeStatisticsResponse::fromModel)
-                    .orElse(null);
-
-            return dto;
+                    .orElseThrow(() ->new DashboardException(DashboardErrorCode.CHALLENGE_NOT_FOUND));
     }
 
 
@@ -64,7 +62,7 @@ public class StatisticsService {
 
         var dto = getStatisticsRepository.findMonthlyOne(DomainType.PAYMENT, ym)
                 .map(PaymentStatisticsResponse::fromModel)
-                .orElse(null);
+                .orElseThrow(() -> new DashboardException(DashboardErrorCode.PAYMENT_NOT_FOUND));
 
         return dto;
     }
@@ -79,7 +77,7 @@ public class StatisticsService {
 
         var dto = getStatisticsRepository.findMonthlyOne(DomainType.POINT, ym)
                 .map(PointStatisticsResponse::fromModel)
-                .orElse(null);
+                .orElseThrow(() -> new DashboardException(DashboardErrorCode.POINT_NOT_FOUND));
 
         return dto;
 
@@ -95,7 +93,7 @@ public class StatisticsService {
 
         var dto = getStatisticsRepository.findMonthlyOne(DomainType.USER, ym)
                 .map(UserStatisticsResponse::fromModel)
-                .orElse(null);
+                .orElseThrow(() -> new DashboardException(DashboardErrorCode.USER_NOT_FOUND));
 
         return dto;
 

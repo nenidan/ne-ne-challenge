@@ -27,6 +27,13 @@
             <totalSizeCap>5GB</totalSizeCap> <!-- 전체 용량 5GB 제한 -->
         </rollingPolicy>
     </appender>
+    <!--Appender 비동기로 병행처리하기-->
+    <appender name="ASYNC_AUDIT" class="ch.qos.logback.classic.AsyncAppender">
+        <queueSize>8192</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+        <neverBlock>true</neverBlock>
+        <appender-ref ref="FILE"/>
+    </appender>
 
     <!-- 루트 로거 -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
