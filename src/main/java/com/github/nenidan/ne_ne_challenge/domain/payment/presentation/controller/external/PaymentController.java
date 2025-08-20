@@ -30,10 +30,14 @@ import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 import com.github.nenidan.ne_ne_challenge.global.security.auth.Auth;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+@Tag(name = "결제", description = "결제 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -51,6 +55,10 @@ public class PaymentController {
      * 토스에서는 결제 요청 전 orderId와 amount를 세션이나 데이터베이스에 저장하는 것을 적극 권장한다.
      * @see <a href="https://docs.tosspayments.com/guides/v2/get-started/payment-flow#%EB%8D%94-%EC%95%8C%EC%95%84%EB%B3%B4%EA%B8%B0">토스페이먼츠 가이드</a>
      */
+    @Operation(summary = "결제 준비", description = "토스 결제 전 요청 금액, 주문 id, 주문 상품 이름을 저장합니다.")
+    @ApiResponses({
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "결제 준비가 완료되었습니다."),
+    })
     @PostMapping("/payments/prepare")
     public ResponseEntity<ApiResponse<PaymentPrepareResponse>> preparePayment(
         @AuthenticationPrincipal Auth auth,
