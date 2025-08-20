@@ -46,7 +46,7 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     @Override
     public Product findByIdFromElasticsearch(ProductId productId) {
-        ProductDocument productDocument = productElasticsearchRepository.findById(productId.getValue())
+        ProductDocument productDocument = productElasticsearchRepository.findByIdAndDeletedAtIsNull(productId.getValue())
             .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
         return ProductMapper.fromDocument(productDocument);
     }

@@ -89,6 +89,13 @@ public class SecurityConfig {
                 // prometheus
                 .requestMatchers("/actuator/**").permitAll()
 
+				// swagger
+				.requestMatchers(
+					"/v3/api-docs/**",
+					"/swagger-ui/**",
+					"/swagger-ui.html"
+				).permitAll()
+
                 .requestMatchers("/api/**").authenticated()
 
                 .anyRequest().denyAll()
