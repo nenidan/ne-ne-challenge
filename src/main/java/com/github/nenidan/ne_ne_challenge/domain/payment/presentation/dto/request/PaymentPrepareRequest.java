@@ -4,9 +4,11 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class PaymentPrepareRequest {
 
     @Min(value = 10000, message = "최소 결제 금액은 10,000원 입니다.")

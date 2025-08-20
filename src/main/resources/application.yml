@@ -12,7 +12,7 @@ spring:
     show-sql: true
     open-in-view: false
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
 
 # Resilience4j 설정
 resilience4j:
@@ -70,16 +70,12 @@ management:
     web:
       exposure:
         include: "prometheus"
-#logging:
-#  level:
-#    org.springframework.cache: DEBUG
-#    org.springframework.data.redis.cache: DEBUG
-#
-#    org.springframework.data.elasticsearch.client.elc: DEBUG
-#    org.elasticsearch.client: DEBUG
-#    co.elastic.clients: DEBUG
-#    org.springframework.data.elasticsearch.core: DEBUG
-#    tracer: TRACE
+logging:
+  level:
+    org.springframework.cache: DEBUG
+    org.springframework.data.redis.cache: DEBUG
+  file:
+    path: ${LOG_DIR:./logs}
 
 ---
 spring:
@@ -123,8 +119,8 @@ spring:
 
   data:
     redis:
-      host: ${SPRING_REDIS_HOST:redis}
-      port: ${SPRING_REDIS_PORT:6379}
+      host: ${SPRING_REDIS_HOST}
+      port: ${SPRING_REDIS_PORT}
 
   elasticsearch:
     uris: ${ELASTIC_SEARCH_URL}

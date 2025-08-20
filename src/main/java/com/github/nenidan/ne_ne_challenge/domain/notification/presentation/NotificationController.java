@@ -1,5 +1,6 @@
 package com.github.nenidan.ne_ne_challenge.domain.notification.presentation;
 
+import com.github.nenidan.ne_ne_challenge.global.aop.annotation.AuditIgnore;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,6 +39,7 @@ public class NotificationController {
 		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "서버 오류")
 	})
 	@PostMapping("/notifications/send")
+	@AuditIgnore
 	public ResponseEntity<ApiResponse<Void>> send(@RequestBody SendNotificationRequest notificationRequest){
 		return ApiResponse.success(
 			HttpStatus.OK,
@@ -52,6 +54,7 @@ public class NotificationController {
 		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "서버 오류")
 	})
 	@PatchMapping("/notifications/{id}")
+	@AuditIgnore
 	public ResponseEntity<ApiResponse<Void>> read(@RequestBody ReadNotificationRequest request,@PathVariable Long id){
 		return ApiResponse.success(
 			HttpStatus.OK,
@@ -73,6 +76,7 @@ public class NotificationController {
 		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "서버 오류")
 	})
 	@GetMapping("/notifications")
+	@AuditIgnore
 	public ResponseEntity<ApiResponse<CursorResponse<NotificationResponse, Long>>> searchNotifications(
 		@RequestParam Long userId,
 		@RequestParam(defaultValue = "all") String isRead,

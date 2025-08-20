@@ -1,5 +1,6 @@
 package com.github.nenidan.ne_ne_challenge.domain.notification.presentation;
 
+import com.github.nenidan.ne_ne_challenge.global.aop.annotation.AuditIgnore;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +31,7 @@ public class FcmTokenController {
 		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "서버 오류")
 	})
 	@PostMapping("/fcm/token/{userId}")
+	@AuditIgnore
 	public ResponseEntity<ApiResponse<Void>> saveToken(@PathVariable Long userId, @RequestBody FcmTokenRequest request) {
 		return ApiResponse.success(
 			HttpStatus.OK,

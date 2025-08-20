@@ -1,14 +1,17 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.product.presentation.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 public class UpdateProductRequest {
 
-    private final String productName;
-    private final String productDescription;
-    private final Integer productPrice;
+    private String productName;
+    private String productDescription;
+    private Integer productPrice;
 }
 
