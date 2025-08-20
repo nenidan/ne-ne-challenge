@@ -3,6 +3,7 @@ package com.github.nenidan.ne_ne_challenge.domain.shop.product.presentation.cont
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,11 +26,17 @@ import com.github.nenidan.ne_ne_challenge.domain.shop.product.presentation.mappe
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ProductController {
 
     private final ProductFacade productFacade;
@@ -38,6 +45,8 @@ public class ProductController {
         this.productFacade = productFacade;
     }
 
+    @Operation(summary = "상품 생성", description = "상품을 생성합니다.")
+    @Tag(name = "상품 관리")
     @PostMapping("/products")
     public ResponseEntity<ApiResponse<ProductResponse>> createProduct(
         @RequestBody @Valid CreateProductRequest createProductRequest
@@ -49,6 +58,14 @@ public class ProductController {
         return ApiResponse.success(HttpStatus.CREATED, "상품이 성공적으로 등록되었습니다.", productResponse);
     }
 
+    @Operation(summary = "상품 정보 수정", description = "특정 상품 정보를 수정합니다.")
+    @Tag(name = "상품 관리")
+    @Parameter(
+        name = "id",
+        description = "상품 식별자",
+        example = "1",
+        in = ParameterIn.PATH
+    )
     @PatchMapping("/products/{id}")
     public ResponseEntity<ApiResponse<ProductResponse>> updateProduct(
         @PathVariable Long id,
@@ -61,6 +78,14 @@ public class ProductController {
         return ApiResponse.success(HttpStatus.OK, "상품이 성공적으로 수정되었습니다.", productResponse);
     }
 
+    @Operation(summary = "상품 단 건 조회", description = "특정 상품을 조회합니다.")
+    @Tag(name = "상품 관리")
+    @Parameter(
+        name = "id",
+        description = "상품 식별자",
+        example = "1",
+        in = ParameterIn.PATH
+    )
     @GetMapping("/products/{id}")
     public ResponseEntity<ApiResponse<ProductResponse>> findProduct(
         @PathVariable Long id
@@ -70,6 +95,28 @@ public class ProductController {
         return ApiResponse.success(HttpStatus.OK, "상품이 성공적으로 조회되었습니다.", productResponse);
     }
 
+    @Operation(summary = "상품 다 건 조회", description = "최신 순으로 여러 상품을 조회합니다. (검색 기능 포함)")
+    @Tag(name = "상품 관리")
+    @Parameters({
+        @Parameter(
+            name = "cursor",
+            description = "페이지 기준점",
+            example = "1",
+            in = ParameterIn.QUERY
+        ),
+        @Parameter(
+            name = "size",
+            description = "페이지 크기",
+            example = "30",
+            in = ParameterIn.QUERY
+        ),
+        @Parameter(
+            name = "keyword",
+            description = "검색어",
+            example = "GS25",
+            in = ParameterIn.QUERY
+        ),
+    })
     @GetMapping("/products")
     public ResponseEntity<ApiResponse<CursorResponse<ProductResponse, Long>>> findAllProducts(
         @RequestParam(required = false) List<Object> cursor,
@@ -82,6 +129,14 @@ public class ProductController {
         return ApiResponse.success(HttpStatus.OK, "상품이 성공적으로 조회되었습니다.", productResponseLongCursorResponse);
     }
 
+    @Operation(summary = "상품 삭제", description = "특정 상품을 삭제합니다.")
+    @Tag(name = "상품 관리")
+    @Parameter(
+        name = "id",
+        description = "상품 식별자",
+        example = "1",
+        in = ParameterIn.PATH
+    )
     @DeleteMapping("/products/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteProduct(
         @PathVariable Long id
