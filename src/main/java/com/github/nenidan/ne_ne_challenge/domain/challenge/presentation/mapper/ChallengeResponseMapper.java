@@ -8,6 +8,7 @@ import com.github.nenidan.ne_ne_challenge.domain.challenge.presentation.dto.resp
 import com.github.nenidan.ne_ne_challenge.domain.challenge.presentation.dto.response.ChallengeSuccessRateResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
@@ -19,6 +20,8 @@ public interface ChallengeResponseMapper {
     ChallengeResponseMapper INSTANCE = Mappers.getMapper(ChallengeResponseMapper.class);
 
     ChallengeResponse fromDto(ChallengeDto dto);
+
+    @Mapping(source = "success", target = "isSuccess")
     ChallengeHistoryResponse fromDto(ChallengeHistoryDto dto);
     ChallengeSuccessRateResponse fromDto(ChallengeSuccessRateDto dto);
 

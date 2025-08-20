@@ -9,18 +9,23 @@ import com.github.nenidan.ne_ne_challenge.domain.challenge.presentation.dto.resp
 import com.github.nenidan.ne_ne_challenge.domain.challenge.presentation.mapper.ChallengeRequestMapper;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.presentation.mapper.ChallengeResponseMapper;
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
-import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 import com.github.nenidan.ne_ne_challenge.global.security.auth.Auth;
-import jakarta.validation.constraints.Min;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
+@Tag(name = "챌린지", description = "챌린지 API")
+
 public class ChallengeController {
 
     private static final ChallengeRequestMapper requestMapper = ChallengeRequestMapper.INSTANCE;
@@ -29,6 +34,10 @@ public class ChallengeController {
     private final ChallengeCommandService commandService;
     private final ChallengeQueryService queryService;
 
+    @Operation(summary = "새로운 챌린지 생성", description = "제공한 조건으로 새로운 챌린지를 생성합니다.")
+    @ApiResponses({
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "새로운 챌린지 정상 생성.")
+    })
     @PostMapping("/challenges")
     public ResponseEntity<ApiResponse<ChallengeResponse>> createChallenge(@AuthenticationPrincipal Auth authUser,
         @RequestBody CreateChallengeRequest request
@@ -41,10 +50,11 @@ public class ChallengeController {
         );
     }
 
+    @Operation(summary = "챌린지 정보 수정", description = "대기중(WAITING)인 챌린지의 이름, 설명, 시작/종료일, 카테고리를 수정합니다. 방장만 가능합니다.")
     @PatchMapping("/challenges/{id}")
     public ResponseEntity<ApiResponse<ChallengeResponse>> updateChallengeInfo(@AuthenticationPrincipal Auth authUser,
         @RequestBody UpdateChallengeInfoRequest request,
-        @PathVariable Long id
+        @Parameter(description = "챌린지 ID", example = "1") @PathVariable Long id
     ) {
         commandService.updateChallengeInfo(authUser.getId(), id, requestMapper.toCommand(request));
 
@@ -54,10 +64,11 @@ public class ChallengeController {
         );
     }
 
+    @Operation(summary = "챌린지 상태 변경", description = "참가자 확정(READY) 또는 챌린지 시작(READY)을 요청합니다.")
     @PutMapping("/challenges/{id}/status")
     public ResponseEntity<ApiResponse<ChallengeResponse>> updateChallengeStatus(@AuthenticationPrincipal Auth authUser,
-        @PathVariable Long id,
-        @RequestParam ChallengeStatus status
+        @Parameter(description = "챌린지 ID", example = "1") @PathVariable Long id,
+        @Parameter(description = "변경할 챌린지 상태") @RequestParam ChallengeStatus status
     ) {
         commandService.updateChallengeStatus(authUser.getId(), id, status);
 
@@ -67,9 +78,10 @@ public class ChallengeController {
         );
     }
 
+    @Operation(summary = "챌린지 삭제", description = "아직 시작하지 않은 챌린지를 삭제합니다.")
     @DeleteMapping("/challenges/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteChallenge(@AuthenticationPrincipal Auth authUser,
-        @PathVariable Long id
+        @Parameter(description = "챌린지 ID", example = "1") @PathVariable Long id
     ) {
         commandService.deleteChallenge(authUser.getId(), id);
 
@@ -79,8 +91,9 @@ public class ChallengeController {
         );
     }
 
+    @Operation(summary = "챌린지 참가", description = "지정한 챌린지에 참가합니다.")
     @PostMapping("/challenges/{id}/join")
-    public ResponseEntity<ApiResponse<ChallengeResponse>> joinChallenge(@PathVariable Long id,
+    public ResponseEntity<ApiResponse<ChallengeResponse>> joinChallenge(@Parameter(description = "챌린지 ID", example = "1") @PathVariable Long id,
         @AuthenticationPrincipal Auth authUser
     ) {
         commandService.joinChallenge(authUser.getId(), id);
@@ -91,8 +104,9 @@ public class ChallengeController {
         );
     }
 
+    @Operation(summary = "챌린지 퇴장", description = "참가중인 챌린지에서 퇴장합니다.")
     @PostMapping("/challenges/{id}/quit")
-    public ResponseEntity<ApiResponse<Void>> quitChallenge(@PathVariable Long id,
+    public ResponseEntity<ApiResponse<Void>> quitChallenge(@Parameter(description = "챌린지 ID", example = "1") @PathVariable Long id,
         @AuthenticationPrincipal Auth authUser
     ) {
         commandService.quitChallenge(authUser.getId(), id);
@@ -100,18 +114,6 @@ public class ChallengeController {
         return ApiResponse.success(HttpStatus.OK,
             "챌린지를 나왔습니다.",
             null
-        );
-    }
-    @GetMapping("/challenges/{id}/participants")
-    public ResponseEntity<ApiResponse<CursorResponse<Long, Long>>> searchParticipants(
-        @PathVariable Long id,
-        @RequestParam(defaultValue = "0") Long cursor,
-        @RequestParam(defaultValue = "5") @Min(1) int size
-    ){
-        return ApiResponse.success(
-            HttpStatus.OK,
-            "챌린지 참가자 목록을 조회했습니다.",
-            queryService.findParticipants(id, cursor, size)
         );
     }
 }

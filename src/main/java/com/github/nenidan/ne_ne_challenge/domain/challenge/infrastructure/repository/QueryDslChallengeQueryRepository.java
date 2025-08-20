@@ -42,7 +42,6 @@ public class QueryDslChallengeQueryRepository implements ChallengeQueryRepositor
     @Override
     public List<ChallengeDto> findChallenges(ChallengeSearchCond cond) {
         BooleanBuilder builder = new BooleanBuilder();
-        builder.and(userIdEq(cond.getUserId()));
         builder.and(nameContains(cond.getName()));
         builder.and(statusEq(cond.getStatus()));
         builder.and(startAtGoe(cond.getStartAt()));
@@ -82,10 +81,6 @@ public class QueryDslChallengeQueryRepository implements ChallengeQueryRepositor
 
     private BooleanExpression notSoftDeleted() {
         return challenge.deletedAt.isNull();
-    }
-
-    private BooleanExpression userIdEq(Long userId) {
-        return userId == null ? null : participant.userId.eq(userId);
     }
 
     private BooleanExpression nameContains(String name) {
