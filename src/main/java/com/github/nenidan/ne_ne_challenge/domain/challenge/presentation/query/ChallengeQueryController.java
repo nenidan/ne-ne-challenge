@@ -1,56 +1,54 @@
 package com.github.nenidan.ne_ne_challenge.domain.challenge.presentation.query;
 
-import java.time.LocalDateTime;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.ChallengeQueryService;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.request.ChallengeSearchCond;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.request.HistorySearchCond;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.response.ChallengeHistoryResponse;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.response.ChallengeResponse;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.response.ChallengeSuccessRateResponse;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.presentation.dto.request.ChallengeSearchRequest;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.presentation.dto.request.HistorySearchRequest;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.presentation.dto.response.ChallengeHistoryResponse;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.presentation.dto.response.ChallengeResponse;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.presentation.dto.response.ChallengeSuccessRateResponse;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.presentation.mapper.ChallengeRequestMapper;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.presentation.mapper.ChallengeResponseMapper;
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class ChallengeQueryController {
 
+    private final ChallengeRequestMapper requestMapper = ChallengeRequestMapper.INSTANCE;
+    private final ChallengeResponseMapper responseMapper = ChallengeResponseMapper.INSTANCE;
+
     private final ChallengeQueryService queryService;
 
     @GetMapping("/challenges/{id}")
     public ResponseEntity<ApiResponse<ChallengeResponse>> getChallenge(@PathVariable Long id) {
-        return ApiResponse.success(HttpStatus.OK, "챌린지를 조회했습니다.", queryService.findChallengeById(id));
+        return ApiResponse.success(HttpStatus.OK, "챌린지를 조회했습니다.", responseMapper.fromDto(queryService.findChallengeById(id)));
     }
 
     @GetMapping("/challenges")
-    public ResponseEntity<ApiResponse<CursorResponse<ChallengeResponse, LocalDateTime>>> getChallengeList(@ModelAttribute ChallengeSearchCond cond) {
+    public ResponseEntity<ApiResponse<CursorResponse<ChallengeResponse, LocalDateTime>>> getChallengeList(@ModelAttribute ChallengeSearchRequest request) {
         return ApiResponse.success(HttpStatus.OK,
             "챌린지 목록을 조회했습니다.",
-            queryService.getChallengeList(cond)
+            responseMapper.fromChallengeCursorDto(queryService.getChallengeList(requestMapper.toCond(request)))
         );
     }
 
     @GetMapping("/challenges/{id}/history")
     public ResponseEntity<ApiResponse<CursorResponse<ChallengeHistoryResponse, LocalDateTime>>> getHistoryList(
         @PathVariable("id") Long challengeId,
-        @Valid @ModelAttribute HistorySearchCond cond
+        @Valid @ModelAttribute HistorySearchRequest request
     ) {
         return ApiResponse.success(HttpStatus.OK,
             "챌린지 기록을 조회했습니다.",
-            queryService.getHistoryList(challengeId, cond)
+            responseMapper.fromChallengeHistoryCursorDto(queryService.getHistoryList(challengeId, requestMapper.toCond(request)))
         );
     }
 
@@ -60,7 +58,7 @@ public class ChallengeQueryController {
     ) {
         return ApiResponse.success(HttpStatus.OK,
             "현재까지의 인증율을 조회했습니다.",
-            queryService.getSuccessRate(userId, id)
+            responseMapper.fromDto(queryService.getSuccessRate(userId, id))
         );
     }
 }

@@ -11,7 +11,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.request.ChallengeSearchCond;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.response.ChallengeResponse;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.response.ChallengeDto;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.repository.ChallengeQueryRepository;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeCategory;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus;
@@ -30,8 +30,8 @@ public class QueryDslChallengeQueryRepository implements ChallengeQueryRepositor
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Optional<ChallengeResponse> findChallengeById(Long challengeId) {
-        ChallengeResponse result = projectToChallengeResponse()
+    public Optional<ChallengeDto> findChallengeById(Long challengeId) {
+        ChallengeDto result = projectToChallengeResponse()
             .from(challenge)
             .where(challenge.id.eq(challengeId).and(notSoftDeleted()))
             .fetchOne();
@@ -40,7 +40,7 @@ public class QueryDslChallengeQueryRepository implements ChallengeQueryRepositor
     }
 
     @Override
-    public List<ChallengeResponse> findChallenges(ChallengeSearchCond cond) {
+    public List<ChallengeDto> findChallenges(ChallengeSearchCond cond) {
         BooleanBuilder builder = new BooleanBuilder();
         builder.and(userIdEq(cond.getUserId()));
         builder.and(nameContains(cond.getName()));
@@ -60,9 +60,9 @@ public class QueryDslChallengeQueryRepository implements ChallengeQueryRepositor
             .fetch();
     }
 
-    private JPAQuery<ChallengeResponse> projectToChallengeResponse() {
+    private JPAQuery<ChallengeDto> projectToChallengeResponse() {
         return queryFactory
-            .select(Projections.bean(ChallengeResponse.class,
+            .select(Projections.bean(ChallengeDto.class,
                 challenge.id,
                 challenge.name,
                 challenge.description,

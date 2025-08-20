@@ -1,30 +1,35 @@
-package com.github.nenidan.ne_ne_challenge.domain.challenge.domain.dto;
-
-import java.time.LocalDate;
+package com.github.nenidan.ne_ne_challenge.domain.challenge.presentation.dto.response;
 
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeCategory;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus;
+import lombok.*;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@AllArgsConstructor
 @NoArgsConstructor
-public class ChallengeRequestInfo {
+public class ChallengeResponse {
+
+    private Long id;
 
     private String name;
     private String description;
-
     private ChallengeStatus status;
     private ChallengeCategory category;
 
     private int minParticipants;
     private int maxParticipants;
 
-    private LocalDate startAt;
-    private LocalDate dueAt;
-
     private int participationFee;
+    private int totalFee;
+
+    private LocalDate dueAt;
+    private LocalDate startAt;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private LocalDateTime deletedAt;
 }

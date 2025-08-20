@@ -1,15 +1,12 @@
-package com.github.nenidan.ne_ne_challenge.domain.challenge.application.command.dto;
+package com.github.nenidan.ne_ne_challenge.domain.challenge.presentation.dto.request;
+
+import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeCategory;
+import lombok.Getter;
 
 import java.time.LocalDate;
 
-import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeCategory;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 @Getter
-@AllArgsConstructor
-public class CreateChallengeCommand {
+public class CreateChallengeRequest {
 
     private String name;
     private String description;
