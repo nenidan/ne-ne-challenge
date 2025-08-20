@@ -109,6 +109,10 @@ public class PaymentController {
      * @param request 환불 사유(예: 단순 변심)
      * @return 결제 취소 결과
      */
+    @Operation(summary = "결제 취소", description = "7일 이내의 사용하지 않은 포인트를 결제 취소합니다.")
+    @ApiResponses({
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "결제 취소가 완료되었습니다."),
+    })
     @PostMapping("/payments/{orderId}/cancel")
     public ResponseEntity<ApiResponse<PaymentCancelResponse>> cancelPayment(
         @AuthenticationPrincipal Auth auth,
