@@ -84,10 +84,10 @@ public class ChallengeQueryController {
     public ResponseEntity<ApiResponse<CursorResponse<Long, Long>>> searchParticipants(
         @Parameter(description = "챌린지 ID", example = "1") @PathVariable Long id,
 
-        @Parameter(description = "커서 기반 페이지네이션 키. 키보다 큰 값을 가져옵니다. 기본값은 0입니다.", example = "10")
+        @Parameter(description = "커서 기반 페이지네이션 키. 키보다 큰 값을 가져옵니다. 기본값은 0입니다.", example = "0")
         @RequestParam(defaultValue = "0") Long cursor,
 
-        @Parameter(description = "한 번에 조회할 데이터 개수. 최소 1 이상, 기본값은 5입니다.", example = "20")
+        @Parameter(description = "한 번에 조회할 데이터 개수. 최소 1 이상, 기본값은 5입니다.", example = "5")
         @RequestParam(defaultValue = "5") @Min(1) int size
     ){
         return ApiResponse.success(

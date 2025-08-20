@@ -29,16 +29,22 @@ public class ChallengeResponse {
     @Schema(description = "챌린지 카테고리", example = "HABIT")
     private ChallengeCategory category;
 
+    @Schema(description = "방장의 사용자 ID", example = "22")
+    private Long hostId;
+
     @Schema(description = "최소 참여 인원", example = "2")
     private int minParticipants;
 
     @Schema(description = "최대 참여 인원", example = "5")
     private int maxParticipants;
 
+    @Schema(description = "현재 참여 인원", example = "4")
+    private int currentParticipantCount;
+
     @Schema(description = "참가비", example = "1000")
     private int participationFee;
 
-    @Schema(description = "총 참가비", example = "7000")
+    @Schema(description = "총 참가비", example = "4000")
     private int totalFee;
 
     @Schema(description = "챌린지 종료일", example = "2025-09-30")

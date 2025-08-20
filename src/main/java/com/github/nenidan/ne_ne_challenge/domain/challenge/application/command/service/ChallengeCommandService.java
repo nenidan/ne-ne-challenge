@@ -57,7 +57,7 @@ public class ChallengeCommandService {
     public void updateChallengeInfo(Long requesterId, Long challengeId, UpdateChallengeInfoCommand command) {
         Challenge challenge = getChallengeOrThrow(challengeId);
 
-        challenge.updateInfo(requesterId, command);
+        challenge.updateInfo(requesterId, challengeMapper.toInfo(command));
     }
 
     public void deleteChallenge(Long requesterId, Long challengeId) {
@@ -106,9 +106,9 @@ public class ChallengeCommandService {
         Challenge challenge = getChallengeOrThrow(challengeId);
 
         if (newStatus == READY) {
-            challenge.ready();
+            challenge.ready(userId);
         } else if (newStatus == ONGOING) {
-            challenge.start();
+            challenge.start(userId);
         } else {
             throw new ChallengeException(ChallengeErrorCode.INVALID_STATUS_TRANSITION);
         }

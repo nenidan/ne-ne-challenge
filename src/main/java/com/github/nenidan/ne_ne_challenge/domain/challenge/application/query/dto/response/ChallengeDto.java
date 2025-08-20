@@ -24,8 +24,11 @@ public class ChallengeDto {
     private ChallengeStatus status;
     private ChallengeCategory category;
 
+    private Long hostId;
+
     private int minParticipants;
     private int maxParticipants;
+    private int currentParticipantCount;
 
     private int participationFee;
     private int totalFee;

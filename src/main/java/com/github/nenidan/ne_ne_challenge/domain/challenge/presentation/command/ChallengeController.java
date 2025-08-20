@@ -36,7 +36,7 @@ public class ChallengeController {
 
     @Operation(summary = "새로운 챌린지 생성", description = "제공한 조건으로 새로운 챌린지를 생성합니다.")
     @ApiResponses({
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "새로운 챌린지 정상 생성.")
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "새로운 챌린지 정상 생성")
     })
     @PostMapping("/challenges")
     public ResponseEntity<ApiResponse<ChallengeResponse>> createChallenge(@AuthenticationPrincipal Auth authUser,

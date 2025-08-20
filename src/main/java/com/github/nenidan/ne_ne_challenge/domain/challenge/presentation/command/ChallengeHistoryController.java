@@ -10,6 +10,7 @@ import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
 import com.github.nenidan.ne_ne_challenge.global.security.auth.Auth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,10 @@ public class ChallengeHistoryController {
     private final ChallengeCommandService commandService;
     private final ChallengeQueryService queryService;
 
-    @Operation(summary = "챌린지 참가 기록 생성", description = "오늘의 챌린지 참가 기록을 남깁니다.")
+    @Operation(summary = "챌린지 인증 기록 생성", description = "오늘의 챌린지 인증 기록을 남깁니다.")
+    @ApiResponses({
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "인증 기록 정상 생성")
+    })
     @PostMapping("/challenges/{id}/history")
     public ResponseEntity<ApiResponse<ChallengeHistoryResponse>> verifyProgress(@AuthenticationPrincipal Auth authUser,
         @Parameter(description = "챌린지 ID", example = "1") @PathVariable("id") Long challengeId,
