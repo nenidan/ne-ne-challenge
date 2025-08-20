@@ -1,10 +1,10 @@
 <configuration>
     <!-- 로그 디렉토리 (없으면 ./logs 로 기본 설정) -->
-    <property name="LOG_DIR" value="${LOG_DIR:-./logs}" />
+    <property name="LOG_DIR" value="${LOG_DIR}" />
 
     <!-- 파일 로그 Appender -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_DIR:./logs}/application.log</file>
+        <file>${LOG_DIR}/application.log</file>
         <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
             <providers>
                 <timestamp>
@@ -22,7 +22,7 @@
 
         <!-- 일 단위 로그 롤링 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_DIR:./logs}/application-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>${LOG_DIR}/application-%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory> <!-- 30일 보관 -->
             <totalSizeCap>5GB</totalSizeCap> <!-- 전체 용량 5GB 제한 -->
         </rollingPolicy>
