@@ -78,6 +78,8 @@ public class AdminLogAspect {
             error = t.getClass().getSimpleName() + ": " + Optional.ofNullable(t.getMessage()).orElse("");
             throw t;
         } finally {
+            try {
+
             long took = System.currentTimeMillis() - start;
             TraceContext ctx = TraceContextHolder.get();
 
@@ -118,9 +120,9 @@ public class AdminLogAspect {
             event.put("res", resultJson);
             event.put("error", error);
 
-            try {
                 AUDIT.info(loggingObjectMapper.writeValueAsString(event));
-            } catch (Exception e) {
+
+            } catch (Throwable e) {
                 log.warn("[AUDIT_WRITE_ERR] {}", e.toString());
             }
         }
