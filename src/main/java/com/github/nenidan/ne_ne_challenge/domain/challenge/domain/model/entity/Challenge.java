@@ -236,6 +236,10 @@ public class Challenge extends BaseEntity {
             .findFirst()
             .orElseThrow(() -> new ChallengeException(NOT_PARTICIPATING));
 
+        if(status == WAITING) {
+            totalFee -= participationFee;
+        }
+
         participants.remove(participant);
         currentParticipantCount--;
     }
