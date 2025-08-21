@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ReadNotificationRequest {
 	@Schema(description = "읽음 처리", example = "true")
-	boolean isRead;
+	boolean read;
 }
