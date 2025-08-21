@@ -37,7 +37,12 @@ public class ProductFacade {
     }
 
     public ProductResult updateProduct(Long productId, UpdateProductCommand updateProductCommand) {
-        return productService.updateProduct(productId, updateProductCommand);
+        ProductResult updateProduct = productService.updateProduct(productId, updateProductCommand);
+
+        // 상품 캐시 업데이트
+        productCacheService.putMainPageCache();
+
+        return updateProduct;
     }
 
     public ProductResult findProduct(Long productId) {
@@ -45,7 +50,7 @@ public class ProductFacade {
     }
 
     public CursorResponse<ProductResult, Long> findAllProducts(
-        List<Object> cursor,
+        List<Long> cursor,
         int size,
         String keyword
     ) {
