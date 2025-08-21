@@ -10,14 +10,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
-public class ChallengeResponse {
+public class ChallengeDto {
 
     private Long id;
 
@@ -26,8 +24,11 @@ public class ChallengeResponse {
     private ChallengeStatus status;
     private ChallengeCategory category;
 
+    private Long hostId;
+
     private int minParticipants;
     private int maxParticipants;
+    private int currentParticipantCount;
 
     private int participationFee;
     private int totalFee;

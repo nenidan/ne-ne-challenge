@@ -15,8 +15,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ChallengeSearchCond {
 
-    private Long userId;
-
     private String name;
 
     private ChallengeStatus status;

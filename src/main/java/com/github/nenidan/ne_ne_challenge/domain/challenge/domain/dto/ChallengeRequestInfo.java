@@ -14,8 +14,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ChallengeRequestInfo {
 
-    private Long Id;
-
     private String name;
     private String description;
 

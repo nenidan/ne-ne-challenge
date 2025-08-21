@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class ChallengeSuccessRateResponse {
+public class ChallengeSuccessRateDto {
 
     private int successRate;
 }

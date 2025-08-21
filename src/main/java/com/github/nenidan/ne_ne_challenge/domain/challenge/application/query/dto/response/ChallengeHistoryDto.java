@@ -8,7 +8,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class ChallengeHistoryResponse {
+public class ChallengeHistoryDto {
 
     private Long id;
 
