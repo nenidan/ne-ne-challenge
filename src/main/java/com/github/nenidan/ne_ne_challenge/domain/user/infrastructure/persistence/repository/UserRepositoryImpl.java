@@ -38,7 +38,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public boolean existsByEmail(String email) {
-        return jpaAccountRepository.existsByEmail(email);
+        return jpaAccountRepository.countByEmail(email) != 0L;
     }
 
     @Override

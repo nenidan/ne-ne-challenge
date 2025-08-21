@@ -12,7 +12,7 @@ spring:
     show-sql: true
     open-in-view: false
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
 
 springdoc:
   paths-to-exclude:
