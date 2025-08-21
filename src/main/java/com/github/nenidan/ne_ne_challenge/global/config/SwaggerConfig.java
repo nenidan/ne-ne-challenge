@@ -48,7 +48,7 @@ public class SwaggerConfig {
 
 		return new OpenAPI()
 			.info(info)
-			.servers(List.of(localServer, prodServer));
+			.servers(List.of(prodServer, localServer));
 	}
 
 }
