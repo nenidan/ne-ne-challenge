@@ -95,7 +95,7 @@ public class ProductService {
      */
     @Transactional(readOnly = true)
     public CursorResponse<ProductResult, Long> findAllProducts(
-        List<Object> cursor,
+        List<Long> cursor,
         int size,
         String keyword
     ) {

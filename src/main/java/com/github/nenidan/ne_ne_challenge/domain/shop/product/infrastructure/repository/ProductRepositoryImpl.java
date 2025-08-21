@@ -1,6 +1,7 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.product.infrastructure.repository;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.PageRequest;
@@ -59,7 +60,11 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public List<Product> findAllByKeyword(List<Object> after, int size, String keyword) {
+    public List<Product> findAllByKeyword(List<Long> after, int size, String keyword) {
+        List<Object> afterCursor = (after == null || after.isEmpty())
+            ? null
+            : new ArrayList<>(after);
+
         Query query =
             Query.of(q -> q.bool(b -> {
                 b.mustNot(f -> f.exists(e -> e.field("deletedAt")));
@@ -78,7 +83,7 @@ public class ProductRepositoryImpl implements ProductRepository {
             .withSort(s -> s.field(f -> f.field("id").order(SortOrder.Desc)))
 
             .withPageable(PageRequest.of(0, size))
-            .withSearchAfter(after)
+            .withSearchAfter(afterCursor)
             .withTrackTotalHits(false)
             .build();
 
