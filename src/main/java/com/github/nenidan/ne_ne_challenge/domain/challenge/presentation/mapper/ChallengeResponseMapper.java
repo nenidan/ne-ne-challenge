@@ -21,7 +21,6 @@ public interface ChallengeResponseMapper {
 
     ChallengeResponse fromDto(ChallengeDto dto);
 
-    @Mapping(source = "success", target = "isSuccess")
     ChallengeHistoryResponse fromDto(ChallengeHistoryDto dto);
     ChallengeSuccessRateResponse fromDto(ChallengeSuccessRateDto dto);
 
