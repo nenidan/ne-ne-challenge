@@ -70,6 +70,9 @@ public class ProductFacade {
     public void deleteProduct(Long productId) {
         productService.deleteProduct(productId);
 
+        // 상품 캐시 업데이트
+        productCacheService.putMainPageCache();
+
         // 상품이 삭제될 때, 상품과 관련된 재고와 리뷰도 삭제하기 위해 이벤트 발행
         applicationEventPublisher.publishEvent(new StockDeleteEvent(new ProductId(productId)));
     }

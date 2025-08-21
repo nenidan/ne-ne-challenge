@@ -1,6 +1,11 @@
 package com.github.nenidan.ne_ne_challenge.domain.user.presentation.controller.external;
 
+import com.github.nenidan.ne_ne_challenge.global.aop.annotation.AuditIgnore;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,14 +33,16 @@ import com.github.nenidan.ne_ne_challenge.global.security.auth.Auth;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name="사용자 관리", description = "사용자 관리 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AccountController {
 
     private final UserFacade userFacade;
     private final UserMapper userMapper;
 
+    @Operation(summary = "회원가입", description = "신규 사용자를 등록")
     @PostMapping("/accounts")
     public ResponseEntity<ApiResponse<UserResponse>> join(@RequestBody @Valid JoinRequest joinRequest) {
 
@@ -49,6 +56,7 @@ public class AccountController {
         );
     }
 
+    @Operation(summary = "로그인", description = "사용자 로그인 처리")
     @PostMapping("/accounts/login")
     public ResponseEntity<ApiResponse<UserResponse>> login(@RequestBody @Valid LoginRequest loginRequest) {
 
@@ -62,9 +70,17 @@ public class AccountController {
         );
     }
 
+    @Operation(summary = "소셜 로그인", description = "카카오/네이버 소셜 로그인 처리")
     @PostMapping("/accounts/login/{provider}")
-    public ResponseEntity<ApiResponse<UserResponse>> login(
+    @AuditIgnore
+    public ResponseEntity<ApiResponse<UserResponse>> loginSns(
+            @Parameter(
+                    description = "소셜 로그인 공급자",
+                    example = "naver",
+                    required = true
+            )
             @PathVariable String provider,
+
             @RequestBody OAuthLoginRequest request
     ) {
         request.setProvider(Provider.of(provider));
@@ -79,9 +95,12 @@ public class AccountController {
         );
     }
 
+    @Operation(summary = "로그아웃", description = "로그아웃 처리")
     @PostMapping("/accounts/logout")
     public ResponseEntity<ApiResponse<Void>> logout(
+            @Parameter(hidden = true)
             @RequestHeader("Authorization") String bearerToken,
+
             @AuthenticationPrincipal Auth auth
     ) {
 
@@ -94,9 +113,12 @@ public class AccountController {
         );
     }
 
+    @Operation(summary = "비밀번호 검증", description = "비밀번호 검증 처리")
     @PostMapping("/accounts/me/verify-password")
     public ResponseEntity<ApiResponse<Void>> verifyPassword(
+            @Parameter(hidden = true)
             @RequestHeader("Authorization") String bearerToken,
+
             @AuthenticationPrincipal Auth auth,
             @RequestBody VerifyPasswordRequest request
     ) {
@@ -110,9 +132,12 @@ public class AccountController {
         );
     }
 
+    @Operation(summary = "비밀번호 변경", description = "비밀번호 변경 처리")
     @PatchMapping("/accounts/me/password")
     public ResponseEntity<ApiResponse<Void>> updatePassword(
+            @Parameter(hidden = true)
             @RequestHeader("Authorization") String bearerToken,
+
             @AuthenticationPrincipal Auth auth,
             @RequestBody UpdatePasswordRequest request
     ) {
@@ -125,9 +150,12 @@ public class AccountController {
         );
     }
 
+    @Operation(summary = "회원 탈퇴", description = "사용자 탈퇴 처리")
     @DeleteMapping("/accounts/me")
     public ResponseEntity<ApiResponse<Void>> delete(
+            @Parameter(hidden = true)
             @RequestHeader("Authorization") String bearerToken,
+
             @AuthenticationPrincipal Auth auth
     ) {
 
@@ -140,8 +168,10 @@ public class AccountController {
         );
     }
 
+    @Operation(summary = "토큰 갱신", description = "AccessToken 갱신")
     @PostMapping("/accounts/refresh")
     public ResponseEntity<ApiResponse<Void>> refresh(
+            @Parameter(hidden = true)
             @RequestHeader("Refresh-Token") String refreshToken
     ) {
         return ApiResponse.success(

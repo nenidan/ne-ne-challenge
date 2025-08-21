@@ -1,5 +1,8 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.product.infrastructure.mapper;
 
+import java.time.Instant;
+import java.time.ZoneId;
+
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.domain.model.Product;
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.infrastructure.entity.ProductDocument;
 import com.github.nenidan.ne_ne_challenge.domain.shop.product.infrastructure.entity.ProductEntity;
@@ -32,7 +35,9 @@ public class ProductMapper {
             productEntity.getProductName(),
             productEntity.getProductDescription(),
             productEntity.getProductPrice(),
-            productEntity.getDeletedAt()
+            Instant.now(),
+            Instant.now(),
+            productEntity.getDeletedAt() == null ? null : productEntity.getDeletedAt().atZone(ZoneId.of("Asia/Seoul")).toInstant()
         );
     }
 

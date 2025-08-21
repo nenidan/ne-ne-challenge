@@ -61,7 +61,7 @@ public class ProductService {
      */
     @Transactional
     public ProductResult updateProduct(Long productId, UpdateProductCommand updateProductCommand) {
-        Product product = productRepository.findById(new ProductId(productId));
+        Product product = productRepository.findByIdFromJpa(new ProductId(productId));
         product.update(
             updateProductCommand.getProductName(),
             updateProductCommand.getProductDescription(),
@@ -80,7 +80,7 @@ public class ProductService {
      */
     @Transactional(readOnly = true)
     public ProductResult findProduct(Long productId) {
-        Product product = productRepository.findById(new ProductId(productId));
+        Product product = productRepository.findByIdFromElasticsearch(new ProductId(productId));
         return ProductResult.fromEntity(product);
     }
 
@@ -116,7 +116,7 @@ public class ProductService {
      */
     @Transactional
     public void deleteProduct(Long productId) {
-        Product product = productRepository.findById(new ProductId(productId));
+        Product product = productRepository.findByIdFromJpa(new ProductId(productId));
         product.delete();
         productRepository.save(product);
 

@@ -1,9 +1,13 @@
 package com.github.nenidan.ne_ne_challenge.domain.shop.product.infrastructure.entity;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.Mapping;
 import org.springframework.data.elasticsearch.annotations.Setting;
 
@@ -26,5 +30,12 @@ public class ProductDocument {
 
     private Integer productPrice;
 
-    private LocalDateTime deletedAt;
+    @Field(type = FieldType.Date, format = DateFormat.date_time)
+    private Instant createdAt;
+
+    @Field(type = FieldType.Date, format = DateFormat.date_time)
+    private Instant updatedAt;
+
+    @Field(type = FieldType.Date, format = DateFormat.date_time)
+    private Instant deletedAt;
 }

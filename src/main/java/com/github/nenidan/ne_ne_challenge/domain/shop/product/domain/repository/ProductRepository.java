@@ -7,7 +7,8 @@ import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 
 public interface ProductRepository {
     Product save(Product product);
-    Product findById(ProductId productId);
+    Product findByIdFromElasticsearch(ProductId productId);
+    Product findByIdFromJpa(ProductId productId);
     List<Product> findAllByKeyword(List<Object> after, int size, String keyword);
     List<Product> findAll();
 }

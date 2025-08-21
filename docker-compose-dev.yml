@@ -123,7 +123,7 @@ services:
     ports:
       - "5601:5601"
     volumes:
-      - ./kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml
+      - ./src/main/resources/kibana:/usr/share/kibana/config:ro
     networks:
       - search
 

@@ -9,7 +9,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.request.HistorySearchCond;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.response.ChallengeHistoryResponse;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.response.ChallengeHistoryDto;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.repository.ChallengeHistoryQueryRepository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -25,8 +25,8 @@ public class QueryDslHistoryRepository implements ChallengeHistoryQueryRepositor
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Optional<ChallengeHistoryResponse> findHistoryById(Long historyId) {
-        ChallengeHistoryResponse result = projectToChallengeHistoryResponse()
+    public Optional<ChallengeHistoryDto> findHistoryById(Long historyId) {
+        ChallengeHistoryDto result = projectToChallengeHistoryResponse()
             .from(history)
             .where(history.id.eq(historyId).and(notSoftDeleted()))
             .fetchOne();
@@ -35,7 +35,7 @@ public class QueryDslHistoryRepository implements ChallengeHistoryQueryRepositor
     }
 
     @Override
-    public List<ChallengeHistoryResponse> findHistory(Long challengeId, HistorySearchCond cond) {
+    public List<ChallengeHistoryDto> findHistory(Long challengeId, HistorySearchCond cond) {
         return projectToChallengeHistoryResponse()
             .from(history)
             .where(
@@ -59,9 +59,9 @@ public class QueryDslHistoryRepository implements ChallengeHistoryQueryRepositor
             .fetchOne();
     }
 
-    private JPAQuery<ChallengeHistoryResponse> projectToChallengeHistoryResponse() {
+    private JPAQuery<ChallengeHistoryDto> projectToChallengeHistoryResponse() {
         return queryFactory
-            .select(Projections.constructor(ChallengeHistoryResponse.class,
+            .select(Projections.constructor(ChallengeHistoryDto.class,
                 history.id,
                 history.userId,
                 history.challengeId,

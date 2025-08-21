@@ -14,9 +14,17 @@
     "productPrice": {
       "type": "integer"
     },
+    "createdAt": {
+      "type": "date",
+      "format": "strict_date_time"
+    },
+    "updatedAt": {
+      "type": "date",
+      "format": "strict_date_time"
+    },
     "deletedAt": {
       "type": "date",
-      "format": "strict_date_time||epoch_millis"
+      "format": "strict_date_time"
     }
   }
 }

@@ -6,9 +6,11 @@ import com.github.nenidan.ne_ne_challenge.domain.notification.infrastructure.fcm
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class SendNotificationRequest {
 	@Schema(description = "제목", example = "리마인드 알림")
 	private String title;
