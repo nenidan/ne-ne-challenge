@@ -9,6 +9,6 @@ public interface ProductRepository {
     Product save(Product product);
     Product findByIdFromElasticsearch(ProductId productId);
     Product findByIdFromJpa(ProductId productId);
-    List<Product> findAllByKeyword(List<Object> after, int size, String keyword);
+    List<Product> findAllByKeyword(List<Long> after, int size, String keyword);
     List<Product> findAll();
 }

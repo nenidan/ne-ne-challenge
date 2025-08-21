@@ -101,25 +101,22 @@ public class ProductController {
         @Parameter(
             name = "cursor",
             description = "페이지 기준점",
-            example = "1",
             in = ParameterIn.QUERY
         ),
         @Parameter(
             name = "size",
             description = "페이지 크기",
-            example = "30",
             in = ParameterIn.QUERY
         ),
         @Parameter(
             name = "keyword",
             description = "검색어",
-            example = "GS25",
             in = ParameterIn.QUERY
         ),
     })
     @GetMapping("/products")
     public ResponseEntity<ApiResponse<CursorResponse<ProductResponse, Long>>> findAllProducts(
-        @RequestParam(required = false) List<Object> cursor,
+        @RequestParam(required = false) List<Long> cursor,
         @RequestParam(defaultValue = "10") @Min(1) int size,
         @RequestParam(required = false) String keyword
     ) {
