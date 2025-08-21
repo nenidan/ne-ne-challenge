@@ -154,6 +154,10 @@ public class Challenge extends BaseEntity {
         verifyHost(loginUserId);
         verifyWaiting();
 
+        if(currentParticipantCount != 1) {
+            throw new ChallengeException(NOT_MODIFIABLE);
+        }
+
         String newName = info.getName();
         if(newName != null && !newName.isEmpty()) {
             this.name = newName;
