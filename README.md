@@ -1,4 +1,4 @@
-<p align="center">
+<div align="center">
 
 # 💸내네 챌린지 플랫폼
 <br>
@@ -10,7 +10,7 @@
 
 <br>
 
-</p>
+</div>
 
 ---
 
@@ -38,11 +38,11 @@
 
 
 ---
-
+<div align="center">
 
 ## 💰 내돈 네돈 챌린지가 뭐에요?
 
-<div style="text-align: center;">
+
 
 <br>
 
