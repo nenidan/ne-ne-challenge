@@ -401,7 +401,9 @@ src
 - 실패 시 DB에 저장, 스케줄러가 주기적으로 재시도
 - IO 병목으로 성능 저하 발생
 
----
+<br>
+<br>
+
 ## ⚡ Redis ZSet 기반 재전송 큐
 ![redis-queue](https://velog.velcdn.com/images/wkdrnsgh1/post/b1183645-a3c2-4214-a015-e82668292c47/image.png)
 
@@ -409,14 +411,18 @@ src
 - 스케줄러가 해당 시점 도달한 항목만 꺼내서 재전송
 - **메모리 기반**이라 DB 대비 훨씬 빠름
 
----
+<br>
+<br>
+
 ## 🚀 Redis ZSet (병렬 처리)
 ![parallel-queue](https://velog.velcdn.com/images/wkdrnsgh1/post/97dd6f6c-ad60-47c3-b5a2-d569371ed08d/image.png)
 
 - **멀티 스레드 병렬 처리** → TPS 약 5배 향상
 - 30만 건 테스트에서도 안정적인 성능 확인
 
----
+<br>
+<br>
+
 ## 📊 성능 비교 결과
 
 | 항목 | DB 기반 | Redis ZSet (단일) | Redis ZSet (병렬) |
@@ -427,13 +433,17 @@ src
 
 ![성능 비교 그래프](https://velog.velcdn.com/images/wkdrnsgh1/post/e4aa8abd-60ac-4e00-8020-23ab84828bdb/image.png)
 
----
+<br>
+<br>
+
 ## 🔑 결론
 - Redis는 DB 대비 **약 3배 이상 빠른 처리**
 - 병렬 스레드 적용 시 **TPS 5배 이상 향상**
 - 모놀리틱 환경에서는 Kafka/RabbitMQ 대신 Redis로 가볍게 구현하는 게 적절
 
----
+<br>
+<br>
+
 ## 📌 한계 & 개선 방향
 - JMeter 다중 스레드 실험은 로컬 환경 한계로 충분히 못함
 - 분산 환경(MSA)에서 Redisson 분산 락 실험은 추후 과제
@@ -449,7 +459,9 @@ src
 - 포인트 중복 차감 방지
 - 인원 제한 초과 방지 (정합성 유지)
 
----
+<br>
+<br>
+
 ## 🚨 문제 상황
 - 여러 사용자가 동시에 같은 챌린지 참가 시도
 - 한 사용자가 빠르게 연속 클릭 → 중복 참가 발생
@@ -461,14 +473,17 @@ src
 **문제 발생 흐름**
 ![problem](https://velog.velcdn.com/images/wkdrnsgh1/post/d7e0bbcf-b754-43fd-8ae1-eab10b6ae842/image.png)
 
----
+<br>
+<br>
+
 ## 🔒 비관적 락 (Pessimistic Lock)
 ![pess-lock](https://velog.velcdn.com/images/wkdrnsgh1/post/b46dad4a-ef84-4dc9-a51d-2d8b0f87a183/image.png)
 
 - 소량 트래픽(250건): 빠르고 정합성 보장
 - 대량 트래픽(5000건): **응답 시간 급증, 처리량 급감, 심하면 데드락 발생**
 
----
+<br>
+<br>
 
 ## 🔑 Redisson 분산 락
 ![redisson-lock](https://velog.velcdn.com/images/wkdrnsgh1/post/f80008ee-e682-45c8-8f44-1b7902a86908/image.png)
@@ -477,7 +492,8 @@ src
 - **처리량은 오히려 증가, 평균 응답 시간 안정적**
 - 일부 최대 응답 시간은 증가했으나 큰 문제는 아님
 
----
+<br>
+<br>
 
 ## 📊 성능 비교
 
@@ -492,7 +508,8 @@ src
 **시각화**
 ![comparison-graph](https://velog.velcdn.com/images/wkdrnsgh1/post/1d7d5030-3ff6-4a22-b986-be21c4e52b37/image.png)
 
----
+<br>
+<br>
 
 ## ✅ 결론
 - **소량 트래픽** → 비관적 락이 더 빠름
@@ -523,7 +540,8 @@ https://ddokyun.tistory.com/66
 4. **포인트 충전** → 결제 금액만큼 사용자 포인트 충전
 5. **완료 응답** → 사용자에게 결제 완료 알림
 
----
+<br>
+<br>
 
 ## ⚠️ 문제 정의
 
@@ -712,7 +730,9 @@ public class PointChargeEventHandler {
 }
 ```
 
----
+<br>
+<br>
+
 ## 📊 성능 테스트
 
 ### 🛠️ 테스트 환경
@@ -750,7 +770,8 @@ public class PointChargeEventHandler {
 | 최대 응답시간 | 1,008 ms | 786 ms | 222 ms 단축 (22% 개선) |
 | 표준편차 | 약 90 ms | 약 70.7 ms | 안정성 21% 향상 |
 
----
+<br>
+<br>
 
 ## ✅ 해결 완료
 
@@ -789,7 +810,8 @@ https://ddokyun.tistory.com/65
     - 장애 격리로 부분 장애 대응 가능
     - **재시도 로직으로 일시적 장애 자동 복구**
 
----
+<br>
+<br>
 
 ## 🔮 향후 개선 사항
 
@@ -806,7 +828,6 @@ https://ddokyun.tistory.com/65
 <br>
 <br>
 
----
 
 ### 🔥 우리는 문제를 이렇게 해결했어요!
 <details>
@@ -839,7 +860,9 @@ https://ddokyun.tistory.com/65
 
 <br>
 
----
+<br>
+<br>
+
 ## 🧑‍🤝‍🧑 팀원 소개
 <br>
 
@@ -858,10 +881,10 @@ https://ddokyun.tistory.com/65
 |                                 알림 시스템                                  |                                모니터링 & 로깅                                | 상점 시스템 |
 |                 FCM 알림, Redis ZSet 재전송 큐<br/>병렬 처리 최적화                  |            Promtail & Loki Grafana 대시보드 시각화<br/>시스템 전체 모니터링             | 포인트 상점, Elasticsearch 검색<br/>상품 관리 API |
 |                            "실패해도 끝까지 보낸다 📩"                            |                             "데이터는 곧 힘이다 📊"                             | "포인트는 써야 제맛 🛍️" |
+
+
 <br>
-
-
----
+<br>
 
 ## 📊 프로젝트 성과
 - TPS **2000+ 처리** 안정 검증 완료
@@ -869,9 +892,10 @@ https://ddokyun.tistory.com/65
 - 대규모 트래픽 상황에서도 **데이터 정합성 보장**
 - CI/CD 파이프라인 구축 → **배포 자동화 & 다운타임 최소화**
 
+
+<br>
 <br>
 
----
 ## 🔮 추후 개선
 - **멀티 결제 프로바이더** 적용 (토스 외 결제수단 연동)
 - **챌린지 추천 알고리즘** (AI 기반 개인 맞춤형 도전 제안)
