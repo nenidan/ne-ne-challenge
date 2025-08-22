@@ -77,7 +77,7 @@
 
 ### 🚀 서비스 플로우
 
-<img src="readmeImg/user_flow.png" width="70%" />
+<img src="readmeImg/user_flow.png" width="100%" />
 
 <br>
 <br>
