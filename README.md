@@ -761,8 +761,6 @@ https://ddokyun.tistory.com/65
 | *토스페이먼츠 API 연동*<br/>*포인트 FIFO 알고리즘 설계* | *OAuth 2.0 소셜 로그인*<br/>*JWT 인증, 사용자 관리* | *챌린지 생성·참여 시스템*<br/>*Spring Batch 정산 처리* |
 | *"돈이 오가면, 나는 시스템을 믿게 만든다"* | *"로그인 화면에서 서비스 품질이 갈린다"* | *"정합성이 깨지면, 도전도 깨진다"* |
 
----
-
 | [**장군호**](https://github.com/NewJKH) | [**박민욱**](https://github.com/m1lotic) | [**김용준**](https://github.com/kimyongjun) |
 |:--------------------------------------:|:--------------------------------------:|:------------------------------------------:|
 | <img src="readmeImg/sexy_koonho_profile.png" width="300" height="400"/> | <img src="readmeImg/sexy_minook_profile.png" width="300" height="400"/> | <img src="readmeImg/yongjun_profile.png" width="300" height="400"/> |
@@ -787,7 +785,6 @@ https://ddokyun.tistory.com/65
 - 대규모 트래픽 상황에서도 **데이터 정합성 보장**
 - CI/CD 파이프라인 구축 → **배포 자동화 & 다운타임 최소화**
 
-<br>
 
 <br>
 <br>
@@ -804,4 +801,26 @@ https://ddokyun.tistory.com/65
 - **습관 분석 리포트** 제공 (인증 패턴 분석, 피드백 제공)
 - **모바일 앱 런칭**으로 접근성 강화
 
+
 <br>
+<br>
+<br>
+
+## 🧑‍🤝‍🧑 팀원 소개
+<br>
+
+|                **[김도균](https://github.com/DOGYUN0903)**                 |                 **[김나경](https://github.com/gajicoding)**                  | **[한재현](https://github.com/hanjaehyeon)** |
+|:-----------------------------------------------------------------------:|:-------------------------------------------------------------------------:| :---------------------------------------------------------------------------------------------------------------------------: |
+| <img src="readmeImg/sexy_dogyun_profile.png" width="300" height="400"/> | <img src="readmeImg/sexy_nagyeong_profile.png" width="300" height="400"/> | <img src="readmeImg/sexy_jaeheoyn_profile.png" width="300" height="400"/> |
+|                                 **팀장**                                  |                                  **부팀장**                                  | **팀원** |
+|                                결제 & 포인트                                 |                              사용자 인증 (OAuth)                               | 챌린지 시스템 |
+|        토스페이먼츠 API 연동<br/>포인트 사용 로직(FIFO 알고리즘)        |                    OAuth 2.0 소셜 로그인<br/>JWT 인증, 사용자 관리                    | 챌린지 생성/참여 시스템<br/>Spring Batch 정산 처리 |
+|                           "돈이 오가면 안정성이 생명 💳"                           |                              "로그인도 경험이다 🔑"                               | "도전은 배신하지 않는다 🎯" |
+
+|                 **[장군호](https://github.com/NewJKH)**                 |                  **[박민욱](https://github.com/m1lotic)**                  | **[김용준](https://github.com/kimyongjun)** |
+|:-----------------------------------------------------------------------:|:-----------------------------------------------------------------------:| :---------------------------------------------------------------------------------------------------------------------------: |
+| <img src="readmeImg/sexy_koonho_profile.png" width="300" height="400"/> | <img src="readmeImg/sexy_minook_profile.png" width="300" height="400"/> | <img src="readmeImg/yongjun_profile.png" width="300" height="400"/> |
+|                                 **팀원**                                  |                                 **팀원**                                  | **팀원** |
+|                                 알림 시스템                                  |                                모니터링 & 로깅                                | 상점 시스템 |
+|                 FCM 알림, Redis ZSet 재전송 큐<br/>병렬 처리 최적화                  |            Promtail & Loki Grafana 대시보드 시각화<br/>시스템 전체 모니터링             | 포인트 상점, Elasticsearch 검색<br/>상품 관리 API |
+|                            "실패해도 끝까지 보낸다 📩"                            |                             "데이터는 곧 힘이다 📊"                             | "포인트는 써야 제맛 🛍️" |
