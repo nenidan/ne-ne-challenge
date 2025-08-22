@@ -1,4 +1,4 @@
-<div style="text-align: center;">
+<div align="center">
 
 # 💸내네 챌린지 플랫폼
 <br>
@@ -6,14 +6,14 @@
 
 <img src="readmeImg/nene_challenge.png" width="400" />
 
-> <font size="4">“참가비를 걸고 함께 도전한다!”</font><br>
-> 단순 기록이 아닌, 강력한 **동기부여 플랫폼**
-
-<br>
+<h3>“참가비를 걸고 함께 도전한다!”</h3>
+단순 기록이 아닌, 강력한 <b>동기부여 플랫폼</b>
 
 </div>
 
----
+<br>
+<br>
+
 
 ## 📋 목차
 
@@ -36,12 +36,13 @@
 - [🔮 추후 개선](#-추후-개선)
   
 
----
+<br>
+<br>
 
 
 ## 💰 내돈 네돈 챌린지가 뭐에요?
 
-<div style="text-align: center;">
+<div align="center">
 
 <br>
 
@@ -61,7 +62,9 @@
 
 </div>
 
----
+<br>
+<br>
+
 ## 🙋 우리가 제안하는 방법과 기대 효과
 <br>
 
@@ -79,42 +82,46 @@
 👉 혼자가 아닌, <font size="3">__함께 성장하는 문화__</font>를 만듭니다.
 
 <br>
+<br>
 
-
----
 ## 🛠️ 기술 스택
 
   <img src="readmeImg/tech-stack.svg" width="100%" />
 
 
----
+<br>
+<br>
+
 ## 📐 프로젝트 설계
 ### 📚 API 명세서
 <font size="5">[API Documentation(swagger)](http://3.36.220.104:8080/swagger-ui/index.html)</font>
+
+<br>
 
 ### 🎨 와이어프레임
 
 <img src="readmeImg/wireframe.png" width="600" />
 
----
+<br>
 
 ### 🏗️ 시스템 아키텍처
 
 <img src="readmeImg/architecture.png" width="600" />
 
----
+<br>
 
 ### 🚀 서비스 플로우
 
 <img src="readmeImg/flow.png" width="600" />
 
----
+<br>
 
 ### 🗂️ ERD
 
 <img src="readmeImg/erd.png" width="600" />
 
----
+<br>
+
 ### 📦 패키지 구조
 
 ```bash
@@ -139,7 +146,6 @@ src
 ```
 <br>
 
----
 ## 🧠 기술을 선택할 때, 이런 고민을 했어요!
 
 왜 Redis를 썼나요?
@@ -151,8 +157,9 @@ src
 ... 대충 흥미유발 ㄱㄱ;
 
 <br>
+<br>
 
----
+
 ## 🔧 핵심 기능
 <details>
   <summary>👤 유저 도메인</summary>
@@ -357,6 +364,7 @@ src
 </details>
 
 <br>
+<br>
 
 ---
 ## ⚡ 우리는 성능을 이렇게 개선했어요!
@@ -370,7 +378,6 @@ src
 <br>
 <br>
 
----
 ## 📌 문제 정의
 - **유저 토큰 만료 / 삭제** → 알림 실패
 - **네트워크 장애 / FCM 서비스 불가** → 전송 실패
@@ -379,14 +386,14 @@ src
 <br>
 <br>
 
----
 ## 🚨 기존 문제점
 1. 확장성 부족 → 다중 서버 환경에서 큐 충돌
 2. 상태 추적 어려움 → 실시간 모니터링 부족
 3. 사용자 경험 저하 → 알림 누락 인지 불가
 
 
----
+<br>
+<br>
 
 ## 🗄️ DB 기반 재전송 큐
 ![db-queue](https://velog.velcdn.com/images/wkdrnsgh1/post/d31b54c8-a156-4cff-9ff6-5fb05c48993b/image.png)
@@ -561,7 +568,9 @@ https://ddokyun.tistory.com/66
 - **재시도 없음** → 포인트 유실 위험
 - **재시도 있음** → 사용자 경험 악화 (최악의 경우 50초 이상)
 
----
+<br>
+<br>
+
 
 ## 💡 해결 방안
 
