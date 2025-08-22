@@ -1,7 +1,8 @@
-<div style="text-align: center;">
+<div align="center">
 
 # 💸내네 챌린지 플랫폼
 <br>
+
 
 <img src="readmeImg/nene_challenge.png" width="400" />
 
@@ -35,7 +36,6 @@
 - [🔮 추후 개선](#-추후-개선)
 
   <a href="#-내돈-네돈-챌린지가-뭐에요" style="color:inherit; text-decoration: none;" >💰 내돈 네돈 챌린지가 뭐에요?</a>
-
 
 
 ---
