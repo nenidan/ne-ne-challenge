@@ -1,12 +1,12 @@
 <div align="center">
 
 # 💸내네 챌린지 플랫폼
-<br>
 
+<br>
 <img src="readmeImg/nene_challenge.png" width="400" />
 
-> <font size="4">“참가비를 걸고 함께 도전한다!”</font><br>
-> 단순 기록이 아닌, 강력한 **동기부여 플랫폼**
+<h3>“참가비를 걸고 함께 도전한다!”</h3>
+단순 기록이 아닌, 강력한 <b>동기부여 플랫폼</b>
 
 <br>
 
@@ -77,10 +77,8 @@
 
 ### 🚀 서비스 플로우
 
-<img src="readmeImg/user_flow.png" width="70%" />
+<img src="readmeImg/user_flow.png" width="100%" />
 
-<br>
-<br>
 <br>
 
 ## 🛠️ 기술 스택
@@ -97,23 +95,17 @@
 <img src="readmeImg/architecture.png" width="100%" />
 
 <br>
-<br>
-<br>
 
 ### 🚀 서비스 플로우
 
 <img src="readmeImg/flow.png" width="100%" />
 
 <br>
-<br>
-<br>
 
 ### 🗂️ ERD
 
 <img src="readmeImg/erd.png" width="100%" />
 
-<br>
-<br>
 <br>
 
 ## 🧠 기술 도입 제안서
