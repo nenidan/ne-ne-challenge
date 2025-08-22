@@ -59,7 +59,7 @@
 
   <!-- Column 2 -->
   <g transform="translate(490,0)">
-    <rect width="420" height="236" rx="16" fill="url(#bgGrad)" filter="url(#shadow)"/>
+    <rect width="420" height="240" rx="16" fill="url(#bgGrad)" filter="url(#shadow)"/>
     <text x="20" y="36" class="section">Cloud Service</text>
     <text x="20" y="76" class="item">🐧 Ubuntu Linux</text>
     <text x="20" y="104" class="item">🅰️ AWS EC2</text>
@@ -69,21 +69,21 @@
     <text x="25" y="216" class="item">λ AWS Lambda</text>
   </g>
 
-  <g transform="translate(490,256)">
+  <g transform="translate(490,260)">
     <rect width="420" height="130" rx="16" fill="url(#bgGrad)" filter="url(#shadow)"/>
     <text x="20" y="36" class="section">Infra &amp; CI/CD</text>
     <text x="20" y="76" class="item">🐳 Docker</text>
     <text x="20" y="104" class="item">⚙️ GitHub Actions</text>
   </g>
 
-  <g transform="translate(490,406)">
+  <g transform="translate(490,410)">
     <rect width="420" height="130" rx="16" fill="url(#bgGrad)" filter="url(#shadow)"/>
     <text x="20" y="36" class="section">API</text>
     <text x="20" y="76" class="item">📮 Postman</text>
     <text x="20" y="104" class="item">🐉 Swagger</text>
   </g>
 
-  <g transform="translate(490,526)">
+  <g transform="translate(490,560)">
     <rect width="420" height="240" rx="16" fill="url(#bgGrad)" filter="url(#shadow)"/>
     <text x="20" y="36" class="section">Monitoring</text>
     <text x="20" y="76" class="item">📊 Grafana</text>
