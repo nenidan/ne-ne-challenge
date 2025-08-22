@@ -115,6 +115,7 @@
 | **CI/CD (GitHub Actions)** | **주 2~3회 배포**를 자동화해 안정성과 속도를 확보 | [왜 Jenkins 대신 GitHub Actions를 도입했을까?](#) |
 | **Promtail + Loki + Grafana** | 대규모 트래픽 환경에서 **로그·지표를 시각화**해 장애 추적 용이 | [왜 ELK(Elastic Stack) 대신 Loki를 선택했을까?](#) |
 
+
 <br>
 (안에 들어갈 것)
 <details>
