@@ -89,6 +89,33 @@
 <br>
 <br>
 
+<h2>📐 프로젝트 설계</h2>
+
+### 📚 API 명세서
+[API Documentation(swagger)](http://3.36.220.104:8080/swagger-ui/index.html)
+
+<br>
+
+### 🏗️ 시스템 아키텍처
+
+<img src="readmeImg/architecture.png" width="100%" />
+
+<br>
+
+### 🚀 서비스 플로우
+
+<img src="readmeImg/flow.png" width="100%" />
+
+<br>
+
+### 🗂️ ERD
+
+<img src="readmeImg/erd.png" width="100%" />
+
+<br>
+<br>
+<br>
+
 
 <h2>🛠️ 우리가 사용한 기술들</h2>
 <img src="readmeImg/tech-stack.svg" width="100%" />
@@ -141,34 +168,6 @@
 
 </details>
 
-
-<br>
-<br>
-<br>
-
-
-<h2>📐 프로젝트 설계</h2>
-
-### 📚 API 명세서
-[API Documentation(swagger)](http://3.36.220.104:8080/swagger-ui/index.html)
-
-<br>
-
-### 🏗️ 시스템 아키텍처
-
-<img src="readmeImg/architecture.png" width="100%" />
-
-<br>
-
-### 🚀 서비스 플로우
-
-<img src="readmeImg/flow.png" width="100%" />
-
-<br>
-
-### 🗂️ ERD
-
-<img src="readmeImg/erd.png" width="100%" />
 
 <br>
 <br>
