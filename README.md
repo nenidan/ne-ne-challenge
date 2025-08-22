@@ -1,4 +1,4 @@
-<div style="text-align: center;">
+<p align="center">
 
 # 💸내네 챌린지 플랫폼
 <br>
@@ -10,7 +10,7 @@
 
 <br>
 
-</div>
+</p>
 
 ---
 
@@ -21,7 +21,6 @@
 - [🛠️ 기술 스택](#-기술-스택)
 - [📐 프로젝트 설계](#-프로젝트-설계)
     - [📚 API 명세서](#-api-명세서)
-    - [🎨 와이어프레임](#-와이어프레임)
     - [🏗️ 시스템 아키텍처](#-시스템-아키텍처)
     - [🚀 서비스 플로우](#-서비스-플로우)
     - [🗂️ ERD](#-erd)
@@ -92,11 +91,7 @@
 ---
 ## 📐 프로젝트 설계
 ### 📚 API 명세서
-<font size="5">[API Documentation(swagger)](http://3.36.220.104:8080/swagger-ui/index.html)</font>
-
-### 🎨 와이어프레임
-
-<img src="readmeImg/wireframe.png" width="600" />
+[API Documentation(swagger)](http://3.36.220.104:8080/swagger-ui/index.html)
 
 ---
 
@@ -110,35 +105,18 @@
 
 <img src="readmeImg/flow.png" width="600" />
 
+<br>
+<br>
+<br>
+
 ---
 
 ### 🗂️ ERD
 
 <img src="readmeImg/erd.png" width="600" />
 
----
-### 📦 패키지 구조
-
-```bash
-src
-├─main
-│  ├─java.com.github.nenidan.ne_ne_challenge
-│  │   ├─domain
-│  │   │  ├─admin
-│  │   │  │  ├─application
-│  │   │  │  ├─domain
-│  │   │  │  ├─infrastructure
-│  │   │  │  └─presentation
-│  │   │  ├─challenge
-│  │   │  ├─notification
-│  │   │  ├─payment
-│  │   │  ├─point
-│  │   │  ├─shop
-│  │   │  └─user
-│  │   └─global
-│  └─resources
-└─test
-```
+<br>
+<br>
 <br>
 
 ---
@@ -805,15 +783,65 @@ https://ddokyun.tistory.com/65
 <details>
   <summary>🚨 배치 처리 중에 데드락 발생</summary>
 
-트랜잭션 격리수준 및 락 전략 미흡이 원인.  
-→ 격리수준 조정 + 락 전략 재설계로 해결.
+## 🚨문제 상황
+
+
+## 🤔 원인 분석
+
+## 🙆‍♀️ 해결 방안
+
+## ⭐ 핵심 로직
 </details>
 
 <details>
   <summary>🚨 Redis 서버 터지니까 왜 메인 서비스가 멈췄을까?</summary>
 
-장애 격리 구조가 부족해서 전체 서비스가 종속됨.  
-→ Failover 구조와 장애 격리 설계로 안정성 확보.
+   ## 🚨문제 상황
+
+   <img src="readmeImg/yongjun_trouble_shooting_redis_1.png" width="600" />
+   - 상품 첫 페이지 다 건 조회 중, <strong>500 Internal Server Error 발생</strong>
+
+   <br>
+   <br>
+   <br>
+
+   ## 🤔 원인 분석
+
+   <img src="readmeImg/yongjun_trouble_shooting_redis_2.png" width="600" />
+   - 위 상품 첫 페이지 다 건 조회는 Redis 통해 Cache 조회가 이루어지는데, Redis가 종료되어서 발생한 문제였습니다.
+
+   <br>
+   <br>
+   <br>
+
+   ## 🙆‍♀️ 해결 방안
+   - 장애 대응 로직을 추가하여 Redis 연결이 실패했을 시, Redis가 아닌 DB에서 값을 조회하도록 하였습니다.
+
+   <br>
+
+   [장애 대응 로직 없는 흐름도]
+
+   <img src="readmeImg/yongjun_trouble_shooting_redis_3.png" width="300" />
+
+   - Redis 연결 실패 시, 그 아래 로직이 전혀 실행되지 않습니다.
+
+   <br>
+   <br>
+   <br>
+
+   [장애 대응 로직 적용 흐름도]
+
+   <img src="readmeImg/yongjun_trouble_shooting_redis_4.png" width="300" />
+
+   - Redis 연결에 실패하여, 정해놓은 시간 안에 실행되지 않으면, MySQL DB에서 데이터를 직접 조회합니다.
+
+
+   ## ⭐ 핵심 로직
+   
+   <img src="readmeImg/yongjun_trouble_shooting_redis_5.png" width="300" />
+   
+   - 지정한 시간(100ms) 이내 Redis에서 Cache 가져오지 못하면, MySQL DB에서 데이터를 가져옵니다.
+
 </details>
 
 <details>
