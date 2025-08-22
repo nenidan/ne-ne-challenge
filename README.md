@@ -100,25 +100,25 @@
 
 ### 🎨 와이어프레임
 
-<img src="readmeImg/wireframe.png" width="600" />
+<img src="readmeImg/wireframe.png" width="100%"  />
 
 <br>
 
 ### 🏗️ 시스템 아키텍처
 
-<img src="readmeImg/architecture.png" width="600" />
+<img src="readmeImg/architecture.png" width="100%" />
 
 <br>
 
 ### 🚀 서비스 플로우
 
-<img src="readmeImg/flow.png" width="600" />
+<img src="readmeImg/flow.png" width="100%" />
 
 <br>
 
 ### 🗂️ ERD
 
-<img src="readmeImg/erd.png" width="600" />
+<img src="readmeImg/erd.png" width="100%" />
 
 <br>
 
