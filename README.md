@@ -116,37 +116,7 @@
 | **Promtail + Loki + Grafana** | 대규모 트래픽 환경에서 **로그·지표를 시각화**해 장애 추적 용이 | [왜 ELK(Elastic Stack) 대신 Loki를 선택했을까?](#) |
 
 <br>
-<br>
-<br>
-
-
-<h2>📐 프로젝트 설계</h2>
-
-### 📚 API 명세서
-[API Documentation(swagger)](http://3.36.220.104:8080/swagger-ui/index.html)
-
-<br>
-
-### 🏗️ 시스템 아키텍처
-
-<img src="readmeImg/architecture.png" width="100%" />
-
-<br>
-
-### 🚀 서비스 플로우
-
-<img src="readmeImg/flow.png" width="100%" />
-
-<br>
-
-### 🗂️ ERD
-
-<img src="readmeImg/erd.png" width="100%" />
-
-<br>
-<br>
-<br>
-
+(안에 들어갈 것)
 <details>
   <summary>왜 챌린지 종료에 Spring Batch를 썼나요?</summary>
 
@@ -173,7 +143,34 @@
 
 </details>
 
-... 대충 흥미유발 ㄱㄱ;
+
+<br>
+<br>
+<br>
+
+
+<h2>📐 프로젝트 설계</h2>
+
+### 📚 API 명세서
+[API Documentation(swagger)](http://3.36.220.104:8080/swagger-ui/index.html)
+
+<br>
+
+### 🏗️ 시스템 아키텍처
+
+<img src="readmeImg/architecture.png" width="100%" />
+
+<br>
+
+### 🚀 서비스 플로우
+
+<img src="readmeImg/flow.png" width="100%" />
+
+<br>
+
+### 🗂️ ERD
+
+<img src="readmeImg/erd.png" width="100%" />
 
 <br>
 <br>
