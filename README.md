@@ -1001,15 +1001,19 @@ Elasticsearch N-gram은 %LIKE%와 유사한 부분 문자열 검색을 지원하
 - 결과 :
 
 Hit per seconds
+
 <img src="readmeImg/yongjun_es_1.png" width="80%" />
 
 Response Times Over Time
+
 <img src="readmeImg/yongjun_es_2.png" width="80%" />
 
 Active Threads Over Time
+
 <img src="readmeImg/yongjun_es_3.png" width="80%" />
 
 Transactions per Second
+
 <img src="readmeImg/yongjun_es_4.png" width="80%" />
 
 <br>
@@ -1023,19 +1027,23 @@ Transactions per Second
 
 <img src="readmeImg/yongjun_es_5.png" width="30%" />
 
-- **조건 :** min-gram : 2, max-gram : 5, 검색어 x, 삭제 된 상품 조회 x, 최신으로 30개 조회
+- **조건 :** min-gram : 2, max-gram : 5, 검색어 o, 삭제 된 상품 조회 x, 최신으로 30개 조회
 - **결과 :**
 
 Hit per seconds
+
 <img src="readmeImg/yongjun_es_6.png" width="80%" />
 
 Response Times Over Time
+
 <img src="readmeImg/yongjun_es_7.png" width="80%" />
 
 Active Threads Over Time
+
 <img src="readmeImg/yongjun_es_8.png" width="80%" />
 
 Transactions per Second
+
 <img src="readmeImg/yongjun_es_9.png" width="80%" />
 
 
