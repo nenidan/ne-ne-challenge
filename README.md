@@ -91,24 +91,25 @@
 
 ### 🔄 참여 프로세스
 
-🔐 **소셜 로그인 시스템**<br>
+- 🔐 **소셜 로그인 시스템**<br>
 
-카카오/네이버 간편 로그인 : 복잡한 회원가입 과정 스킵
-
-
-💳 **토스페이먼츠 포인트 충전**<br>
-
-실제 돈 → 포인트 안전 변환 : 필요한 만큼만 충전하는 스마트한 시작
+    - 카카오/네이버 간편 로그인 : 복잡한 회원가입 과정 스킵
 
 
-💸 **All Or Nothing** 참가비 시스템 <br>
+- 💳 **토스페이먼츠 포인트 충전**<br>
 
-성공하면 참가비 환급 + 실패자의 참가비 분배, 실패하면 전액 손실 : 절대 포기할 수 없는 강력한 동기부여
+    - 실제 돈 → 포인트 안전 변환 : 필요한 만큼만 충전하는 스마트한 시작
 
 
-🛍️ **리워드 상점 시스템** <br>
+- 💸 **All Or Nothing** 참가비 시스템 <br>
 
-챌린지 상금으로 실물 상품 구매 : 노력이 실제 보상으로
+  - 성공하면 참가비 환급 + 실패자의 참가비 분배, 
+  - 실패하면 전액 손실 : 절대 포기할 수 없는 강력한 동기부여
+
+
+- 🛍️ **리워드 상점 시스템** <br>
+
+    - 챌린지 상금으로 실물 상품 구매 : 노력이 실제 보상으로
 
 <br>
 <br>
@@ -138,18 +139,18 @@
 
 ## 🤔 우리가 고민한 기술 선택들
 
-| 기술                                  | 우리 프로젝트에서 왜 사용했는지                                             | 질문                                                                                                                                                                                                                                                   |
-|-------------------------------------|---------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **FCM (푸시 알림)**                     | 챌린지 인증·보상·리마인드 알림을 **실시간 전송**하기 위해 사용                         | [왜 SSE나 WebSocket이 아닌 FCM을 선택했을까?](https://www.notion.so/teamsparta/SSE-WebSocket-FCM-2542dc3ef51480a4b5acf3a637be0c87)                                                                                                                              |
-| **OAuth 2.0**                       | SNS 계정(카카오·네이버·구글)으로 **가입 장벽을 낮추고 빠른 유입**을 위해 사용              | [왜 단순 이메일 인증만 두지 않았을까?](https://www.notion.so/teamsparta/OAuth-2-0-2542dc3ef514807e85d2d7ef64bb1638?source=copy_link)                                                                                                                                |
-| **TossPayments API**                | 애플리케이션 내부에서 자체 재화로 사용되는 **포인트를 결제**하기 위해 사용                   | [왜 많은 PG사 중에서 토스페이먼츠일까?](https://www.notion.so/teamsparta/TossPayments-API-2582dc3ef51480938e07c017cf02cd66)                                                                                                                                         |
-| **Redis(캐싱)**                       | **검색 캐싱**으로 조회 성능 향상                                          | [왜 로컬 캐시 말고 Redis를 사용했을까?](https://www.notion.so/teamsparta/Redis-2542dc3ef5148084893ad5cc9911933e)                                                                                                                                                  |
-| **Redis(재전송 큐**                     | **알림 재시도 큐**로 장애 대응                                           | [왜 Kafka나 RabbitMQ 대신 Redis를 썼을까?](https://www.notion.so/teamsparta/Kafka-Redis-RebbitMQ-Redis-2592dc3ef514801393bbdb1f83b9100d)                                                                                                                     |
-| **Elasticsearch**                   | **닉네임/자기소개/상품 검색**에서 대규모 데이터 빠른 응답 보장                         | [왜 DB LIKE 쿼리 대신 Elasticsearch를 택했을까?](https://www.notion.so/teamsparta/Elasticsearch-2542dc3ef514809c9e8cca2019e13edb)                                                                                                                              |
-| **Spring Batch**                    | 챌린지 종료 및 달성자 보상 분배 **자동화**, **대량 데이터** 일괄 처리의 **정합성 및 안정성** 보장 | [왜 챌린지 종료와 정산을 배치로 처리했을까?](https://www.notion.so/teamsparta/Spring-Batch-2542dc3ef5148052a44ff177fdb9b89a)                                                                                                                                           |
-| **Amazon EventBridge + AWS Lambda** | 배치 서버 인스턴스를 **배치가 돌아가는 동안**에만 실행                              | [EC2를 필요할 때만 켜는 다른 방법은 없을까?](https://www.notion.so/teamsparta/Amazon-EventBridge-AWS-Lambda-2582dc3ef514809d9b40f06426c547ae)                                                                                                                        |
-| **CI/CD (GitHub Actions)**          | **주 2~3회 배포**를 자동화해 안정성과 속도를 확보                               | [Jar 파일은 꼭 수동으로 서버에 배포해야하나요?](https://www.notion.so/teamsparta/CI-CD-2542dc3ef51480b391a9f6cb583c0f4e)                                                                                                                                               |
-| **Promtail + Loki + Grafana**       | **트레이드 오프**를 고려하여 도커 컨테이너 내부의 로그·지표를 시각화해 장애 추적 용이            | [왜 ELK(Elastic Stack) 대신 Loki를 선택했을까?](https://teamsparta.notion.site/Loki-Grafana-2572dc3ef51480f0af97c334566cc213?source=copy_link)<br>[Promtail이 뭔데??](https://teamsparta.notion.site/Promtail-2562dc3ef5148092877cee8c2f95c375?source=copy_link) |
+| 기술                                      | 우리 프로젝트에서 왜 사용했는지                                             | 질문                                                                                                                                                                                                                                                   |
+|-----------------------------------------|---------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **🔔 FCM (푸시 알림)**                      | 챌린지 인증·보상·리마인드 알림을 **실시간 전송**하기 위해 사용                         | [왜 SSE나 WebSocket이 아닌 FCM을 선택했을까?](https://www.notion.so/teamsparta/SSE-WebSocket-FCM-2542dc3ef51480a4b5acf3a637be0c87)                                                                                                                              |
+| **🔐 OAuth 2.0**                        | SNS 계정(카카오·네이버·구글)으로 **가입 장벽을 낮추고 빠른 유입**을 위해 사용              | [왜 단순 이메일 인증만 두지 않았을까?](https://www.notion.so/teamsparta/OAuth-2-0-2542dc3ef514807e85d2d7ef64bb1638?source=copy_link)                                                                                                                                |
+| **💳 TossPayments API**                 | 애플리케이션 내부에서 자체 재화로 사용되는 **포인트를 결제**하기 위해 사용                   | [왜 많은 PG사 중에서 토스페이먼츠일까?](https://www.notion.so/teamsparta/TossPayments-API-2582dc3ef51480938e07c017cf02cd66)                                                                                                                                         |
+| **🔴 Redis(캐싱)**                        | **검색 캐싱**으로 조회 성능 향상                                          | [왜 로컬 캐시 말고 Redis를 사용했을까?](https://www.notion.so/teamsparta/Redis-2542dc3ef5148084893ad5cc9911933e)                                                                                                                                                  |
+| **🔴 Redis(재전송 큐**                      | **알림 재시도 큐**로 장애 대응                                           | [왜 Kafka나 RabbitMQ 대신 Redis를 썼을까?](https://www.notion.so/teamsparta/Kafka-Redis-RebbitMQ-Redis-2592dc3ef514801393bbdb1f83b9100d)                                                                                                                     |
+| **🔎 Elasticsearch**                    | **닉네임/자기소개/상품 검색**에서 대규모 데이터 빠른 응답 보장                         | [왜 DB LIKE 쿼리 대신 Elasticsearch를 택했을까?](https://www.notion.so/teamsparta/Elasticsearch-2542dc3ef514809c9e8cca2019e13edb)                                                                                                                              |
+| **⏱️ Spring Batch**                     | 챌린지 종료 및 달성자 보상 분배 **자동화**, **대량 데이터** 일괄 처리의 **정합성 및 안정성** 보장 | [왜 챌린지 종료와 정산을 배치로 처리했을까?](https://www.notion.so/teamsparta/Spring-Batch-2542dc3ef5148052a44ff177fdb9b89a)                                                                                                                                           |
+| **🅰️ Amazon EventBridge + AWS Lambda** | 배치 서버 인스턴스를 **배치가 돌아가는 동안**에만 실행                              | [EC2를 필요할 때만 켜는 다른 방법은 없을까?](https://www.notion.so/teamsparta/Amazon-EventBridge-AWS-Lambda-2582dc3ef514809d9b40f06426c547ae)                                                                                                                        |
+| **🐈‍⬛ CI/CD (GitHub Actions)**         | **주 2~3회 배포**를 자동화해 안정성과 속도를 확보                               | [Jar 파일은 꼭 수동으로 서버에 배포해야하나요?](https://www.notion.so/teamsparta/CI-CD-2542dc3ef51480b391a9f6cb583c0f4e)                                                                                                                                               |
+| **📊 Promtail + Loki + Grafana**        | **트레이드 오프**를 고려하여 도커 컨테이너 내부의 로그·지표를 시각화해 장애 추적 용이            | [왜 ELK(Elastic Stack) 대신 Loki를 선택했을까?](https://teamsparta.notion.site/Loki-Grafana-2572dc3ef51480f0af97c334566cc213?source=copy_link)<br>[Promtail이 뭔데??](https://teamsparta.notion.site/Promtail-2562dc3ef5148092877cee8c2f95c375?source=copy_link) |
 <br>
 <br>
 <br>
