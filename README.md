@@ -1089,12 +1089,11 @@ Transactions per Second
 
 <details>
   <summary>💡 리소스를 최소화하여 장애 대응까지..</summary>
+	
 # 문제 정의
 
 - 각 API 메서드마다 **AopLoggingData DB에 동기 저장** 후 각 저장데이터와 병합 후 시각화 → 요청 경로에서 **INSERT/트랜잭션/인덱스 갱신** 발생
-<br>
 - 트래픽 피크 구간에서 **DB 커넥션 풀 대기/락 경합/스토리지 증가**가 누적 → 일부 요청의 **레이트시(최대/상위 분위)** 스파이크
-  <br>
 - **관측성** 또한 **애플리케이션 로그만**으로는 부족(ES/Redis 등 **동일 타임라인 상관관계 분석 어려움**)
 
 ---
@@ -1117,7 +1116,26 @@ Transactions per Second
 
 # 성능 테스트
 
-( 첨부 예정 )
+### **DB 리소스 사용하여 AopData+SavedData 병합 후 조회(MySQL + Spring JPA 환경 기준)**
+
+- **DB 트랜잭션 2번 이상** (히스토리 조회 + 로그 조회)
+- **결과셋 머지/정렬** (O(n log n))
+- **DTO 변환 + 직렬화**
+- **커서/페이징 처리**
+
+→ 네트워크 왕복과 객체 생성 비용을 추가하여 1~4 t/s 의 효율을 가짐.
+
+### **DB 로깅을 제외 후, Appender로 Log 파일생성**
+
+- 기본 Appender 처리량 : 7.8 t/s
+
+<img alt="배치 병목 쿼리 실행시간" src="readmeImg/Appender1.png" width="100%" />
+
+### **AsyncAppender로 Log 파일 생성 시 비동기 처리 적용**
+
+- Async Appender 처리량: 15.9 t/s
+
+<img alt="배치 병목 쿼리 실행시간" src="readmeImg/Appender2.png" width="100%" />
 
 ---
 
@@ -1132,7 +1150,7 @@ Transactions per Second
       <br>
 - **로깅 과정 중 DB 리소스 사용 없음**
     - **요청 경로 DB 쓰기 제거**로 **지연/변동성 하락**, TPS 여유 증가
-      <br>
+	  
 </details>
 
 <details>
