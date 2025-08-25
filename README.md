@@ -1411,7 +1411,7 @@ Transactions per Second
 - `point_wallet_id`를 **FK로 참조**
 - InnoDB에서 **`INSERT`는 FK로 참조하는 테이블의 row에 S락**을 획득
 
-- [MySQL 공식문서](https://dev.mysql.com/doc/refman/8.4/en/innodb-locks-set.html)에 다믕과 같이 근거
+- [MySQL 공식문서](https://dev.mysql.com/doc/refman/8.4/en/innodb-locks-set.html)에 다음과 같이 근거
     ```text
     If `FOREIGN KEY` constraint is defined on a table, any insert, update, or delete 
     that requires the constraint condition to be checked 
