@@ -65,6 +65,7 @@ jobs:
             echo "NAVER_CLIENT_ID=PkWF00P7EtlCjh_wO57B" >> .env
             echo "NAVER_CLIENT_SECRET=6G76rrm2do" >> .env
             echo "SPRING_ELASTICSEARCH_URIS=http://3.36.220.104:9200" >> .env
+            echo "LOG_DIR = /app/logs" >> .env
             
             docker rm -f my-app || true
             docker rm -f redis || true
