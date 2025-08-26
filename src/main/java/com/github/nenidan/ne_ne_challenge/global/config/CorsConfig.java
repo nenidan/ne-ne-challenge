@@ -19,6 +19,8 @@ public class CorsConfig {
         configuration.setAllowedHeaders(List.of("*")); // 모든 헤더 허용
         configuration.setAllowCredentials(true); // 자격 증명 허용
 
+        configuration.setExposedHeaders(List.of("Authorization", "Refresh-Token"));
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration); // 모든 경로에 대해 적용
         return source;
