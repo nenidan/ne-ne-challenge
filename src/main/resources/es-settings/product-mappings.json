@@ -1,0 +1,30 @@
+{
+  "properties": {
+    "id": {
+      "type": "long"
+    },
+    "productName": {
+      "type": "text",
+      "analyzer": "ngram_index_analyzer",
+      "search_analyzer": "standard_search_analyzer"
+    },
+    "productDescription": {
+      "type": "text"
+    },
+    "productPrice": {
+      "type": "integer"
+    },
+    "createdAt": {
+      "type": "date",
+      "format": "strict_date_time"
+    },
+    "updatedAt": {
+      "type": "date",
+      "format": "strict_date_time"
+    },
+    "deletedAt": {
+      "type": "date",
+      "format": "strict_date_time"
+    }
+  }
+}

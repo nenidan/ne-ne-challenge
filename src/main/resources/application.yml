@@ -2,16 +2,61 @@ spring:
   application:
     name: ne-ne-challenge
 
+  profiles:
+    active: dev
+
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     show-sql: true
     open-in-view: false
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
+
+springdoc:
+  paths-to-exclude:
+    - /internal/**
+
+# Resilience4j 설정
+resilience4j:
+  circuitbreaker:
+    instances:
+      # 토스 환경 최적화 설정
+      tossPayments:
+        failure-rate-threshold: 50              # 실패율 50% 이상시 OPEN
+        minimum-number-of-calls: 10             # 최소 10번 호출 후 판단
+        wait-duration-in-open-state: 45s        # OPEN 상태 45초 유지
+        permitted-number-of-calls-in-half-open-state: 3  # HALF-OPEN에서 3번 테스트
+        sliding-window-size: 20                 # 최근 20번 호출 기준
+        sliding-window-type: count_based        # 개수 기준
+        automatic-transition-from-open-to-half-open-enabled: true # 자동으로 HALF-OPEN 전환
+
+  retry:
+    instances:
+      tossPayments:
+        max-attempts: 2                         # 멱등성 키 덕분에 안전하게 2번 시도
+        wait-duration: 2s                       # 2초 대기
+        exponential-backoff-multiplier: 2       # 지수적 증가 (2s, 4s)
+        retry-exceptions:                       # 네트워크 문제만 재시도
+          - java.net.ConnectException           # 연결 실패
+          - java.net.SocketTimeoutException     # 응답 타임아웃
+          - org.springframework.web.client.ResourceAccessException  # 리소스 접근 실패
+          - java.util.concurrent.TimeoutException  # 일반적인 타임아웃
+
+oauth:
+  kakao:
+    client-id: ${KAKAO_CLIENT_ID}
+    redirect-uri: ${KAKAO_REDIRECT_URI}
+  naver:
+    client-id: ${NAVER_CLIENT_ID}
+    client-secret: ${NAVER_CLIENT_SECRET}
+
+toss:
+  payments:
+    secret-key: ${TOSS_SECRET_KEY}
+    client-key: ${TOSS_CLIENT_KEY}
+    base-url: ${TOSS_BASE_URL}
 
 server:
   error:
@@ -20,3 +65,67 @@ server:
 jwt:
   secret:
     key: ${SECRET_KEY}
+
+external:
+  base-url: http://127.0.0.1:8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "prometheus"
+logging:
+  level:
+    org.springframework.cache: DEBUG
+    org.springframework.data.redis.cache: DEBUG
+  file:
+    path: ${LOG_DIR:./logs}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  firebase:
+    config:
+      path: classpath:firebase/firebase-key.json
+
+  data:
+    redis:
+      host: ${SPRING_REDIS_HOST}
+      port: ${SPRING_REDIS_PORT}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+      ddl-auto: none
+
+  firebase:
+    config:
+      path: file:/app/firebase/firebase-key.json
+
+  data:
+    redis:
+      host: ${SPRING_REDIS_HOST}
+      port: ${SPRING_REDIS_PORT}
+
+  elasticsearch:
+    uris: ${ELASTIC_SEARCH_URL}

@@ -1,6 +1,8 @@
 HELP.md
 .gradle
+elasticsearch/
 build/
+src/main/generated/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
@@ -37,4 +39,7 @@ out/
 .vscode/
 
 ### env ###
-.env
+*.env
+
+/logs/
+/src/main/resources/firebase/firebase-key.json
