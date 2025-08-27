@@ -133,7 +133,7 @@
 <br>
 
 
-## 🛠️ 우리가 사용한 기술들
+## 🛠 우리가 사용한 기술들
 <img src="readmeImg/tech-stack.svg" width="100%" />
 
 ## 🤔 우리가 고민한 기술 선택들
@@ -1678,7 +1678,7 @@ byte[] decoded = Base64.getDecoder().decode(base64);
 </details>
 
 <details>
-  <summary>🚨 `@EnableBatchProcessing`으로 인한 Spring Batch 메타데이터 테이블 생성 실패</summary>
+  <summary>🚨 @EnableBatchProcessing으로 인한 Spring Batch 메타데이터 테이블 생성 실패</summary>
 
 # 🚨 문제 상황
 
