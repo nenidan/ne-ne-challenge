@@ -144,7 +144,7 @@
 | **🔐 OAuth 2.0**                        | SNS 계정(카카오·네이버·구글)으로 **가입 장벽을 낮추고 빠른 유입**을 위해 사용              | [왜 단순 이메일 인증만 두지 않았을까?](https://www.notion.so/teamsparta/OAuth-2-0-2542dc3ef514807e85d2d7ef64bb1638?source=copy_link)                                                                                                                                |
 | **💳 TossPayments API**                 | 애플리케이션 내부에서 자체 재화로 사용되는 **포인트를 결제**하기 위해 사용                   | [왜 많은 PG사 중에서 토스페이먼츠일까?](https://www.notion.so/teamsparta/TossPayments-API-2582dc3ef51480938e07c017cf02cd66)                                                                                                                                         |
 | **🔴 Redis(캐싱)**                        | **검색 캐싱**으로 조회 성능 향상                                          | [왜 로컬 캐시 말고 Redis를 사용했을까?](https://www.notion.so/teamsparta/Redis-2542dc3ef5148084893ad5cc9911933e)                                                                                                                                                  |
-| **🔴 Redis(재전송 큐**                      | **알림 재시도 큐**로 장애 대응                                           | [왜 Kafka나 RabbitMQ 대신 Redis를 썼을까?](https://www.notion.so/teamsparta/Kafka-Redis-RebbitMQ-Redis-2592dc3ef514801393bbdb1f83b9100d)                                                                                                                     |
+| **🔴 Redis(재전송 큐)**                     | **알림 재시도 큐**로 장애 대응                                           | [왜 Kafka나 RabbitMQ 대신 Redis를 썼을까?](https://www.notion.so/teamsparta/Kafka-Redis-RebbitMQ-Redis-2592dc3ef514801393bbdb1f83b9100d)                                                                                                                     |
 | **🔎 Elasticsearch**                    | **닉네임/자기소개/상품 검색**에서 대규모 데이터 빠른 응답 보장                         | [왜 DB LIKE 쿼리 대신 Elasticsearch를 택했을까?](https://www.notion.so/teamsparta/Elasticsearch-2542dc3ef514809c9e8cca2019e13edb)                                                                                                                              |
 | **⏱️ Spring Batch**                     | 챌린지 종료 및 달성자 보상 분배 **자동화**, **대량 데이터** 일괄 처리의 **정합성 및 안정성** 보장 | [왜 챌린지 종료와 정산을 배치로 처리했을까?](https://www.notion.so/teamsparta/Spring-Batch-2542dc3ef5148052a44ff177fdb9b89a)                                                                                                                                           |
 | **🅰️ Amazon EventBridge + AWS Lambda** | 배치 서버 인스턴스를 **배치가 돌아가는 동안**에만 실행                              | [EC2를 필요할 때만 켜는 다른 방법은 없을까?](https://www.notion.so/teamsparta/Amazon-EventBridge-AWS-Lambda-2582dc3ef514809d9b40f06426c547ae)                                                                                                                        |
@@ -1236,7 +1236,7 @@ Transactions per Second
 
 - 실행 시간 → 배치 프로그램 로그
 
-  <img alt="로그를 통한 실행시간 측정" src="readmeImg/ExecutionTime.png" width="100%" />
+  <img alt="로그를 통한 실행시간 측정" src="readmeImg/ExecutionTIme.png" width="100%" />
 
 ### Step 별 측정 결과 및 해석
 
@@ -1292,7 +1292,7 @@ Transactions per Second
 - 롤백 비용과 락 점유 시간 고려한 chunk 크기 설정
     - DistributeRewardStep: 읽기 위주 + 큰 chunk 부담 없음 → 10000
     - CalculateRewardStep: 읽기 위주이나 메모리 안정성 고려 → 1000
-    - DistributeRewardStep: ****여러 테이블/인덱스에 락 + 값 수정  → 1000
+    - DistributeRewardStep: 여러 테이블/인덱스에 락 + 값 수정  → 1000
 
 ## 🔀 멀티스레딩을 통한 개선
 
@@ -1823,7 +1823,7 @@ byte[] decoded = Base64.getDecoder().decode(base64);
 ## 🧑‍🤝‍🧑 팀원 소개
 <br>
 
-|                [**김도균**](https://github.com/DOGYUN0903)                 |                 [**김나경**](https://github.com/gajicoding)                  |                      [**한재현**](https://github.com/hanjaehyeon)                      |
+|                [**김도균**](https://github.com/DOGYUN0903)                 |                 [**김나경**](https://github.com/gajicoding)                  |                      [**한재현**](https://github.com/Jaehyeon-Han)                      |
 |:-----------------------------------------------------------------------:|:-------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------:|
 | <img src="readmeImg/sexy_dogyun_profile.png" width="300" height="400"/> | <img src="readmeImg/sexy_nagyeong_profile.png" width="300" height="400"/> |      <img src="readmeImg/sexy_jaeheoyn_profile.png" width="300" height="400"/>      |
 |                                 **팀장**                                  |                                  **부팀장**                                  |                                       **팀원**                                        |
