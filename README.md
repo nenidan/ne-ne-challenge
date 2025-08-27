@@ -1813,13 +1813,13 @@ byte[] decoded = Base64.getDecoder().decode(base64);
 |                 **토스페이먼츠 API 연동**<br/>포인트 FIFO 알고리즘 설계                  |                  **OAuth 2.0 소셜 로그인**<br/>JWT 인증, 사용자 관리                  |                      **Spring Batch 정산 처리**<br/>챌린지 생성·참여 시스템                       |
 |                        "돈이 오가면, 나는 시스템을 믿게 만든다"                         |                           "유저가 움직이면, 서비스가 움직인다"                           |                                 "정합성이 깨지면, 도전도 깨진다"                                 |
 
-|                  [**장군호**](https://github.com/NewJKH)                   |                  [**박민욱**](https://github.com/m1lotic)                  |              [**김용준**](https://github.com/kimyongjun)               |
-|:-----------------------------------------------------------------------:|:-----------------------------------------------------------------------:|:-------------------------------------------------------------------:|
-| <img src="readmeImg/sexy_koonho_profile.png" width="300" height="400"/> | <img src="readmeImg/sexy_minook_profile.png" width="300" height="400"/> | <img src="readmeImg/yongjun_profile.png" width="300" height="400"/> |
-|                                 **팀원**                                  |                                 **팀원**                                  |                               **팀원**                                |
-|                             **알림 & CI/CD**                              |                              **모니터링 & 로깅**                              |                             **상점 시스템**                              |
-|            **FCM 알림, Redis ZSet 재전송 큐**<br/>병렬 처리 최적화<br/>자동화 배포             |            **Promtail & Loki, Grafana 대시보드**<br/>시스템 전반 모니터링            |               **Elasticsearch 검색 기능 향상**<br>포인트 조회 캐싱               |
-|                       "알림은 절대 잃지 않는다, 실패해도 다시 간다"                       |                       "로그는 숫자가 아니라, 서비스의 심장박동이다"                        |                        "검색이 느리면, 장바구니도 닫힌다"                         |
+|                  [**장군호**](https://github.com/NewJKH)                   |                  [**박민욱**](https://github.com/m1lotic)                  |               [**김용준**](https://github.com/kimyongjun0129)               |
+|:-----------------------------------------------------------------------:|:-----------------------------------------------------------------------:|:------------------------------------------------------------------------:|
+| <img src="readmeImg/sexy_koonho_profile.png" width="300" height="400"/> | <img src="readmeImg/sexy_minook_profile.png" width="300" height="400"/> |   <img src="readmeImg/yongjun_profile.png" width="300" height="400"/>    |
+|                                 **팀원**                                  |                                 **팀원**                                  |                                  **팀원**                                  |
+|                             **알림 & CI/CD**                              |                              **모니터링 & 로깅**                              |                                **상점 시스템**                                |
+|            **FCM 알림, Redis ZSet 재전송 큐**<br/>병렬 처리 최적화<br/>자동화 배포             |            **Promtail & Loki, Grafana 대시보드**<br/>시스템 전반 모니터링            | **상품 목록 검색 기능 향상**<br/>Redis Cache 적용<br/>복합 인덱스 적용<br/>elasticsearch 적용 |
+|                       "알림은 절대 잃지 않는다, 실패해도 다시 간다"                       |                       "로그는 숫자가 아니라, 서비스의 심장박동이다"                        |                           "검색이 느리면, 장바구니도 닫힌다"                           |
 
 
 
